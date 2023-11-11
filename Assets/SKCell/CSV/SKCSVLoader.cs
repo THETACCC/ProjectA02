@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace SKCell
 {
-    [AddComponentMenu("SKCell/CSVLoader")]
+    [AddComponentMenu("SKCell/SKCSVLoader")]
     public class SKCSVLoader : MonoSingleton<SKCSVLoader>
     {
         protected override void Awake()

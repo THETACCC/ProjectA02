@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-namespace SKCell {
+namespace SKCell 
+{
     [InitializeOnLoad]
     public class SKSceneEditorView
     {
@@ -29,6 +30,7 @@ namespace SKCell {
             {
                 ToggleObjectCount();
             }
+
             EditorGUILayout.EndHorizontal();
             GUI.skin.label.fontSize = 14;
             GUI.skin.label.alignment = TextAnchor.UpperLeft;

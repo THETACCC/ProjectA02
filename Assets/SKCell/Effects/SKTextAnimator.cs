@@ -9,7 +9,6 @@ namespace SKCell
     /// <summary>
     /// Plays custom effects on text components.
     /// </summary>
-    [RequireComponent(typeof(TMP_Text))]
     [RequireComponent(typeof(SKTextAnimation))]
     [DisallowMultipleComponent]
 
@@ -23,7 +22,7 @@ namespace SKCell
         public bool startOnEnable = true; //deprecated
 
         [Header("Inline Effects")]
-        public bool useInlineEffects = true;
+        public bool useInlineEffects = false;
 
         private string oStr; //original string
         private string pStr; //parsed string
@@ -61,7 +60,7 @@ namespace SKCell
                 {
                     if (startOnEnable)
                     {
-                        PlayTypeWriter();
+                        PlayTypeWriterInternal();
                     }
                     if(!startOnEnable || !useTypeWriter)
                     {
@@ -70,11 +69,19 @@ namespace SKCell
                 });
             });
         }
+        /// <summary>
+        /// Replay the typewriter effect associated to this object.
+        /// </summary>
         public void PlayTypeWriter()
+        {
+            UpdateText(text.text);
+        }
+        private void PlayTypeWriterInternal()
         {
             if (!useTypeWriter)
                 return;
 
+            skAnim.UpdateTextInfo();
             typewriterPlaying = true;
             curTypewriterEffect = 0;
             curTypewriterChar = -1;
@@ -138,7 +145,7 @@ namespace SKCell
                     text.alpha = oa;
                     if (useTypeWriter)
                     {
-                        PlayTypeWriter();
+                        PlayTypeWriterInternal();
                     }
                     else
                     {
@@ -201,6 +208,9 @@ namespace SKCell
         }
         private void ParseText()
         {
+            if (oStr == null)
+                return;
+
             oStr = oStr.Replace(@"\r", "\r");
             oStr = oStr.Replace(@"\n", "\n");
 

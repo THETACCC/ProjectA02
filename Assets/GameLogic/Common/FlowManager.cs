@@ -6,6 +6,8 @@ using Cinemachine;
 using System.IO;
 using System;
 using static Unity.VisualScripting.Icons;
+using MoreMountains.Tools;
+using UnityEngine.SceneManagement;
 
 public class FlowManager : MonoSingleton<FlowManager>
 {
@@ -25,10 +27,45 @@ public class FlowManager : MonoSingleton<FlowManager>
                 index = scenetitle,
             });
         });
+
+        InitializeConsoleCommands();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            SKConsole.Toggle();
+        }
     }
     public void LoadScene(SceneInfo info)
     {
         Scenecontroller.instance.LoadSceneAsset(info);
+    }
+
+    public void InitializeConsoleCommands()
+    {
+        SKConsole.AddCommand("loadscene", "Load a scene.", (x) =>
+        {
+            SceneInfo info = new SceneInfo()
+            {
+                index = (SceneTitle)(x)
+            };
+            Scenecontroller.instance.LoadSceneAsset(info);
+        });
+        SKConsole.AddCommand("reload", "Reload a scene.", () =>
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        });
+       SKConsoleCommand cmd =  SKConsole.AddCommand("set", "Set value");
+        cmd.AddCommand("ply", "Set player value...", () =>
+        {
+
+        });
+        cmd.AddCommand("obj", "Set obj value...", () =>
+        {
+
+        });
     }
 
 }

@@ -31,6 +31,13 @@ namespace SKCell
 
         public const string RES_SPRITE_PATH = "SKCell/Sprites/";
 
+        private static Dictionary<string, Texture> textureCache = new Dictionary<string, Texture>();
+
+        public static void ClearTextureCache()
+        {
+            textureCache.Clear();
+        }
+
         public static void SaveJsonFile(object obj, string fileName)
         {
             string js = JsonUtility.ToJson(obj);
@@ -49,7 +56,10 @@ namespace SKCell
         }
         public static Texture LoadTexture(string fileName)
         {
-            return Resources.Load<Texture>(RES_SPRITE_PATH + fileName);
+            if(textureCache.ContainsKey(fileName))
+                return textureCache[fileName];
+            textureCache.Add(fileName, Resources.Load<Texture>(RES_SPRITE_PATH + fileName));
+            return textureCache[fileName];
         }
 
         private static SKLocalizationAsset localizationAsset;

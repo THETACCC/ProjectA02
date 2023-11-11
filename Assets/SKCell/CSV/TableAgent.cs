@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using UnityEngine;
+
 namespace SKCell
 {
     public class SKCSVReader : Singleton<SKCSVReader>
@@ -171,12 +171,6 @@ namespace SKCell
             return list;
         }
 
-        /// <summary>
-        /// 改变带<<>>的字符.
-        /// </summary>
-        /// <param name="des">原字符串</param>
-        /// <param name="trs">转换函数</param>
-        /// <returns>转换后的字符串</returns>
         public static string TransformString(string des, Func<string, string> trs)
         {
             List<string> secList = SecStrings(des);
@@ -198,11 +192,6 @@ namespace SKCell
             return value;
         }
 
-        /// <summary>
-        /// 将带<<>>的分段.
-        /// </summary>
-        /// <param name="des"></param>
-        /// <returns>分段</returns>
         private static List<string> SecStrings(string des)
         {
             List<string> secList = new List<string>();
@@ -234,11 +223,6 @@ namespace SKCell
             }
 
             return secList;
-        }
-
-        public void Clear()
-        {
-            _tableAgent.Clear();
         }
     }
 

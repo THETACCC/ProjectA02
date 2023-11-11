@@ -1,20 +1,26 @@
-﻿using System;
-using System.Collections;
+﻿//------------------------------------------------------------
+// SKCell - Comprehensive Unity Utility Package
+// Copyright © 2019-2024 Alex Liu. All rights reserved.
+// https://github.com/Skyrim07/SKCell
+//------------------------------------------------------------
+
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 /// <summary>
 /// Base level flow control
 /// </summary>
 namespace SKCell
 {
+    [ExecuteInEditMode]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SKCommonTimer))]
     [RequireComponent(typeof(SKPoolManager))]
     [AddComponentMenu("SKCell/SKCore")]
     public sealed class SKCore : MonoSingleton<SKCore>
     {
-        public const string SKCELL_VERSION = "v0.12.0";
+        public const string SKCELL_VERSION = "v0.15.0";
 
         public static Action Awake000 = new Action(EmptyAction), Awake100 = new Action(EmptyAction),
                               Start000 = new Action(EmptyAction), Start100 = new Action(EmptyAction), Start200 = new Action(EmptyAction),
