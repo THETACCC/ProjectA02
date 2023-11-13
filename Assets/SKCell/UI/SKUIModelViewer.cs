@@ -40,6 +40,7 @@ namespace SKCell
 
         private void Start()
         {
+            rectTransform = GetComponent<RectTransform>();
             ReloadRT();
             sizeMonitor = new SKVariableMonitor<Vector2>(() =>
             {
@@ -84,6 +85,7 @@ namespace SKCell
             if (rt != null)
                 RenderTexture.ReleaseTemporary(rt);
             rt = RenderTexture.GetTemporary(xRes, yRes);
+            print(0);
             cam.targetTexture = rt;
             rawImage.texture = rt;
         }
