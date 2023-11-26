@@ -9,7 +9,7 @@ public class InventoryItem : MonoBehaviour
     public ItemSO itemScriptableObject;
 
     [SerializeField] GameObject BlockImage;
-
+    public GameObject ActualObject;
 
 
     // Update is called once per frame

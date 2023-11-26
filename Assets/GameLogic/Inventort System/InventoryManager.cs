@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Cinemachine;
 
 public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     //References
     [SerializeField] Camera cam;
-
+    [SerializeField] GameObject dropItemUI;
     //Inventory systems
 
     [SerializeField] GameObject inventoryParent;
@@ -20,7 +21,13 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
     void Start()
     {
-        
+        GameObject cameraGameObject = GameObject.FindGameObjectWithTag("MainCamera");
+        cam = cameraGameObject.GetComponent<Camera>();
+        if (cam == null)
+        {
+            Debug.LogError("Cinemachine camera not found!");
+        }
+
     }
 
     // Update is called once per frame
@@ -33,6 +40,28 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         if (draggedObject != null)
         {
             draggedObject.transform.position = Input.mousePosition;
+            Debug.Log(draggedObject.transform.position.y);
+            if (draggedObject.transform.position.y > 170)
+            {
+                //When the object is throw out of the inventory
+                Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+                Vector3 position = ray.GetPoint(200);
+
+                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, position, new Quaternion());
+                Destroy(draggedObject);
+                //Instantiate draggable blocks in to the scene, make sure the block register the mouse and is moving
+                lastItemSlot.GetComponent<InventorySlots>().heldItem = null;
+                Block block = newItem.GetComponent<Block>();
+                block.mouse_drag = true;
+                block._OnStartDrag();
+                //block.instantiateBlocks();
+
+        
+                draggedObject = null;
+
+            }
+
+
         }
 
         if (Input.GetKeyDown(KeyCode.A))
@@ -46,7 +75,6 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
                 isInventoryOpened = true;
             }
         }
-
 
 
 
@@ -66,10 +94,13 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
                 lastItemSlot = clickedObject;
             }
 
-            Debug.Log(eventData.pointerCurrentRaycast.gameObject);
+
         }
 
     }
+
+
+
 
     public void OnPointerUp(PointerEventData eventData)
     {
@@ -97,9 +128,9 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             {
                 //When the object is throw out of the inventory
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-                Vector3 position = ray.GetPoint(3);
+                Vector3 position = ray.GetPoint(100);
 
-                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().itemScriptableObject.prefab, position, new Quaternion());
+                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, position, new Quaternion());
                 lastItemSlot.GetComponent<InventorySlots>().heldItem = null;
 
                 Destroy(draggedObject);
@@ -108,6 +139,5 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             draggedObject = null;
         }
     }
-    
 
 }
