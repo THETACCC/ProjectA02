@@ -17,6 +17,7 @@ public class InventoryItem : MonoBehaviour
     void Start()
     {
         BlockImage = itemScriptableObject.prefab;
+        ActualObject = itemScriptableObject.Actualobject;
         Instantiate(BlockImage, transform);
     }
     void Update()

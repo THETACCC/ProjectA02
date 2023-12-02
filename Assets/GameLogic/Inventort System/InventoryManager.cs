@@ -12,7 +12,9 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [SerializeField] GameObject dropItemUI;
     //Inventory systems
 
+    [SerializeField] GameObject[] slots = new GameObject[4];
     [SerializeField] GameObject inventoryParent;
+    [SerializeField] GameObject itemPrefab;
     bool isInventoryOpened = true;
 
     GameObject draggedObject;
@@ -142,5 +144,40 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             draggedObject = null;
         }
     }
+
+
+    //code for putting blocks back to the inventory
+    public void ItemPicked(GameObject Item)
+    {
+        GameObject emptyslot = null;
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            InventorySlots slot = slots[i].GetComponent<InventorySlots>();
+
+            if (slot.heldItem == null)
+            {
+                emptyslot = slots[i];
+                break;
+            }
+
+        }
+
+        if (emptyslot != null)
+        {
+            GameObject newItem = Instantiate(itemPrefab);
+            newItem.GetComponent<InventoryItem>().itemScriptableObject = Item.GetComponent<ItemPickable>().itemScriptableOBJ;
+            //newItem.GetComponent<InventoryItem>().ActualObject = Item.GetComponent<Block>().blocka;
+
+            newItem.transform.SetParent(emptyslot.transform.parent.parent.GetChild(1));
+
+            emptyslot.GetComponent<InventorySlots>().SetHeldItem(newItem); 
+
+            Destroy(Item);
+        }
+
+
+    }
+
 
 }

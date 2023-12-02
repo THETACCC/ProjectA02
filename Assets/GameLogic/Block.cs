@@ -34,8 +34,8 @@ public class Block : MonoBehaviour
     //Link blocks
     public Block linkedblock;
     public bool canlink;
-    [SerializeField] private GameObject blocka;
-    [SerializeField] private GameObject blockb;
+    [SerializeField] public GameObject blocka;
+    [SerializeField] public GameObject blockb;
     [SerializeField] private Block B_blocka;
     [SerializeField] private Block B_blockb;
     [SerializeField] private float offset;
@@ -49,6 +49,12 @@ public class Block : MonoBehaviour
 
     //Get level loader
     private LevelLoader levelLoader;
+
+
+    //Get the inventory
+    public GameObject inventoryManagerOBJ;
+    public InventoryManager inventoryManager;
+
     private void Awake()
     {
 
@@ -56,6 +62,10 @@ public class Block : MonoBehaviour
 
     private void Start()
     {
+        //get the inventory manager at start
+        inventoryManagerOBJ = GameObject.FindGameObjectWithTag("Inventory");
+        inventoryManager = inventoryManagerOBJ.GetComponent<InventoryManager>();
+
         rotate = transform.rotation.eulerAngles;
         
         canlink = true;
@@ -285,12 +295,19 @@ public class Block : MonoBehaviour
 
         if (transform.position.z < -50)
         {
-            Destroy(blockb);
+            if (blockb != null)
+            {
+                inventoryManager.ItemPicked(blocka);
+                //Destroy(blocka);
+                Destroy(blockb);
+            }
+
+            //Destroy(gameObject);
             blockb = null;
             B_blockb = null;
             linked = false;
             instantiated = false;
-            Destroy(gameObject);
+
         }
         float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
         moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));

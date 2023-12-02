@@ -8,5 +8,6 @@ public class ItemSO : ScriptableObject
 {
     public string Name;
     public GameObject prefab;
+    public GameObject Actualobject;
     public int stackMax;
 }
