@@ -40,7 +40,7 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         if (draggedObject != null)
         {
             draggedObject.transform.position = Input.mousePosition;
-            Debug.Log(draggedObject.transform.position.y);
+           // Debug.Log(draggedObject.transform.position.y);
             if (draggedObject.transform.position.y > 170)
             {
                 //When the object is throw out of the inventory
@@ -53,10 +53,13 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
                 lastItemSlot.GetComponent<InventorySlots>().heldItem = null;
                 Block block = newItem.GetComponent<Block>();
                 block.mouse_drag = true;
+
+
                 block._OnStartDrag();
                 //block.instantiateBlocks();
+                //block.instantiateBlocks();
 
-        
+
                 draggedObject = null;
 
             }
