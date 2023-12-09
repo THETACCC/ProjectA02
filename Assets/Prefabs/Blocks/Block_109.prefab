@@ -200,6 +200,7 @@ GameObject:
   - component: {fileID: 3254015091543437195}
   - component: {fileID: 2263305804555380732}
   - component: {fileID: 1426460785}
+  - component: {fileID: 1612651196981463858}
   m_Layer: 9
   m_Name: Block_109
   m_TagString: Block
@@ -256,6 +257,8 @@ MonoBehaviour:
   B_blockb: {fileID: 0}
   offset: 0
   linked: 0
+  inventoryManagerOBJ: {fileID: 0}
+  inventoryManager: {fileID: 0}
 --- !u!114 &2263305804555380732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,6 +291,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1612651196981463858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3254015091543437193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bcf66ee87b09254b94c65649e33dd42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemScriptableOBJ: {fileID: 11400000, guid: fc5e6238d2bb1ee4187a802d2b82139c, type: 2}
 --- !u!1001 &3174454880956924321
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -407,7 +423,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1354026830104860744, guid: 664556a2397e9ec40a7c6b5510ef64ad, type: 3}
       propertyPath: m_VersionIndex
-      value: 145
+      value: 157
       objectReference: {fileID: 0}
     - target: {fileID: 6607374999636267330, guid: 664556a2397e9ec40a7c6b5510ef64ad, type: 3}
       propertyPath: m_Mesh
@@ -419,7 +435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8093621442937227960, guid: 664556a2397e9ec40a7c6b5510ef64ad, type: 3}
       propertyPath: m_VersionIndex
-      value: 109
+      value: 121
       objectReference: {fileID: 0}
     - target: {fileID: 8121603267113695775, guid: 664556a2397e9ec40a7c6b5510ef64ad, type: 3}
       propertyPath: m_Name
