@@ -39,6 +39,7 @@ public class Block : MonoBehaviour
     [SerializeField] private Block B_blocka;
     [SerializeField] private Block B_blockb;
     [SerializeField] private float offset;
+    [SerializeField] private float offsetz;
     [SerializeField] private bool linked = false;
     private Vector3 bcpos;
     private Vector3 bnpos;
@@ -101,6 +102,7 @@ public class Block : MonoBehaviour
 
         if (controller.phase == LevelPhase.Placing)
         {
+            Debug.Log(mouse_drag);
             UpdateMouseBehavior();
         }
         else
@@ -160,9 +162,10 @@ public class Block : MonoBehaviour
         {
             rotated = false;
         }
+        Debug.Log(mouse_drag);
         if (mouse_drag)
         {
-
+            Debug.Log("CanDrag");
 
 
             _OnMouseDrag();
@@ -222,7 +225,7 @@ public class Block : MonoBehaviour
 
     public void _OnStartDrag()
     {
-
+        Debug.Log("Dragged");
         //These controlls the information that is instantiated for both blocks when dragging
         if (instantiated)
         {
@@ -231,7 +234,7 @@ public class Block : MonoBehaviour
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 drag_start_pos = transform.position;
                 is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
-                //is_drag_start_in_select_area = false;
+                //is_drag_start_in_select_area = true;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 drag_offset = transform.position - moveposition;
                 drag_offset.y = 0;
@@ -240,7 +243,7 @@ public class Block : MonoBehaviour
                 bool isLeft = blockb.transform.position.x < LevelLoader.center.x;
                 B_blockb.drag_start_pos = blockb.transform.position;
                 B_blockb.is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(B_blockb.drag_start_pos);
-                //B_blockb.is_drag_start_in_select_area = false;
+                //B_blockb.is_drag_start_in_select_area = true;
                 B_blockb.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
                 B_blockb.drag_offset = blockb.transform.position - B_blockb.moveposition;
                 B_blockb.drag_offset.y = 0;
@@ -250,7 +253,7 @@ public class Block : MonoBehaviour
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 drag_start_pos = transform.position;
                 is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
-                //is_drag_start_in_select_area = false;
+                is_drag_start_in_select_area = true;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 drag_offset = transform.position - moveposition;
                 drag_offset.y = 0;
@@ -258,8 +261,8 @@ public class Block : MonoBehaviour
 
                 bool isLeft = blocka.transform.position.x < LevelLoader.center.x;
                 B_blocka.drag_start_pos = blocka.transform.position;
-                B_blocka.is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(B_blocka.drag_start_pos);
-                //B_blocka.is_drag_start_in_select_area = false;
+                //B_blocka.is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(B_blocka.drag_start_pos);
+                //B_blocka.is_drag_start_in_select_area = true;
                 B_blocka.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
                 B_blocka.drag_offset = blocka.transform.position - B_blocka.moveposition;
                 B_blocka.drag_offset.y = 0;
@@ -271,6 +274,7 @@ public class Block : MonoBehaviour
         {
             drag_start_pos = transform.position;
             is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
+            //is_drag_start_in_select_area = true;
             float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
             moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
             drag_offset = transform.position - moveposition;
@@ -293,7 +297,10 @@ public class Block : MonoBehaviour
     {
         mouseposition = CommonReference.mainCam.ScreenToWorldPoint(Input.mousePosition);
 
-        if (transform.position.z < -50)
+        float testPos = 0;
+        testPos = transform.position.z + transform.position.x;
+        Debug.Log(testPos);
+        if (transform.position.z + transform.position.x < - 80)
         {
             if (blockb != null)
             {
@@ -309,6 +316,7 @@ public class Block : MonoBehaviour
             instantiated = false;
 
         }
+        
         float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
         moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
         Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
@@ -327,7 +335,8 @@ public class Block : MonoBehaviour
                 if (blockb != null) // Make sure blockb (the clone) is not null
                 {
 
-                    blockb.transform.position = mpos + (isLeft ? offset : -offset) * Vector3.right; // Assuming offset is the distance between original and clone
+                    blockb.transform.position = new Vector3( mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
+
                 }
             }
             else if (this == B_blockb) // If this is the clone
@@ -338,7 +347,7 @@ public class Block : MonoBehaviour
                 if (blocka != null) // Make sure blocka (the original) is not null
                 {
 
-                    blocka.transform.position = mpos + (isLeft ? offset : -offset) * Vector3.right; // Assuming offset is the distance between original and clone
+                    blocka.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
                 }
             }
         }
@@ -459,10 +468,11 @@ public class Block : MonoBehaviour
         Vector3 r_pos = LevelLoader.CellToWorldPos(true, 0, 0);
 
         float dist = l_pos.x - r_pos.x;
+        float distz = l_pos.z - r_pos.z;
         bool isLeft = transform.position.x < LevelLoader.center.x;
 
         //this moves the clone to its position.
-        b.transform.position = transform.position + (isLeft ? dist : -dist) * Vector3.right;
+        b.transform.position = new Vector3 (transform.position.x + (isLeft ? dist : -dist), 0 , transform.position.z + (isLeft ? distz : -distz));
 
         //float distanceBetweenBlocks = Vector3.Distance(l_pos, r_pos);
         _LinkBlock(a, b);
@@ -473,6 +483,7 @@ public class Block : MonoBehaviour
         //Debug.Log(npos);
 
         offset = dist;
+        offsetz = distz;
         blocka = this.gameObject;
         blockb = b.gameObject;
         B_blocka = this.GetComponent<Block>();
@@ -484,6 +495,7 @@ public class Block : MonoBehaviour
         B_blockb.blocka = blocka;
         B_blockb.blockb = blockb;
         B_blockb.offset = offset;
+        B_blockb.offsetz = offsetz;
         B_blockb.instantiated = true;
         {
             LevelLoader.instance.OnMoveBlockFromSelection(this, LevelLoader.WorldToCellPos(drag_start_pos), bcpos);

@@ -14,12 +14,12 @@
     }
     SubShader
     {
-        Tags { "LightMode"="ForwardBase" "Queue"="Transparent" "IgnoreProjector"="True"}
+        Tags {"Queue"="Transparent" "IgnoreProjector"="True"}
         
-        GrabPass
-        {
-            "_BackgroundTex"
-        }
+        //GrabPass
+        //{
+        //    "_BackgroundTex"
+        //}
         
         Pass
         {

@@ -16,6 +16,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     GameObject[] blocks;
     public Vector2Int levelDimensions = new Vector2Int(3,3);
     [SerializeField] Transform mapLeft, mapRight;
+    [SerializeField] Transform LeftSide, RightSide;
     [SerializeField] Transform blockContainerLeft, blockContainerRight;
     [SerializeField] Transform BS_Center, BS_Left, BS_Right, BS_Top;
 
@@ -46,7 +47,9 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     {
         boundsLeft = mapLeft.GetComponent<BoxCollider>().bounds;
         boundsRight = mapRight.GetComponent<BoxCollider>().bounds;
-        center = (mapLeft.position + mapRight.position) / 2.0f;
+        center = (LeftSide.position + RightSide.position) / 2.0f;
+        Debug.Log(center);
+        //center.x = (mapLeft.position.x + mapRight.position.x) / 2.0f;
         LoadMap();
         LoadCharacter();
     }
@@ -98,14 +101,18 @@ public class LevelLoader : MonoSingleton<LevelLoader>
         {
             Vector3 pos = block.transform.position;
 
-            if(pos.z < boundsLeft.min.z || pos.z>boundsLeft.max.z || pos.x<boundsLeft.min.x || pos.x>boundsRight.max.x)
-            {
-                continue; // out of bounds, do not align
-            }
+
+            //This is disabled for now due to the bug that the block would not align
+            //if(pos.z < boundsLeft.min.z || pos.z>boundsLeft.max.z || pos.x<boundsLeft.min.x || pos.x>boundsRight.max.x)
+            //{
+            //    continue; // out of bounds, do not align
+            //}
 
             float min_delta = float.MaxValue;
             Vector3 best_pos = Vector3.zero;
             Vector3[,] to_comp = pos.x < center.x?blockposLeft: blockposRight;
+            Debug.Log(blockposRight);
+            //to_comp = pos.z < center.z ? blockposLeft: blockposRight;
             foreach (Vector3 comp in to_comp)
             {
                 float delta = Mathf.Abs(comp.x - pos.x) + Mathf.Abs(comp.z - pos.z);
@@ -233,10 +240,10 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     public static Vector3 WorldToCellPos(Vector3 wpos)
     {
         LevelLoader l = LevelLoader.instance;
-        if(wpos.x<l.boundsLeft.min.x || wpos.x>l.boundsRight.max.x || wpos.z < l.boundsLeft.min.z || wpos.z > l.boundsLeft.max.z)
-        {
-            return Vector3.one * -1;
-        }
+        //if(wpos.x<l.boundsLeft.min.x || wpos.x>l.boundsRight.max.x || wpos.z < l.boundsLeft.min.z || wpos.z > l.boundsLeft.max.z)
+        //{
+        //    return Vector3.one * -1;
+        //}
         float min_delta = float.MaxValue;
         Vector3 best_pos = Vector3.zero;
         Vector3[,] to_comp = wpos.x < center.x ? l.blockposLeft : l.blockposRight;

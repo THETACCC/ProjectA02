@@ -27,7 +27,7 @@ Shader "Unlit/WaterTest"
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
-            #include "Lighting.cginc" // might be UnityLightingCommon.cginc for later versions of unity
+            #include "UnityLightingCommon.cginc" // might be UnityLightingCommon.cginc for later versions of unity
 
             #define MAX_SPECULAR_POWER 256
 

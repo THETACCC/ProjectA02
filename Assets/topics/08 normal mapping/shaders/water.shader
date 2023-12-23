@@ -15,19 +15,23 @@
     {
         // this tag is required to use _LightColor0
         // this shader won't actually use transparency, but we want it to render with the transparent objects
-        Tags { "Queue"="Transparent" "IgnoreProjector"="True" "LightMode"="ForwardBase" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" "LightMode" = "UniversalForward" "IgnoreProjector"="True" }
 
-        GrabPass {
-            "_BackgroundTex"
-        }
+        //GrabPass {
+        //  "_BackgroundTex"
+        //}
 
         Pass
         {
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+            //Name "ForwardLit"
+            //Tags { "LightMode" = "UniversalForward" }
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
-            #include "Lighting.cginc" // might be UnityLightingCommon.cginc for later versions of unity
+            #include "UnityLightingCommon.cginc" // might be UnityLightingCommon.cginc for later versions of unity
 
             #define MAX_SPECULAR_POWER 256
 
@@ -99,6 +103,7 @@
                 
                 float2 refractionUV = screenUV.xy + (tangentSpaceNormal.xy * _refractionIntensity);
                 float3 background = tex2D(_BackgroundTex, refractionUV);
+                //background = tex2D(background, refractionUV);
 
                 float3x3 tangentToWorld = float3x3 
                 (
@@ -122,12 +127,12 @@
                 float diffuseFalloff = max(0, dot(normal, lightDirection));
                 float specularFalloff = max(0, dot(normal, halfDirection));
 
-                float3 specular = pow(specularFalloff, _gloss * MAX_SPECULAR_POWER + 0.0001) * _gloss * lightColor;
+                float3 specular = pow(specularFalloff, _gloss * MAX_SPECULAR_POWER + 0.0001) * _gloss * lightColor ;
                 float3 diffuse = diffuseFalloff * surfaceColor * lightColor;
 
                 float3 color = (diffuse * _opacity) + (background * (1 - _opacity)) + specular;
-
-                return float4(color, 1);
+                    float alpha = _opacity; // Or use an alpha value from a texture
+                return float4(color.rgb, 1);
             }
             ENDCG
         }

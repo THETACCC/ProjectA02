@@ -14,7 +14,7 @@ public class cameramove : MonoBehaviour
     private LevelLoader levelLoader;
 
     private float startZ = 0f; // Starting X position
-    private float targetZ = -25f; // Target X position
+    public float targetZ = -10f; // Target X position
     private float lerpSpeed = 0.005f;
 
     // Start is called before the first frame update

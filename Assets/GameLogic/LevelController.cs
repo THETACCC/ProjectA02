@@ -49,9 +49,9 @@ public class LevelController : MonoSingleton<LevelController>
     }
     public void InitLevel()
     {
-        phase = LevelPhase.Loading;
-        LevelLoader.instance.Load();
         phase = LevelPhase.Placing;
+        LevelLoader.instance.Load();
+        //there is a bug here where the phase will not change to place
     }
 }
 

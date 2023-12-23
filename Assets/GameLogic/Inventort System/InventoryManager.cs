@@ -43,19 +43,22 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         {
             draggedObject.transform.position = Input.mousePosition;
            // Debug.Log(draggedObject.transform.position.y);
-            if (draggedObject.transform.position.y > 170)
+            if (draggedObject.transform.position.y > 100)
             {
                 //When the object is throw out of the inventory
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
                 Vector3 position = ray.GetPoint(200);
+                //The magic number 110 is to fix the issue where the block will mismatch the position it should be in orthographic CAm
 
-                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, position, new Quaternion());
+                //Use this if the camera is not orthographic
+                //GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, position, new Quaternion());
+                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, new Vector3(position.x - 80,0, position.z - 80), new Quaternion());
                 Destroy(draggedObject);
                 //Instantiate draggable blocks in to the scene, make sure the block register the mouse and is moving
                 lastItemSlot.GetComponent<InventorySlots>().heldItem = null;
                 Block block = newItem.GetComponent<Block>();
                 block.mouse_drag = true;
-
+                Debug.Log(block.mouse_drag);
 
                 block._OnStartDrag();
                 //block.instantiateBlocks();
@@ -133,9 +136,9 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             {
                 //When the object is throw out of the inventory
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-                Vector3 position = ray.GetPoint(100);
+                Vector3 position = ray.GetPoint(50);
 
-                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, position, new Quaternion());
+                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, new Vector3(position.x, 0, position.z), new Quaternion());
                 lastItemSlot.GetComponent<InventorySlots>().heldItem = null;
 
                 Destroy(draggedObject);
@@ -170,7 +173,7 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             //newItem.GetComponent<InventoryItem>().ActualObject = Item.GetComponent<Block>().blocka;
 
             newItem.transform.SetParent(emptyslot.transform.parent.parent.GetChild(1));
-
+            newItem.transform.localScale = Vector3.one;
             emptyslot.GetComponent<InventorySlots>().SetHeldItem(newItem); 
 
             Destroy(Item);

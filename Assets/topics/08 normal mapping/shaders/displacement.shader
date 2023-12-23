@@ -12,7 +12,7 @@
     SubShader
     {
         // this tag is required to use _LightColor0
-        Tags { "LightMode"="ForwardBase" }
+        Tags { }
 
         Pass
         {
