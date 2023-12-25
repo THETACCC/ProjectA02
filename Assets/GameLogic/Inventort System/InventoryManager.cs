@@ -104,6 +104,14 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
 
         }
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+
+            GameObject clickedObject = eventData.pointerCurrentRaycast.gameObject;
+            InventorySlots slot = clickedObject.GetComponent<InventorySlots>();
+            Debug.Log(clickedObject.name);
+
+        }
 
     }
 
