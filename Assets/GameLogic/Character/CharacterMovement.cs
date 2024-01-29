@@ -29,6 +29,8 @@ public class CharacterMovement : MonoBehaviour
     //Code when cannot move
     public bool canmove = true;
 
+    private bool isRotating = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -43,43 +45,65 @@ public class CharacterMovement : MonoBehaviour
 
     void Update()
     {
-        if(canmove)
-        {
-            axis_x = Input.GetAxisRaw("Horizontal");
-            axis_z = Input.GetAxisRaw("Vertical");
-        }
+        // Capture the previous position at the start of the frame
+        Vector3 startPos = rb.position;
 
+        if (canmove)
+        {
+            if(Input.GetKeyDown(KeyCode.D))
+            {
+                axis_x = 1;
+            }
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                axis_x = -1;
+            }
+            else
+            {
+                axis_x = 0;
+            }
+
+            if(Input.GetKeyDown(KeyCode.W))
+            {
+                axis_z = 1;
+            }
+            else
+            {
+                axis_z = 0;
+            }
+            //axis_z = Input.GetAxisRaw("Vertical");
+        }
+        //delta_pos = rb.position - prev_pos;
 
         CharacterManager.instance.isSliding[mapSide] = is_sliding;
-    }
-    private void FixedUpdate()
-    {
-        delta_pos = rb.position - prev_pos;
+
+
         if (controller.phase == LevelPhase.Running)
         {
-            if (!CharacterManager.instance.IsSlidingEither())
+            if (!is_sliding)
             {
                 rb.velocity = Vector3.zero;
-                if (axis_x != 0)
-                {
-                    slide_dir = new Vector2(axis_x, 0);
-                    is_sliding = true;
-                    cur_sliding_time = 0;
-                    cur_spd_boost = spdBoost;
-                    upperCld.gameObject.SetActive(false);
-                    upperCld.gameObject.SetActive(true);
 
-                    RotateTo(new Vector3(0, axis_x * 90, 0));
-                }
-                else if (axis_z != 0)
+                if (axis_x != 0 && !isRotating)
                 {
-                    slide_dir = new Vector2(0, axis_z);
+                    StartCoroutine(RotateCharacter());
+                }
+
+                if (axis_z != 0 && !isRotating)
+                {
+                    // Calculate the forward movement direction based on the character's current rotation
+                    //Vector3 moveDirection = transform.forward * axis_z;
+
+                    // Apply the movement speed and update the Rigidbody's velocity
+                    //rb.velocity = moveDirection * moveSpeed;
+
+                    slide_dir = new Vector2(0, 1);
                     is_sliding = true;
                     cur_sliding_time = 0;
                     cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
                     upperCld.gameObject.SetActive(true);
 
-                    RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
+                    //RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
                 }
             }
             else
@@ -89,8 +113,15 @@ public class CharacterMovement : MonoBehaviour
                 {
                     cur_spd_boost -= spdBoostDamping;
                 }
-                rb.velocity = new Vector3(slide_dir.x * moveSpeed * cur_spd_boost, rb.velocity.y, slide_dir.y * moveSpeed * cur_spd_boost);
-                if (cur_sliding_time > 0.5f && delta_pos.magnitude < 0.01f)
+
+                // Calculate the forward movement direction based on the character's current rotation
+                //Vector3 moveDirection = visualTF.forward * slide_dir.y;
+
+                // Apply the movement speed and update the Rigidbody's velocity
+                //rb.velocity = moveDirection * moveSpeed * cur_spd_boost;
+
+                rb.velocity = new Vector3(visualTF.forward.x * moveSpeed * cur_spd_boost, rb.velocity.y, visualTF.forward.z * moveSpeed * cur_spd_boost);
+                if (cur_sliding_time > 0.5f && (rb.position - startPos).magnitude < 0.5f)
                 {
                     is_sliding = false;
                     rb.velocity = Vector3.zero;
@@ -100,8 +131,19 @@ public class CharacterMovement : MonoBehaviour
 
 
         }
- 
-        prev_pos = rb.position;
+
+        // Calculate the change in position at the end of the frame
+        delta_pos = rb.position - startPos;
+
+        // Log the magnitude of delta_pos for debugging
+        Debug.Log(is_sliding);
+        Debug.Log(cur_sliding_time);
+        startPos = rb.position;
+
+    }
+    private void FixedUpdate()
+    {
+
     }
 
     private void RotateTo(Vector3 rot)
@@ -118,4 +160,62 @@ public class CharacterMovement : MonoBehaviour
         //is_sliding = false;
 
     }
+
+    /*
+    IEnumerator RotateCharacter()
+    {
+        isRotating = true;
+
+        Vector3 currentRotation = visualTF.eulerAngles;
+        float rotationSpeed = 10f;
+
+
+        float targetYRotation = (visualTF.eulerAngles.y + 90 * axis_x);
+
+
+        Debug.Log(targetYRotation);
+        while (Mathf.Abs(Mathf.DeltaAngle(visualTF.eulerAngles.y, targetYRotation)) > 0.01f )
+        {
+            visualTF.eulerAngles = Vector3.Lerp(visualTF.eulerAngles, new Vector3(0, targetYRotation, 0), Time.deltaTime * rotationSpeed);
+            //RotateTo(new Vector3(0, targetYRotation, 0));
+            yield return null;
+        }
+
+        if (Mathf.Abs(Mathf.DeltaAngle(visualTF.eulerAngles.y, targetYRotation)) <= 0.01f )
+        {
+            visualTF.eulerAngles = new Vector3(0, targetYRotation,0);
+        }
+
+
+        isRotating = false;
+    }
+    */
+    IEnumerator RotateCharacter()
+    {
+        isRotating = true;
+
+        float rotationSpeed = 10f;
+        float targetYRotation = visualTF.eulerAngles.y + 90 * axis_x;
+
+        // Normalize the target rotation to be within 0 to 360 degrees
+        targetYRotation = (targetYRotation + 360) % 360;
+
+        Debug.Log(targetYRotation);
+        while (Mathf.Abs(Mathf.DeltaAngle(visualTF.eulerAngles.y, targetYRotation)) > 0.1f)
+        {
+            // Calculate the next rotation step
+            float step = Time.deltaTime * rotationSpeed;
+            float newYRotation = Mathf.LerpAngle(visualTF.eulerAngles.y, targetYRotation, step);
+
+            // Apply the rotation
+            visualTF.eulerAngles = new Vector3(0, newYRotation, 0);
+            yield return null;
+        }
+
+        // Snap to the exact target rotation
+        visualTF.eulerAngles = new Vector3(0, targetYRotation, 0);
+
+        isRotating = false;
+    }
+
 }
