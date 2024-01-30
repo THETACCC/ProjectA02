@@ -56,6 +56,9 @@ public class Block : MonoBehaviour
     public GameObject inventoryManagerOBJ;
     public InventoryManager inventoryManager;
 
+
+
+
     private void Awake()
     {
 
