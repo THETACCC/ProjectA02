@@ -402,6 +402,9 @@ public class Block : MonoBehaviour
                         transform.position = Vector3.Lerp(npos, cpos, f);
 
                     }, null, gameObject.GetInstanceID() + "drag_success");
+
+                    //Add Connection to the map here, make parents
+
                     if (canlink && !instantiated)
                     {
                         instantiateBlocks();
