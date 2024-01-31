@@ -8,6 +8,8 @@ public class LevelRotation : MonoBehaviour
 
     private Transform self;
 
+    //The Bool for the block to know whether the map is rotating or not.
+    public bool isRotating = false;
 
     private void Start()
     {
@@ -18,9 +20,10 @@ public class LevelRotation : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            Vector3 orot = self.rotation.eulerAngles;
-
-            RotateTo(self.rotation.eulerAngles + new Vector3(0, 90, 0));
+            if (!isRotating)
+            {
+                StartCoroutine(RotateLevel());
+            }
 
         }
     }
@@ -34,4 +37,33 @@ public class LevelRotation : MonoBehaviour
             self.rotation = Quaternion.Euler(Vector3.Lerp(orot, rot, f));
         });
     }
+
+    IEnumerator RotateLevel()
+    {
+        isRotating = true;
+
+        float rotationSpeed = 2.5f;
+        float targetYRotation = transform.eulerAngles.y + 90;
+
+        // Normalize the target rotation to be within 0 to 360 degrees
+        targetYRotation = (targetYRotation + 360) % 360;
+
+
+        while (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, targetYRotation)) > 0.1f)
+        {
+            // Calculate the next rotation step
+            float step = Time.deltaTime * rotationSpeed;
+            float newYRotation = Mathf.LerpAngle(transform.eulerAngles.y, targetYRotation, step);
+
+            // Apply the rotation
+            transform.eulerAngles = new Vector3(0, newYRotation, 0);
+            yield return null;
+        }
+
+        // Snap to the exact target rotation
+        transform.eulerAngles = new Vector3(0, targetYRotation, 0);
+
+        isRotating = false;
+    }
+
 }

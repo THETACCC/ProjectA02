@@ -29,6 +29,7 @@ public class Block : MonoBehaviour
 
     public float rotatespeed = 10f;
     public Vector3 rotate =  new Vector3 (0,0,0);
+    private bool _isRotating = false;
     public bool rotated = false;
 
     //Link blocks
@@ -56,8 +57,10 @@ public class Block : MonoBehaviour
     public GameObject inventoryManagerOBJ;
     public InventoryManager inventoryManager;
 
-
-
+    //Get the map OBJ
+    private GameObject LevelLeft;
+    private GameObject LevelRight;
+    private LevelRotation levelrotation;
 
     private void Awake()
     {
@@ -66,6 +69,11 @@ public class Block : MonoBehaviour
 
     private void Start()
     {
+        LevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
+        levelrotation = LevelLeft.GetComponent<LevelRotation>();
+        LevelRight = GameObject.FindGameObjectWithTag("LevelRight");
+
+
         //get the inventory manager at start
         inventoryManagerOBJ = GameObject.FindGameObjectWithTag("Inventory");
         inventoryManager = inventoryManagerOBJ.GetComponent<InventoryManager>();
@@ -112,7 +120,20 @@ public class Block : MonoBehaviour
         {
             FX_HOVER.SetActive(false);
         }
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(rotate), Time.deltaTime* rotatespeed);
+
+
+        //This is the code for controlling the block rotation with the level rotation, to make sure that the block is rotating after the level rotated, and do not rotate while the level is rotating
+        if (!levelrotation.isRotating)
+        {
+
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+        }
+        else
+        {
+        }
+
+
+        //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(rotate), Time.deltaTime* rotatespeed);
         //check if the block is end
         if (type == BlockType.End)
         {
@@ -302,7 +323,7 @@ public class Block : MonoBehaviour
 
         float testPos = 0;
         testPos = transform.position.z + transform.position.x;
-        Debug.Log(testPos);
+
         if (transform.position.z + transform.position.x < - 80)
         {
             if (blockb != null)
@@ -381,12 +402,14 @@ public class Block : MonoBehaviour
         if (!is_drag_start_in_select_area)
         {
 
+
+
             //to map
             if (!LevelLoader.IsPosInSelectionArea(npos))
             {
                 if ((cpos == Vector3.one * -1 || LevelLoader.HasBlockOnCellPos(cpos)) || (bcpos == Vector3.one * -1 || LevelLoader.HasBlockOnCellPos(bcpos)))
                 {
-                    Debug.Log(cpos);
+
                     CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                     {
                         transform.position = Vector3.Lerp(npos, drag_start_pos, f);
@@ -403,7 +426,10 @@ public class Block : MonoBehaviour
 
                     }, null, gameObject.GetInstanceID() + "drag_success");
 
-                    //Add Connection to the map here, make parents
+
+
+
+
 
                     if (canlink && !instantiated)
                     {
@@ -417,6 +443,23 @@ public class Block : MonoBehaviour
                 {
                     transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
                 }, null, gameObject.GetInstanceID() + "mouse_over");
+
+
+                //Add Connection to the map here, make parents
+                float DistanceToLevelLeft = Vector3.Distance(transform.position, LevelLeft.transform.position);
+                float DistanceToLevelRight = Vector3.Distance(transform.position, LevelRight.transform.position);
+                if (DistanceToLevelLeft < DistanceToLevelRight)
+                {
+                    blocka.transform.SetParent(LevelLeft.transform);
+                    blockb.transform.SetParent(LevelRight.transform);
+                }
+                else
+                {
+                    blocka.transform.SetParent(LevelRight.transform);
+                    blockb.transform.SetParent(LevelLeft.transform);
+                }
+
+
             }
             // to selection
             else
@@ -438,7 +481,7 @@ public class Block : MonoBehaviour
         {
             if (cpos == Vector3.one * -1 || LevelLoader.HasBlockOnCellPos(cpos))
             {
-                Debug.Log(cpos);
+
                 CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                 {
                     transform.position = Vector3.Lerp(npos, drag_start_pos, f);
