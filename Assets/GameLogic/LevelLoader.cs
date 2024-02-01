@@ -111,7 +111,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
             float min_delta = float.MaxValue;
             Vector3 best_pos = Vector3.zero;
             Vector3[,] to_comp = pos.x < center.x?blockposLeft: blockposRight;
-            Debug.Log(blockposRight);
+
             //to_comp = pos.z < center.z ? blockposLeft: blockposRight;
             foreach (Vector3 comp in to_comp)
             {

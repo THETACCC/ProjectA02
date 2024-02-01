@@ -58,7 +58,7 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
                 lastItemSlot.GetComponent<InventorySlots>().heldItem = null;
                 Block block = newItem.GetComponent<Block>();
                 block.mouse_drag = true;
-                Debug.Log(block.mouse_drag);
+
 
                 block._OnStartDrag();
                 //block.instantiateBlocks();

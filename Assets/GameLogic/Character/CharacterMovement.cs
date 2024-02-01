@@ -136,8 +136,7 @@ public class CharacterMovement : MonoBehaviour
         delta_pos = rb.position - startPos;
 
         // Log the magnitude of delta_pos for debugging
-        Debug.Log(is_sliding);
-        Debug.Log(cur_sliding_time);
+
         startPos = rb.position;
 
     }
