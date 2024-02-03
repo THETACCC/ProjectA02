@@ -32,6 +32,8 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     const float DRAGGABLE_BLOCK_SCALE = 0.7f;
     const float DRAGGABLE_BLOCK_GAP = 12.0f;
 
+    //This is the matrix code created for left and right map
+    public Block[,] blocksLeftMap, blocksRightMap;
 
     //check how manay blocks are in the alignment
     private int blockindex = 0;
@@ -59,6 +61,9 @@ public class LevelLoader : MonoSingleton<LevelLoader>
         mapData = new MapData();
         mapData.map = new int[levelDimensions.x, levelDimensions.y];
 
+        // Initialize the matrices with the dimensions of the level
+        blocksLeftMap = new Block[levelDimensions.x, levelDimensions.y];
+        blocksRightMap = new Block[levelDimensions.x, levelDimensions.y];
 
         //calculate block position
         blockposLeft = new Vector3[levelDimensions.x,levelDimensions.y];
@@ -143,7 +148,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
                 b.draggable = false;
             }
         }
-
+        Debug.Log(blockposLeft[0,1]);
         //align block selection area
         AlignBlockSelection();
     }
@@ -197,13 +202,30 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     }
     public void OnMoveBlock(Block block, Vector3 from, Vector3 to)
     {
-        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
+        if (blockPos.ContainsKey(from))
+        {
+            blockPos.Remove(from);
+        }
         CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos,to,block);
+        /*
+        LevelLoader l = LevelLoader.instance;
+        foreach (Vector3 c in l.blockPos.Keys)
+        {
+            print(c);
+        }
+        */
     }
     public void OnMoveBlockFromSelection(Block block, Vector3 from, Vector3 to)
     {
-        //CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
+        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
         CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, to, block);
+        
+        //LevelLoader l = LevelLoader.instance;
+        //foreach (Vector3 c in l.blockPos.Keys)
+        //{
+        //    print(c);
+        //}
+        
     }
     public void OnMoveBlockToSelection(Block block, Vector3 from, Vector3 to)
     {
@@ -268,8 +290,17 @@ public class LevelLoader : MonoSingleton<LevelLoader>
 
     public static bool HasBlockOnCellPos(Vector3 cpos)
     {
+
+
         LevelLoader l = LevelLoader.instance;
-        return l.blockPos.ContainsKey(cpos) && l.blockPos[cpos] != null;
+        
+        //foreach (Vector3 c in l.blockPos.Keys)
+        //{
+        //    print(c);
+        //}
+
+        //return l.blockPos.ContainsKey(cpos) && l.blockPos[cpos] != null;
+        return l.blockPos.ContainsKey(cpos);
     }
 }
 
