@@ -22,6 +22,7 @@ public class LevelRotation : MonoBehaviour
         {
             if (!isRotating)
             {
+
                 StartCoroutine(RotateLevel());
             }
 

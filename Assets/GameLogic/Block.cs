@@ -49,6 +49,7 @@ public class Block : MonoBehaviour
     private Vector3 npos;
     private Vector3 BlockA_Drag_Start_Pos;
     private Vector3 BlockB_Drag_Start_Pos;
+    private bool isBlockALeft = false;
     private bool instantiated = false;
     public bool DragsuccessA;
     public bool DragsuccessB;
@@ -197,11 +198,8 @@ public class Block : MonoBehaviour
 
 
             }
-
-            
-
-            //_OnEndDrag();
-        }else
+        }
+        else
         {
             rotated = false;
         }
@@ -215,18 +213,7 @@ public class Block : MonoBehaviour
             if (Input.GetMouseButtonUp(0))
             {
                 mouse_drag = false;
-                if ((blockb!= null) && (B_blockb != null))
-                {
-                    B_blocka._OnEndDrag();
-                    if (B_blockb != null)
-                    {
-                        B_blockb._OnEndDrag();
-                    }
-                }
-                else
-                {
-                    _OnEndDrag();
-                }
+                _OnEndDrag();
                 LevelController.instance.curDraggedblock = null;
             }
         }
@@ -296,8 +283,7 @@ public class Block : MonoBehaviour
                     B_blockb.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
                     B_blockb.drag_offset = blockb.transform.position - B_blockb.moveposition;
                     B_blockb.drag_offset.y = 0;
-                    Debug.Log(BlockA_Drag_Start_Pos);
-                    Debug.Log(BlockB_Drag_Start_Pos);
+     
                 }
                 else if (this == B_blockb)
                 {
@@ -321,8 +307,7 @@ public class Block : MonoBehaviour
                     B_blocka.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
                     B_blocka.drag_offset = blocka.transform.position - B_blocka.moveposition;
                     B_blocka.drag_offset.y = 0;
-                    Debug.Log(BlockA_Drag_Start_Pos);
-                    Debug.Log(BlockB_Drag_Start_Pos);
+ 
                 }
                 
                 if (this == B_blocka)
@@ -341,9 +326,6 @@ public class Block : MonoBehaviour
                 {
                     Debug.Log("Dragged Block B OBJ");
                 }
-
-                //Debug.Log(BlockA_Drag_Start_Pos);
-                //Debug.Log(BlockB_Drag_Start_Pos);
             }
             else
             {
@@ -378,11 +360,6 @@ public class Block : MonoBehaviour
 
     }
 
-    public void _LinkBlock(GameObject a1, GameObject b1)
-    {
-        
-    }
-
     public void _OnMouseDrag()
     {
         mouseposition = CommonReference.mainCam.ScreenToWorldPoint(Input.mousePosition);
@@ -411,6 +388,7 @@ public class Block : MonoBehaviour
             float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
             moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
             Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+            
             Vector3 npos = transform.position;
             bool isLeft = this.transform.position.x < LevelLoader.center.x;
             if (!instantiated)
@@ -421,7 +399,19 @@ public class Block : MonoBehaviour
             {
                 if (this == B_blocka) // If this is the original block
                 {
-
+                    /*
+                    if (isBlockALeft)
+                    {
+                        //22.5 is a magical number based on the current map
+                        mpos.x = Mathf.Clamp(mpos.x, -999f, -30f);
+                        mpos.z = Mathf.Clamp(mpos.z, 30f, 999f);
+                    }
+                    else
+                    {
+                        mpos.x = Mathf.Clamp(mpos.x, -30f, 999f);
+                        mpos.z = Mathf.Clamp(mpos.z, -999f, 30f);
+                    }
+                    */
                     blocka.transform.position = mpos;
                     if (blockb != null) // Make sure blockb (the clone) is not null
                     {
@@ -432,8 +422,21 @@ public class Block : MonoBehaviour
                 }
                 else if (this == B_blockb) // If this is the clone
                 {
+                    /*
+                    if (isBlockALeft)
+                    {
+                        mpos.x = Mathf.Clamp(mpos.x, -999f, -15f);
+                        mpos.z = Mathf.Clamp(mpos.z, 15f, 999f);
 
+                        //22.5 is a magical number based on the current map
 
+                    }
+                    else
+                    {
+                        mpos.x = Mathf.Clamp(mpos.x, -15f, 999f);
+                        mpos.z = Mathf.Clamp(mpos.z, -999f, 15f);
+                    }
+                    */
                     blockb.transform.position = mpos;
                     if (blocka != null) // Make sure blocka (the original) is not null
                     {
@@ -456,6 +459,17 @@ public class Block : MonoBehaviour
             Vector3 npos = transform.position;
             bool isLeft = this.transform.position.x < LevelLoader.center.x;
             transform.position = mpos;
+
+            //Put the block back to inventory
+            if (transform.position.z + transform.position.x < -80)
+            {
+                if(instantiated)
+                {
+                    inventoryManager.ItemPicked(this.gameObject);
+                }
+
+            }
+
         }
 
 
@@ -483,47 +497,19 @@ public class Block : MonoBehaviour
 
             }
 
- 
-        
 
-            /*
-            if (transform.position.z < -40)
-            {
-                Destroy(blockb);
-                blockb = null;
-                B_blockb = null;
-                linked = false;
-                instantiated = false;
-            }
-            */
-
-            // drag from map
-            if (!is_drag_start_in_select_area)
-            {
-
-
-
-                //to map
+                //Map to Map Block moving
                 if (!LevelLoader.IsPosInSelectionArea(npos) || !LevelLoader.IsPosInSelectionArea(bnpos))
                 {
 
                     // Check if the drag operation is valid for both blocks
                     if (blockb != null)
                     {
-                        //Temp Or statement due to the bug of LevelLoader cannont update info
+                        B_blockb.DragsuccessB = !LevelLoader.HasBlockOnCellPos(B_blockb.bcpos) && B_blockb.bcpos != Vector3.one * -1;
+                        B_blocka.DragsuccessA = !LevelLoader.HasBlockOnCellPos(B_blocka.cpos) && B_blocka.cpos != Vector3.one * -1;
+                        Debug.Log(B_blocka.DragsuccessA);
+                        Debug.Log(B_blockb.DragsuccessB);
 
-                        //B_blocka.DragsuccessA = !LevelLoader.HasBlockOnCellPos(cpos) || cpos != Vector3.one * -1;
-                        //B_blocka.DragsuccessB = !LevelLoader.HasBlockOnCellPos(bcpos) || bcpos != Vector3.one * -1;
-                        //B_blockb.DragsuccessA = !LevelLoader.HasBlockOnCellPos(cpos) || cpos != Vector3.one * -1;
-                        //B_blockb.DragsuccessB = !LevelLoader.HasBlockOnCellPos(bcpos) || bcpos != Vector3.one * -1;
-                            B_blockb.DragsuccessB = !LevelLoader.HasBlockOnCellPos(B_blockb.bcpos);
-                            B_blocka.DragsuccessA = !LevelLoader.HasBlockOnCellPos(B_blocka.cpos);
-
-
-
-
-                        Debug.Log(LevelLoader.HasBlockOnCellPos(cpos));
-                        Debug.Log(LevelLoader.HasBlockOnCellPos(bcpos));
                     }
                     else
                     {
@@ -534,94 +520,45 @@ public class Block : MonoBehaviour
 
                     if (blockb != null)
                     {
-                        if ((!B_blocka.DragsuccessA && !B_blockb.DragsuccessB))
+
+                        if (B_blocka.DragsuccessA && B_blockb.DragsuccessB)
                         {
-
-                            CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                            {
-                                blocka.transform.position = Vector3.Lerp(npos, BlockA_Drag_Start_Pos, f);
-                                blockb.transform.position = Vector3.Lerp(bnpos, BlockB_Drag_Start_Pos, f);
-                            }, null, gameObject.GetInstanceID() + "drag_fail");
+                            //Debug.Log("Drag success");
 
 
+                                LevelLoader.instance.OnMoveBlock(B_blocka, LevelLoader.WorldToCellPos(BlockA_Drag_Start_Pos), B_blocka.cpos);
+                                LevelLoader.instance.OnMoveBlock(B_blockb, LevelLoader.WorldToCellPos(BlockB_Drag_Start_Pos), B_blockb.bcpos);
+                                UpdateMapCollider();
+                                CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                                {
+                                    blocka.transform.position = Vector3.Lerp(B_blocka.npos, B_blocka.cpos, f);
+                                    blockb.transform.position = Vector3.Lerp(B_blockb.bnpos, B_blockb.bcpos, f);
 
-                            Debug.Log("Drag fail");
+                                }, null, gameObject.GetInstanceID() + "drag_success");
 
                         }
                         else
                         {
-                            Debug.Log("Drag success");
-
-                            if (this == B_blocka)
-                            {
-                                LevelLoader.instance.OnMoveBlock(B_blocka, LevelLoader.WorldToCellPos(BlockA_Drag_Start_Pos), cpos);
-                                UpdateMapCollider();
-                                CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                                {
-                                    blocka.transform.position = Vector3.Lerp(npos, cpos, f);
-
-                                }, null, gameObject.GetInstanceID() + "drag_success");
-                            }
-                            else
-                            {
-
-                                LevelLoader.instance.OnMoveBlock(B_blockb, LevelLoader.WorldToCellPos(BlockB_Drag_Start_Pos), bcpos);
-                                UpdateMapCollider();
-                                CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                                {
-                                    blockb.transform.position = Vector3.Lerp(bnpos, bcpos, f);
-
-                                }, null, gameObject.GetInstanceID() + "drag_success");
-                            }
-
-
-
                             CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                             {
-                                blocka.transform.position = Vector3.Lerp(npos, cpos, f);
-                                blockb.transform.position = Vector3.Lerp(bnpos, bcpos, f);
+                            blocka.transform.position = Vector3.Lerp(B_blocka.npos, BlockA_Drag_Start_Pos, f);
+                            blockb.transform.position = Vector3.Lerp(B_blockb.bnpos, BlockB_Drag_Start_Pos, f);
+                            }, null, gameObject.GetInstanceID() + "drag_fail");
 
-                            }, null, gameObject.GetInstanceID() + "drag_success");
-
-
-                            if (canlink && !instantiated)
-                            {
-                                instantiateBlocks();
-                                Debug.Log("Start Instantiation");
-                            }
                         }
+
                     }
                     else
                     {
-                        if ((DragsuccessA && DragsuccessB))
+                        if (LevelLoader.HasBlockOnCellPos(cpos))
                         {
 
-                            CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                            {
-                                blocka.transform.position = Vector3.Lerp(npos, BlockA_Drag_Start_Pos, f);
-                                blockb.transform.position = Vector3.Lerp(bnpos, BlockB_Drag_Start_Pos, f);
-                            }, null, gameObject.GetInstanceID() + "drag_fail");
-
-
-
-                            Debug.Log("Drag fail");
+                            //When there are objects on the intended place position, put the block back to the inventory
+                            inventoryManager.ItemPicked(this.gameObject);                        
 
                         }
                         else
                         {
-                            Debug.Log("Drag success");
-
-                            LevelLoader.instance.OnMoveBlock(B_blocka, LevelLoader.WorldToCellPos(BlockA_Drag_Start_Pos), cpos);
-                            LevelLoader.instance.OnMoveBlock(B_blockb, LevelLoader.WorldToCellPos(BlockB_Drag_Start_Pos), bcpos);
-                            UpdateMapCollider();
-                            CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                            {
-                                blocka.transform.position = Vector3.Lerp(npos, cpos, f);
-                                blockb.transform.position = Vector3.Lerp(bnpos, bcpos, f);
-
-                            }, null, gameObject.GetInstanceID() + "drag_success");
-
-
                             if (canlink && !instantiated)
                             {
                                 instantiateBlocks();
@@ -640,71 +577,33 @@ public class Block : MonoBehaviour
 
 
                     //Add Connection to the map here, make parents
-
-                    float DistanceToLevelLeft = Vector3.Distance(transform.position, LevelLeft.transform.position);
-                    float DistanceToLevelRight = Vector3.Distance(transform.position, LevelRight.transform.position);
-                    if (DistanceToLevelLeft < DistanceToLevelRight)
+                    if (instantiated)
                     {
-                        blocka.transform.SetParent(LevelLeft.transform);
-                        blockb.transform.SetParent(LevelRight.transform);
+                        float DistanceToLevelLeft = Vector3.Distance(transform.position, LevelLeft.transform.position);
+                        float DistanceToLevelRight = Vector3.Distance(transform.position, LevelRight.transform.position);
+                        if (DistanceToLevelLeft < DistanceToLevelRight)
+                        {
+                            blocka.transform.SetParent(LevelLeft.transform);
+                            blockb.transform.SetParent(LevelRight.transform);
+                            isBlockALeft = true;
+                        }
+                        else
+                        {
+                            blocka.transform.SetParent(LevelRight.transform);
+                            blockb.transform.SetParent(LevelLeft.transform);
+                            isBlockALeft = false;
                     }
-                    else
-                    {
-                        blocka.transform.SetParent(LevelRight.transform);
-                        blockb.transform.SetParent(LevelLeft.transform);
-                    }
-
-
-                }
-                /*
-                // to selection
-                else
-                {
-                    if (linked && blockb != null)
-                    {
-                        Destroy(blockb);
-                        blockb = null;
-                        B_blockb = null;
-                        linked = false;
-                        instantiated = false;
-                    }
-                    LevelLoader.instance.OnMoveBlockToSelection(this, LevelLoader.WorldToCellPos(drag_start_pos), cpos);
-                    LevelLoader.instance.AlignBlockSelection();
-                }
-            }
-            // drag from selection area
-            else
-            {
-                if (cpos == Vector3.one * -1 || LevelLoader.HasBlockOnCellPos(cpos))
-                {
-
-                    CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                    {
-                        transform.position = Vector3.Lerp(npos, drag_start_pos, f);
-                    }, null, gameObject.GetInstanceID() + "drag_fail");
-                }
-                else
-                {
-                    if (canlink && !instantiated)
-                    {
-                        instantiateBlocks();
                     }
 
 
 
-
                 }
-                            */
-            }
+            
         }
         else if (type == BlockType.Free)
         {
             cpos = LevelLoader.WorldToCellPos(this.transform.position);
             npos = this.transform.position;
-
-
-            if (!is_drag_start_in_select_area)
-            {
 
 
 
@@ -728,15 +627,17 @@ public class Block : MonoBehaviour
                     }
                     else
                     {
+                        if(!instantiated)
+                        {
+                            //When there are objects on the intended place position, put the block back to the inventory
+                            inventoryManager.ItemPicked(this.gameObject);
+                        }    
 
                         CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                         {
                             transform.position = Vector3.Lerp(npos, drag_start_pos, f);
 
                         }, null, gameObject.GetInstanceID() + "drag_fail");
-
-
-
                         Debug.Log("Drag fail");
 
                     }
@@ -759,16 +660,20 @@ public class Block : MonoBehaviour
                         }
                         else
                         {
-                        transform.SetParent(LevelRight.transform);
+                           transform.SetParent(LevelRight.transform);
 
                         }
 
+                        if(!instantiated)
+                        {
+                                instantiated = true; 
+                        }
 
 
                 }
 
 
-            }
+            
         }
 
 
@@ -797,14 +702,15 @@ public class Block : MonoBehaviour
         //this moves the clone to its position.
         b.transform.position = new Vector3 (transform.position.x + (isLeft ? dist : -dist), 0 , transform.position.z + (isLeft ? distz : -distz));
 
-        //float distanceBetweenBlocks = Vector3.Distance(l_pos, r_pos);
-        _LinkBlock(a, b);
+  
 
         Vector3 bcpos = LevelLoader.WorldToCellPos(b.transform.position);
         Vector3 bnpos = b.transform.position;
         //Debug.Log(bnpos);
         //Debug.Log(npos);
 
+
+        //The initiation of block link
         offset = dist;
         offsetz = distz;
         blocka = a.gameObject;
@@ -821,7 +727,11 @@ public class Block : MonoBehaviour
         B_blockb.offsetz = offsetz;
         B_blockb.instantiated = true;
         instantiated = true;
+        
+
+        if(!LevelLoader.HasBlockOnCellPos(bcpos))
         {
+            //If there is no blocks in the position, then make the B block
             LevelLoader.instance.OnMoveBlockFromSelection(this, LevelLoader.WorldToCellPos(drag_start_pos), bcpos);
             UpdateMapCollider();
             CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
@@ -836,9 +746,23 @@ public class Block : MonoBehaviour
                 transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
             }, null, gameObject.GetInstanceID() + "mouse_over");
         }
-
-
+        else
         {
+            //Put it back to the inventory if there is a block in it's way
+            if (blockb != null)
+            {
+                inventoryManager.ItemPicked(blocka);
+                Destroy(blockb);
+            }
+        }
+
+
+        
+
+
+        if(!LevelLoader.HasBlockOnCellPos(cpos))
+        {
+            //If there is no blocks in the position, then make the A block
             LevelLoader.instance.OnMoveBlockFromSelection(b.GetComponent<Block>(), LevelLoader.WorldToCellPos(drag_start_pos), cpos);
             UpdateMapCollider();
             CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
@@ -853,6 +777,17 @@ public class Block : MonoBehaviour
                 b.transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
             }, null, b.gameObject.GetInstanceID() + "mouse_over");
         }
+        else
+        {
+            //Put it back to the inventory if there is a block in it's way
+            if (blockb != null)
+            {
+                inventoryManager.ItemPicked(blocka);
+                Destroy(blockb);
+            }
+        }
+
+        
     }
 
 
