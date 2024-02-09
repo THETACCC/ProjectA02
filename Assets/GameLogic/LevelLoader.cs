@@ -302,6 +302,61 @@ public class LevelLoader : MonoSingleton<LevelLoader>
         //return l.blockPos.ContainsKey(cpos) && l.blockPos[cpos] != null;
         return l.blockPos.ContainsKey(cpos);
     }
+
+
+    public void AlignBlocks()
+    {
+        //align blocks
+        blocks = GameObject.FindGameObjectsWithTag(CommonReference.TAG_BLOCK);
+        BLOCK_SCALE_MAP = Vector3.one * BLOCK_SCALE_RATIO / levelDimensions.x;
+        BLOCK_SCALE_SELECT_AREA = Vector3.one * DRAGGABLE_BLOCK_SCALE;
+        foreach (GameObject block in blocks)
+        {
+            Vector3 pos = block.transform.position;
+
+
+            //This is disabled for now due to the bug that the block would not align
+            //if(pos.z < boundsLeft.min.z || pos.z>boundsLeft.max.z || pos.x<boundsLeft.min.x || pos.x>boundsRight.max.x)
+            //{
+            //    continue; // out of bounds, do not align
+            //}
+
+            float min_delta = float.MaxValue;
+            Vector3 best_pos = Vector3.zero;
+            Vector3[,] to_comp = pos.x < center.x ? blockposLeft : blockposRight;
+
+            //to_comp = pos.z < center.z ? blockposLeft: blockposRight;
+            foreach (Vector3 comp in to_comp)
+            {
+                float delta = Mathf.Abs(comp.x - pos.x) + Mathf.Abs(comp.z - pos.z);
+                if (delta < min_delta)
+                {
+                    min_delta = delta;
+                    best_pos = comp;
+                }
+            }
+            block.transform.position = best_pos;
+            CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, best_pos, block.GetComponent<Block>());
+
+            block.transform.localScale = BLOCK_SCALE_MAP;
+            block.GetComponent<Block>().SyncLocalScale(BLOCK_SCALE_MAP);
+            //load start and end blocks
+            bool isLeft = pos.x < center.x;
+            Block b = block.GetComponent<Block>();
+            if (b.type == BlockType.Start)
+            {
+                if (isLeft) startLeft = b;
+                else startRight = b;
+                b.draggable = false;
+            }
+            else if (b.type == BlockType.End)
+            {
+                if (isLeft) endLeft = b;
+                else endRight = b;
+                b.draggable = false;
+            }
+        }
+    }
 }
 
 public class MapData

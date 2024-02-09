@@ -17,7 +17,7 @@ public class Block : MonoBehaviour
 
     public bool mouse_drag, is_drag_start_in_select_area;
     private bool mouse_over, prev_mouseOver;
-    private Vector3 drag_offset, drag_start_pos;
+    private Vector3 drag_offset, drag_start_pos,rotate_start_pos;
 
     public Vector3 moveposition = Vector3.zero;
 
@@ -121,15 +121,14 @@ public class Block : MonoBehaviour
         if (!draggable)
             return;
 
-        if (controller.phase == LevelPhase.Placing)
-        {
+        //enabled for now to allow mouse input
 
             UpdateMouseBehavior();
-        }
-        else
-        {
-            FX_HOVER.SetActive(false);
-        }
+        
+        //else
+        //{
+        //    FX_HOVER.SetActive(false);
+        //}
 
 
         //This is the code for controlling the block rotation with the level rotation, to make sure that the block is rotating after the level rotated, and do not rotate while the level is rotating
@@ -678,6 +677,27 @@ public class Block : MonoBehaviour
 
 
 
+    }
+
+    public void EndMapRotation()
+    {
+        Vector3 Rcpos = LevelLoader.WorldToCellPos(this.transform.position);
+        Vector3 Rnpos = this.transform.position;
+
+        LevelLoader.instance.OnMoveBlock(this, LevelLoader.WorldToCellPos(rotate_start_pos), Rcpos);
+        UpdateMapCollider();
+        //CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+        //{
+         //   transform.position = Vector3.Lerp(Rnpos, Rcpos, f);
+
+
+        //}, null, gameObject.GetInstanceID() + "drag_success");
+        Debug.Log("Rotation Started");
+    }
+
+    public void StartMapRotation()
+    {
+        rotate_start_pos = transform.position;
     }
 
     public void instantiateBlocks()

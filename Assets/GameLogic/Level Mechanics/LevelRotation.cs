@@ -10,7 +10,7 @@ public class LevelRotation : MonoBehaviour
 
     //The Bool for the block to know whether the map is rotating or not.
     public bool isRotating = false;
-
+    public bool finishedRotation = false;
     private void Start()
     {
         self = gameObject.transform; 
@@ -63,7 +63,7 @@ public class LevelRotation : MonoBehaviour
 
         // Snap to the exact target rotation
         transform.eulerAngles = new Vector3(0, targetYRotation, 0);
-
+        finishedRotation = true;
         isRotating = false;
     }
 

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SKCell;
+using UnityEngine.UIElements;
+
 
 public class CharacterMovement : MonoBehaviour
 {
@@ -31,6 +33,12 @@ public class CharacterMovement : MonoBehaviour
 
     private bool isRotating = false;
 
+
+    public Vector3 boxSize = new Vector3(1f, 1f, 1f); // Size of the overlap box
+    public float checkDistance = 3f;
+    private bool collided = false;
+    private bool counting = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -45,8 +53,7 @@ public class CharacterMovement : MonoBehaviour
 
     void Update()
     {
-        // Capture the previous position at the start of the frame
-        Vector3 startPos = rb.position;
+
 
         if (canmove)
         {
@@ -75,14 +82,25 @@ public class CharacterMovement : MonoBehaviour
         }
         //delta_pos = rb.position - prev_pos;
 
+
+        // Log the magnitude of delta_pos for debugging
+
+
+
+    }
+    private void FixedUpdate()
+    {
         CharacterManager.instance.isSliding[mapSide] = is_sliding;
+        delta_pos = rb.position - prev_pos;
+
+
 
 
         if (controller.phase == LevelPhase.Running)
         {
             if (!is_sliding)
             {
-                rb.velocity = Vector3.zero;
+                rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
                 if (axis_x != 0 && !isRotating)
                 {
@@ -113,7 +131,7 @@ public class CharacterMovement : MonoBehaviour
                 {
                     cur_spd_boost -= spdBoostDamping;
                 }
-
+                counting = true;
                 // Calculate the forward movement direction based on the character's current rotation
                 //Vector3 moveDirection = visualTF.forward * slide_dir.y;
 
@@ -121,10 +139,19 @@ public class CharacterMovement : MonoBehaviour
                 //rb.velocity = moveDirection * moveSpeed * cur_spd_boost;
 
                 rb.velocity = new Vector3(visualTF.forward.x * moveSpeed * cur_spd_boost, rb.velocity.y, visualTF.forward.z * moveSpeed * cur_spd_boost);
-                if (cur_sliding_time > 0.5f && (rb.position - startPos).magnitude < 0.5f)
+
+                if (cur_sliding_time > .5f)
                 {
-                    is_sliding = false;
-                    rb.velocity = Vector3.zero;
+
+                    if (delta_pos.magnitude < 0.01f)
+                    {
+                        Debug.Log("stop");
+                        counting = false;
+                        collided = false;
+                        is_sliding = false;
+                        rb.velocity = new Vector3(0, rb.velocity.y, 0);
+                    }
+
                 }
             }
 
@@ -132,17 +159,8 @@ public class CharacterMovement : MonoBehaviour
 
         }
 
-        // Calculate the change in position at the end of the frame
-        delta_pos = rb.position - startPos;
 
-        // Log the magnitude of delta_pos for debugging
-
-        startPos = rb.position;
-
-    }
-    private void FixedUpdate()
-    {
-
+        prev_pos = rb.position;
     }
 
     private void RotateTo(Vector3 rot)
@@ -216,5 +234,7 @@ public class CharacterMovement : MonoBehaviour
 
         isRotating = false;
     }
+
+
 
 }
