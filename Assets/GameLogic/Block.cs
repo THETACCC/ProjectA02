@@ -450,7 +450,7 @@ public class Block : MonoBehaviour
 
 
         }
-       else if (type== BlockType.Free) 
+       else if (type == BlockType.Free) 
         {
             float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
             moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
@@ -465,6 +465,7 @@ public class Block : MonoBehaviour
                 if(instantiated)
                 {
                     inventoryManager.ItemPicked(this.gameObject);
+
                 }
 
             }
