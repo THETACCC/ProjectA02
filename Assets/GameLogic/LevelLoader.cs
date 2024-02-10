@@ -207,13 +207,31 @@ public class LevelLoader : MonoSingleton<LevelLoader>
             blockPos.Remove(from);
         }
         CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos,to,block);
-        /*
+
+
+
+    }
+
+    public void DeBugBlocks()
+    {
         LevelLoader l = LevelLoader.instance;
         foreach (Vector3 c in l.blockPos.Keys)
         {
             print(c);
         }
-        */
+    }
+
+
+    public void OnBlockRotation(Vector3 from)
+    {
+        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
+    }
+    public void OnBlockToInventory(Vector3 from)
+    {
+        if (blockPos.ContainsKey(from))
+        {
+            blockPos.Remove(from);
+        }
     }
     public void OnMoveBlockFromSelection(Block block, Vector3 from, Vector3 to)
     {

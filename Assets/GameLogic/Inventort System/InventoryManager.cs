@@ -52,7 +52,8 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
                 //Use this if the camera is not orthographic
                 //GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, position, new Quaternion());
-                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, new Vector3(position.x - 80,0, position.z - 80), new Quaternion());
+
+                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, new Vector3(position.x - 60,0, position.z - 60), new Quaternion());
                 Destroy(draggedObject);
                 //Instantiate draggable blocks in to the scene, make sure the block register the mouse and is moving
                 lastItemSlot.GetComponent<InventorySlots>().heldItem = null;

@@ -19,6 +19,7 @@ public class MapControll : MonoBehaviour
             {
 
                 blocks = GameObject.FindGameObjectsWithTag(CommonReference.TAG_BLOCK);
+                levelloader.DeBugBlocks();
                 foreach (GameObject block in blocks)
                 {
                     Block my_block = block.GetComponent<Block>();
