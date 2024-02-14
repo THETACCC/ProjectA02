@@ -4,6 +4,7 @@ using UnityEngine;
 
 using SKCell;
 using UnityEngine.SceneManagement;
+using UnityEngine.TextCore.Text;
 
 public class LevelLoader : MonoSingleton<LevelLoader>
 {
@@ -180,8 +181,11 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     public void LoadCharacter()
     {
         PlayerCharacter[] chars = GameObject.FindObjectsOfType<PlayerCharacter>();
+
         CommonReference.playerCharacters = chars;
-        foreach(PlayerCharacter character in chars)
+        print(CommonReference.playerCharacters[0]);
+        print(CommonReference.playerCharacters[1]);
+        foreach (PlayerCharacter character in chars)
         {
             bool isLeft = character.transform.position.x< center.x; 
             if (isLeft)

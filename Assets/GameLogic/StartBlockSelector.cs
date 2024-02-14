@@ -7,7 +7,7 @@ public class StartBlockSelector : MonoBehaviour
     public float elevation = 2;
     [SerializeField] Collider blockCld;
     [SerializeField] GameObject indicatorPrefab;
-
+    public GameObject Parent;
     Vector3[] subPositions = new Vector3[9];
     private void Start()
     {
@@ -26,7 +26,7 @@ public class StartBlockSelector : MonoBehaviour
 
         for (int i = 0;i < 9; i++)
         {
-            GameObject go = GameObject.Instantiate(indicatorPrefab);
+            GameObject go = GameObject.Instantiate(indicatorPrefab,Parent.transform);
             go.transform.position = subPositions[i];    
         }
     }
