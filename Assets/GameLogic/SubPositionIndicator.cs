@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class SubPositionIndicator : MonoBehaviour
 {
-
+    private GameObject LevelControllerOBJ;
+    private LevelController levelController;
     private MeshRenderer mr;
     private Camera mainCamera;
     public LayerMask interactableLayer; // Assign this in the Inspector
@@ -17,48 +18,62 @@ public class SubPositionIndicator : MonoBehaviour
         mr.enabled = false;
     }
 
+    private void Start()
+    {
+        LevelControllerOBJ = GameObject.FindGameObjectWithTag ( "LevelPhaseControll" );
+        levelController = LevelControllerOBJ.GetComponent<LevelController>();
+    }
+
+
     private void Update()
     {
-
-        // Reset hover state at the beginning of each frame
-        bool wasMouseOver = isMouseOver;
-        isMouseOver = false;
-
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        // Add a layer mask to only hit objects on the interactable layer
-        // Also, specify a reasonable max distance for the raycast
-        if (Physics.Raycast(ray, out hit, 1000f, interactableLayer))
+        if (levelController.phase == LevelPhase.Placing)
         {
-            Debug.DrawLine(ray.origin, hit.point, Color.red); // Draw the raycast line in the Scene view
+            // Reset hover state at the beginning of each frame
+            bool wasMouseOver = isMouseOver;
+            isMouseOver = false;
 
-            if (hit.collider.gameObject == gameObject)
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            // Add a layer mask to only hit objects on the interactable layer
+            // Also, specify a reasonable max distance for the raycast
+            if (Physics.Raycast(ray, out hit, 1000f, interactableLayer))
             {
+                Debug.DrawLine(ray.origin, hit.point, Color.red); // Draw the raycast line in the Scene view
 
-                isMouseOver = true;
-                // Mouse is over the object
-                if (!mr.enabled)
-                    mr.enabled = true;
-
-                if (Input.GetMouseButtonUp(0)) // Left mouse button
+                if (hit.collider.gameObject == gameObject)
                 {
-                    PlayerCharacter pc = CommonReference.playerCharacters[LevelLoader.PosToMapID(transform.position)];
-                    pc.transform.position = new Vector3(transform.position.x, pc.transform.position.y, transform.position.z);
+
+                    isMouseOver = true;
+                    // Mouse is over the object
+                    if (!mr.enabled)
+                        mr.enabled = true;
+
+                    if (Input.GetMouseButtonUp(0)) // Left mouse button
+                    {
+                        PlayerCharacter pc = CommonReference.playerCharacters[LevelLoader.PosToMapID(transform.position)];
+                        pc.transform.position = new Vector3(transform.position.x, pc.transform.position.y, transform.position.z);
+                    }
                 }
             }
+
+
+            if (wasMouseOver && !isMouseOver)
+            {
+                mr.enabled = false;
+            }
+
+            if (!isMouseOver)
+            {
+                Debug.DrawRay(ray.origin, ray.direction * 100f, Color.blue); // Draw the raycast line when not hitting
+            }
         }
-
-
-        if (wasMouseOver && !isMouseOver)
+        else
         {
             mr.enabled = false;
         }
 
-        if (!isMouseOver)
-        {
-            Debug.DrawRay(ray.origin, ray.direction * 100f, Color.blue); // Draw the raycast line when not hitting
-        }
     }
 
     /*
