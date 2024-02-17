@@ -57,11 +57,11 @@ public class CharacterMovement : MonoBehaviour
 
         if (canmove)
         {
-            if(Input.GetKeyDown(KeyCode.D))
+            if(Input.GetKey(KeyCode.D))
             {
                 axis_x = 1;
             }
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (Input.GetKey(KeyCode.A))
             {
                 axis_x = -1;
             }
@@ -70,7 +70,7 @@ public class CharacterMovement : MonoBehaviour
                 axis_x = 0;
             }
 
-            if(Input.GetKeyDown(KeyCode.W))
+            if(Input.GetKey(KeyCode.W))
             {
                 axis_z = 1;
             }

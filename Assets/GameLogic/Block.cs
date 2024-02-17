@@ -2,7 +2,8 @@ using SKCell;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+
+
 
 public class Block : MonoBehaviour
 {
@@ -259,6 +260,11 @@ public class Block : MonoBehaviour
             //These controlls the information that is instantiated for both blocks when dragging
             if (instantiated)
             {
+                //disable the collision box
+                B_blocka.cld_0.gameObject.SetActive(false);
+                B_blocka.cld_1.gameObject.SetActive(false);
+                B_blockb.cld_0.gameObject.SetActive(false); 
+                B_blockb.cld_1.gameObject.SetActive(false);
 
                 if (this == B_blocka) // If this is the original block
                 {
@@ -330,6 +336,9 @@ public class Block : MonoBehaviour
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 drag_offset = transform.position - moveposition;
                 drag_offset.y = 0;
+                //disable collision
+                cld_0.gameObject.SetActive(false);
+                cld_1.gameObject.SetActive(false);
             }
 
 
@@ -342,6 +351,9 @@ public class Block : MonoBehaviour
             moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
             drag_offset = transform.position - moveposition;
             drag_offset.y = 0;
+            //disable collision
+            cld_0.gameObject.SetActive(false);
+            cld_1.gameObject.SetActive(false);
         }
 
 
@@ -360,7 +372,7 @@ public class Block : MonoBehaviour
         testPos = transform.position.z + transform.position.x;
        if (type== BlockType.Regular)
         {
-            if (transform.position.z + transform.position.x < -60)
+            if (transform.position.z + transform.position.x < -55)
             {
                 if (blockb != null)
                 {
@@ -378,33 +390,50 @@ public class Block : MonoBehaviour
 
             }
 
+            // Calculate the distance to the screen to maintain the block's depth in the scene
             float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
-            moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+
+            // Convert mouse position to world position using the same depth as the block
+            Vector3 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+
+            // Create a modified position vector that maintains the block's original Y position but updates X and Z
             Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
-            
+
+            // Determine if the block is on the left side of the screen
+            //bool isLeft = this.transform.position.x < LevelLoader.center.x;
+            bool isLeft = IsBlockOnLeftSideOfScreen();
+            // Convert the block's position to screen space
+            Vector3 screenPos = CommonReference.mainCam.WorldToScreenPoint(mpos);          
             Vector3 npos = transform.position;
-            bool isLeft = this.transform.position.x < LevelLoader.center.x;
             if (!instantiated)
             {
+                //disable collision
+                cld_0.gameObject.SetActive(false);
+                cld_1.gameObject.SetActive(false);
                 transform.position = mpos;
             }
             if (linked)
             {
                 if (this == B_blocka) // If this is the original block
                 {
-                    /*
-                    if (isBlockALeft)
+
+                    if (isLeft)
                     {
-                        //22.5 is a magical number based on the current map
-                        mpos.x = Mathf.Clamp(mpos.x, -999f, -30f);
-                        mpos.z = Mathf.Clamp(mpos.z, 30f, 999f);
+                        // Clamp the Y position to not exceed half of the screen height
+                        screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
+
+                        // Convert the clamped screen position back to world space
+                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
                     }
                     else
                     {
-                        mpos.x = Mathf.Clamp(mpos.x, -30f, 999f);
-                        mpos.z = Mathf.Clamp(mpos.z, -999f, 30f);
+                        // Clamp the Y position to not exceed half of the screen height
+                        screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
+
+                        // Convert the clamped screen position back to world space
+                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
                     }
-                    */
+
                     blocka.transform.position = mpos;
                     if (blockb != null) // Make sure blockb (the clone) is not null
                     {
@@ -415,21 +444,24 @@ public class Block : MonoBehaviour
                 }
                 else if (this == B_blockb) // If this is the clone
                 {
-                    /*
-                    if (isBlockALeft)
+                    if (isLeft)
                     {
-                        mpos.x = Mathf.Clamp(mpos.x, -999f, -15f);
-                        mpos.z = Mathf.Clamp(mpos.z, 15f, 999f);
+                        // Clamp the Y position to not exceed half of the screen height
+                        screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
 
-                        //22.5 is a magical number based on the current map
-
+                        // Convert the clamped screen position back to world space
+                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
                     }
                     else
                     {
-                        mpos.x = Mathf.Clamp(mpos.x, -15f, 999f);
-                        mpos.z = Mathf.Clamp(mpos.z, -999f, 15f);
+                        // Clamp the Y position to not exceed half of the screen height
+                        screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
+
+                        // Convert the clamped screen position back to world space
+                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
                     }
-                    */
+
+
                     blockb.transform.position = mpos;
                     if (blocka != null) // Make sure blocka (the original) is not null
                     {
@@ -446,6 +478,9 @@ public class Block : MonoBehaviour
         }
        else if (type == BlockType.Free) 
         {
+            //disable collision
+            cld_0.gameObject.SetActive(false);
+            cld_1.gameObject.SetActive(false);
             float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
             moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
             Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
@@ -476,6 +511,8 @@ public class Block : MonoBehaviour
         {
             if (blockb == null)
             {
+                cld_0.gameObject.SetActive(true);
+                cld_1.gameObject.SetActive(true);
                 cpos = LevelLoader.WorldToCellPos(this.transform.position);
                 npos = this.transform.position;
                
@@ -483,8 +520,15 @@ public class Block : MonoBehaviour
             else
             {
                 Debug.Log("run COde");
+                //enable the collision box
+                B_blocka.cld_0.gameObject.SetActive(true);
+                B_blocka.cld_1.gameObject.SetActive(true);
+                B_blockb.cld_0.gameObject.SetActive(true);
+                B_blockb.cld_1.gameObject.SetActive(true);
 
-                    B_blocka.cpos = LevelLoader.WorldToCellPos(blocka.transform.position);
+
+
+                B_blocka.cpos = LevelLoader.WorldToCellPos(blocka.transform.position);
                     B_blocka.npos = blocka.transform.position;
                     B_blockb.bcpos = LevelLoader.WorldToCellPos(blockb.transform.position);
                     B_blockb.bnpos = blockb.transform.position;
@@ -606,6 +650,10 @@ public class Block : MonoBehaviour
         }
         else if (type == BlockType.Free)
         {
+            //enable collision
+            cld_0.gameObject.SetActive(true);
+            cld_1.gameObject.SetActive(true);
+
             cpos = LevelLoader.WorldToCellPos(this.transform.position);
             npos = this.transform.position;
                 
@@ -812,6 +860,13 @@ public class Block : MonoBehaviour
         }
 
         
+    }
+
+
+    bool IsBlockOnLeftSideOfScreen()
+    {
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+        return screenPos.x < Screen.width / 2;
     }
 
 
