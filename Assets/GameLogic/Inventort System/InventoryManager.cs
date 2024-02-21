@@ -182,7 +182,8 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             //newItem.GetComponent<InventoryItem>().ActualObject = Item.GetComponent<Block>().blocka;
 
             newItem.transform.SetParent(emptyslot.transform.parent.parent.GetChild(1));
-            newItem.transform.localScale = Vector3.one;
+            //This line of code is to set the scale of the blocks in UI
+            newItem.transform.localScale = new Vector3 (.8f, .8f, .8f);
             emptyslot.GetComponent<InventorySlots>().SetHeldItem(newItem); 
 
             Destroy(Item);
