@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using SKCell;
 using UnityEditor.SearchService;
 
-public class LevelController : MonoSingleton<LevelController>
+public class LevelController : SKMonoSingleton<LevelController>
 {
     public int Level { get; private set; }
     public LevelPhase phase;

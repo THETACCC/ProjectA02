@@ -248,7 +248,7 @@ public class FreeBlock : MonoBehaviour
                 if (!LevelLoader.HasBlockOnCellPos(cpos) || cpos != Vector3.one * -1)
                 {
 
-                    CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                    SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                     {
                         transform.position = Vector3.Lerp(npos, drag_start_pos, f);
        
@@ -263,7 +263,7 @@ public class FreeBlock : MonoBehaviour
                 {
                     Debug.Log("Drag success");
                     UpdateMapCollider();
-                    CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                    SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                     {
                         transform.position = Vector3.Lerp(npos, cpos, f);
 
@@ -273,8 +273,8 @@ public class FreeBlock : MonoBehaviour
                 }
 
                 Vector3 nscale = transform.localScale;
-                CommonUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
-                CommonUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
+                SKUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
+                SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
                 {
                     transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
                 }, null, gameObject.GetInstanceID() + "mouse_over");

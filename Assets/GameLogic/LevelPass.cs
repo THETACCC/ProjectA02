@@ -31,7 +31,7 @@ public class LevelPass : MonoBehaviour
         if (left.leftreached && right.rightreached && !startloading)
         {
             Debug.Log("reached");
-            CommonUtils.InvokeAction(0.2f, () =>
+            SKUtils.InvokeAction(0.2f, () =>
             {
 
 

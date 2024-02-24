@@ -6,7 +6,8 @@ namespace SKCell.Test
     {
         void Start()
         {
-            SKConsoleCommand p = SKConsole.AddCommand("print", "Print a number", (x) =>
+            SKConsoleCommand p = 
+            SKConsole.AddCommand("print", "Print a number", (x) =>
             {
                 print(x);
             });
@@ -37,6 +38,14 @@ namespace SKCell.Test
                 });
             }
 
+            SKConsole.AddCommand("addhp", "Add HP to the current player.", (x) =>
+            {
+                print(x);
+            });
+            SKConsole.AddCommand("subhp", "Subtract HP to the current player.", (x) =>
+            {
+                print(x);
+            });
             SKConsole.Open();
         }
 

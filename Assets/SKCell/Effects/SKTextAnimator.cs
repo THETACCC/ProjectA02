@@ -11,13 +11,14 @@ namespace SKCell
     /// </summary>
     [RequireComponent(typeof(SKTextAnimation))]
     [DisallowMultipleComponent]
-
+    [AddComponentMenu("SKCell/Text Animator/SKTextAnimator")]
     public class SKTextAnimator : MonoBehaviour
     {
         [Header("Typewriter")]
         public bool useTypeWriter = false;
         public SKTextTypewriterType typewriterType;
         public float typeSpeed = 1.0f;
+
         [HideInInspector]
         public bool startOnEnable = true; //deprecated
 
@@ -49,15 +50,17 @@ namespace SKCell
         }
         private void Start()
         {
-            CommonUtils.InvokeAction(0.1f, () =>
+            SKUtils.InvokeAction(0.1f, () =>
             {
                 if (useInlineEffects)
                 {
                     ParseText();
                     ApplyParsedText();
                 }
-                CommonUtils.InvokeAction(0.1f, () =>
+
+                SKUtils.InvokeAction(0.1f, () =>
                 {
+                    SKTextUtils.StopAllRoutines(text);
                     if (startOnEnable)
                     {
                         PlayTypeWriterInternal();
@@ -68,6 +71,10 @@ namespace SKCell
                     }
                 });
             });
+        }
+        private void OnDestroy()
+        {
+            SKTextUtils.StopAllRoutines(text);
         }
         /// <summary>
         /// Replay the typewriter effect associated to this object.
@@ -136,11 +143,11 @@ namespace SKCell
 
             ParseText();
             SKTextUtils.StopAllRoutines(text);
-            CommonUtils.InvokeAction(0.05f, () =>
+            SKUtils.InvokeAction(0.05f, () =>
             {
                 ApplyParsedText();
                 skAnim.UpdateTextDataColor(oColor);
-                CommonUtils.InvokeAction(0f, () =>
+                SKUtils.InvokeAction(0f, () =>
                 {
                     text.alpha = oa;
                     if (useTypeWriter)
@@ -157,7 +164,7 @@ namespace SKCell
 
         public void TypewriterFastForward()
         {
-            CommonUtils.CancelInvoke(curTypewriterCRID);
+            SKUtils.CancelInvoke(curTypewriterCRID);
             skAnim.Alpha(10000000, 1, 0, 1000);
 
             typewriterPlaying = false;
@@ -172,7 +179,7 @@ namespace SKCell
         /// </summary>
         public void TypewriteFastForwardComplete(string content)
         {
-            CommonUtils.CancelInvoke(curTypewriterCRID);
+            SKUtils.CancelInvoke(curTypewriterCRID);
             int len = text.textInfo.meshInfo[0].colors32.Length;
             for (int i = 0; i < len; i++)
             {

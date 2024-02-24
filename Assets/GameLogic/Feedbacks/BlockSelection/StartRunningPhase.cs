@@ -32,7 +32,7 @@ public class StartRunningPhase : MonoBehaviour
         mytransform = GetComponent<Transform>();
         /*
         Camera cam;
-        CommonUtils.StartProcedure(SKCurve.QuadraticIn, 1.0f, (t) =>
+        SKUtils.StartProcedure(SKCurve.QuadraticIn, 1.0f, (t) =>
         {
            cam.transform.position = Vector3.Lerp(sbyte, else, t);
         });

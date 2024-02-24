@@ -6,7 +6,7 @@ using SKCell;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 
-public class LevelLoader : MonoSingleton<LevelLoader>
+public class LevelLoader : SKMonoSingleton<LevelLoader>
 {
     public static MapData mapData;
     public static Vector3 BLOCK_SCALE_MAP, BLOCK_SCALE_SELECT_AREA;
@@ -129,7 +129,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
                 }
             }
             block.transform.position = best_pos;
-            CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, best_pos, block.GetComponent<Block>());
+            SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, best_pos, block.GetComponent<Block>());
 
             block.transform.localScale = BLOCK_SCALE_MAP;
             block.GetComponent<Block>().SyncLocalScale(BLOCK_SCALE_MAP);
@@ -167,7 +167,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
             }
             Vector3 fpos = block.transform.position;
             Vector3 tpos = bs_locs[blockindex];
-            CommonUtils.StartProcedure(SKCurve.CubicDoubleIn, 0.2f, (f) =>
+            SKUtils.StartProcedure(SKCurve.CubicDoubleIn, 0.2f, (f) =>
             {
                 block.transform.position = Vector3.Lerp(fpos, tpos, f);
             });
@@ -210,7 +210,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
         {
             blockPos.Remove(from);
         }
-        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos,to,block);
+        SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos,to,block);
 
 
 
@@ -228,7 +228,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
 
     public void OnBlockRotation(Vector3 from)
     {
-        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
+        SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
     }
     public void OnBlockToInventory(Vector3 from)
     {
@@ -239,8 +239,8 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     }
     public void OnMoveBlockFromSelection(Block block, Vector3 from, Vector3 to)
     {
-        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
-        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, to, block);
+        SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
+        SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, to, block);
         
         //LevelLoader l = LevelLoader.instance;
         //foreach (Vector3 c in l.blockPos.Keys)
@@ -251,8 +251,8 @@ public class LevelLoader : MonoSingleton<LevelLoader>
     }
     public void OnMoveBlockToSelection(Block block, Vector3 from, Vector3 to)
     {
-        CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
-        //CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, to, block);
+        SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, from, null);
+        //SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, to, block);
     }
     private Vector3[] GetBSLocations()
     {
@@ -358,7 +358,7 @@ public class LevelLoader : MonoSingleton<LevelLoader>
                 }
             }
             block.transform.position = best_pos;
-            CommonUtils.InsertOrUpdateKeyValueInDictionary(blockPos, best_pos, block.GetComponent<Block>());
+            SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, best_pos, block.GetComponent<Block>());
 
             block.transform.localScale = BLOCK_SCALE_MAP;
             block.GetComponent<Block>().SyncLocalScale(BLOCK_SCALE_MAP);

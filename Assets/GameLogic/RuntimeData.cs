@@ -4,7 +4,7 @@ using UnityEngine;
 
 using SKCell;
 
-public sealed class RuntimeData : MonoSingleton<RuntimeData>
+public sealed class RuntimeData : SKMonoSingleton<RuntimeData>
 {
     #region Scene
     public static bool isSceneLoading;

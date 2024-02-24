@@ -4,7 +4,7 @@ using UnityEngine;
 
 using SKCell;
 
-public class CommonReference : MonoSingleton<CommonReference>
+public class CommonReference : SKMonoSingleton<CommonReference>
 {
 
     public static PlayerCharacter[] playerCharacters;

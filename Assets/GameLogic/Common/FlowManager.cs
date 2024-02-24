@@ -9,7 +9,7 @@ using static Unity.VisualScripting.Icons;
 using MoreMountains.Tools;
 using UnityEngine.SceneManagement;
 
-public class FlowManager : MonoSingleton<FlowManager>
+public class FlowManager : SKMonoSingleton<FlowManager>
 {
     public static SceneTitle scenetitle;
     public static int t_spawnPoint;
@@ -18,7 +18,7 @@ public class FlowManager : MonoSingleton<FlowManager>
 
         scenetitle = (SceneTitle)PlayerPrefs.GetInt("StartScene");
 
-        CommonUtils.InvokeAction(0.2f, () =>
+        SKUtils.InvokeAction(0.2f, () =>
         {
 
 

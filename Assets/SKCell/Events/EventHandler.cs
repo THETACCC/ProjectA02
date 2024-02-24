@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+
 
 
 namespace SKCell
@@ -36,7 +35,7 @@ namespace SKCell
             else
             {
                 RegisterEvent(new SKEvent(), id);
-                //CommonUtils.EditorLogNormal($"EventHandler.DispatchEvent() --- target event id not found. Auto registered.");
+                //SKUtils.EditorLogNormal($"EventHandler.DispatchEvent() --- target event id not found. Auto registered.");
                 return false;
             }
         }
@@ -57,7 +56,7 @@ namespace SKCell
             {
                 RegisterEvent(new SKEvent(), id);
                 dict[id].action += t_event.action;
-                //CommonUtils.EditorLogNormal($"EventHandler.AddListener() --- target event id not found. Auto registered.");
+                //SKUtils.EditorLogNormal($"EventHandler.AddListener() --- target event id not found. Auto registered.");
                 return false;
             }
         }
@@ -77,7 +76,7 @@ namespace SKCell
             }
             else
             {
-                CommonUtils.EditorLogWarning($"EventHandler.RemoveListener() --- target event id not found.");
+                SKUtils.EditorLogWarning($"EventHandler.RemoveListener() --- target event id not found.");
                 return false;
             }
         }
@@ -90,7 +89,7 @@ namespace SKCell
         /// <returns></returns>
         public bool RegisterEvent(SKEvent t_event, int id)
         {
-            return CommonUtils.InsertOrUpdateKeyValueInDictionary(dict, id, t_event);
+            return SKUtils.InsertOrUpdateKeyValueInDictionary(dict, id, t_event);
         }
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace SKCell
 
         public bool RemoveEvent(int id)
         {
-            return CommonUtils.RemoveKeyInDictionary(dict, id);
+            return SKUtils.RemoveKeyInDictionary(dict, id);
         }
     }
 }

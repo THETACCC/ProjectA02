@@ -166,7 +166,7 @@ public class CharacterMovement : MonoBehaviour
     private void RotateTo(Vector3 rot)
     {
         Vector3 orot = visualTF.rotation.eulerAngles;
-        CommonUtils.StartProcedure(SKCurve.QuadraticDoubleIn, 0.2f, (f) =>
+        SKUtils.StartProcedure(SKCurve.QuadraticDoubleIn, 0.2f, (f) =>
         {
             visualTF.rotation = Quaternion.Euler(Vector3.Lerp(orot, rot, f));
         });

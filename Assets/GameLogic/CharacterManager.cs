@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using SKCell;
-public class CharacterManager : MonoSingleton<CharacterManager>
+public class CharacterManager : SKMonoSingleton<CharacterManager>
 {
     public bool[] isSliding =  new bool[2];
 

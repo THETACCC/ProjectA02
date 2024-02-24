@@ -33,7 +33,7 @@ public class LevelRotation : MonoBehaviour
     private void RotateTo(Vector3 rot)
     {
         Vector3 orot = self.rotation.eulerAngles;
-        CommonUtils.StartProcedure(SKCurve.QuadraticDoubleIn, 1f, (f) =>
+        SKUtils.StartProcedure(SKCurve.QuadraticDoubleIn, 1f, (f) =>
         {
             self.rotation = Quaternion.Euler(Vector3.Lerp(orot, rot, f));
         });

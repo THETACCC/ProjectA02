@@ -7,9 +7,9 @@ using UnityEngine.SceneManagement;
 
 namespace SKCell
 {
-    [AddComponentMenu("SKCell/SKSceneManager")]
+    [AddComponentMenu("SKCell/Misc/SKSceneManager")]
 
-    public class SKSceneManager : MonoSingleton<SKSceneManager>
+    public class SKSceneManager : SKMonoSingleton<SKSceneManager>
     {
         private static AsyncOperation async = null;
         private static float actualAsyncProgress = 0;
@@ -116,7 +116,7 @@ namespace SKCell
             async.allowSceneActivation = true;
             onNextSceneLoaded.Invoke();
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.8f);
             loadFader.SetState(SKUIPanelState.Inactive);
 
             async = null;
@@ -135,7 +135,7 @@ namespace SKCell
         {
             if (async == null)
             {
-                CommonUtils.EditorLogWarning("GetLoadProcess can only be called under an async process.");
+                SKUtils.EditorLogWarning("GetLoadProcess can only be called under an async process.");
                 return 0;
             }
             if (async.isDone)

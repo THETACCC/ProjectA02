@@ -7,7 +7,7 @@ using SKCell;
 
 
 
-public class Scenecontroller : MonoSingleton<Scenecontroller>
+public class Scenecontroller : SKMonoSingleton<Scenecontroller>
 {
     public SceneInfo sceneInfo;
 
@@ -17,7 +17,7 @@ public class Scenecontroller : MonoSingleton<Scenecontroller>
     {
         SKSceneManager.instance.onNextSceneLoaded.AddListener(() =>
         {
-            CommonUtils.InvokeAction(0.1f, () =>
+            SKUtils.InvokeAction(0.1f, () =>
             {
                 LoadSceneSetup();
             });

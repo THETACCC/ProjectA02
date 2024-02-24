@@ -9,6 +9,7 @@ using UnityEngine.UI;
 namespace SKCell
 {
     [ExecuteInEditMode]
+    [AddComponentMenu("SKCell/UI/SKUIModelViewer")]
     public class SKUIModelViewer : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
     {
         [Range(0.1f, 1f)] public float resolution;
@@ -29,7 +30,6 @@ namespace SKCell
 
 
 
-        private bool initialized;
         [HideInInspector]
         public RectTransform rectTransform;
 
@@ -40,7 +40,8 @@ namespace SKCell
 
         private void Start()
         {
-            rectTransform = GetComponent<RectTransform>();
+            if(rectTransform==null)
+                rectTransform = GetComponent<RectTransform>();
             ReloadRT();
             sizeMonitor = new SKVariableMonitor<Vector2>(() =>
             {
@@ -85,7 +86,6 @@ namespace SKCell
             if (rt != null)
                 RenderTexture.ReleaseTemporary(rt);
             rt = RenderTexture.GetTemporary(xRes, yRes);
-            print(0);
             cam.targetTexture = rt;
             rawImage.texture = rt;
         }
@@ -99,8 +99,7 @@ namespace SKCell
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(SKAssetLibrary.PREFAB_PATH + pathSuffix);
             if (prefab == null)
             {
-                CommonUtils.EditorLogError("SKUIModelViewer Resource Error: UIModelViewer prefab lost.");
-                initialized = false;
+                SKUtils.EditorLogError("SKUIModelViewer Resource Error: UIModelViewer prefab lost.");
                 return;
             }
             GameObject viewer = Instantiate(prefab);
@@ -108,7 +107,6 @@ namespace SKCell
             viewer.transform.SetParent(transform.parent);
             viewer.transform.CopyFrom(transform);
             viewer.transform.SetSiblingIndex(transform.GetSiblingIndex());
-            viewer.GetComponent<SKUIModelViewer>().initialized = true;
             viewer.GetComponent<SKUIModelViewer>().Initialize();
             Selection.activeGameObject = viewer;
             DestroyImmediate(this.gameObject);
@@ -136,7 +134,7 @@ namespace SKCell
         }
         private void ApplyInertia(Vector3 formerRotAngle)
         {
-            CommonUtils.StartCoroutine(InertiaCR(formerRotAngle));
+            SKUtils.StartCoroutine(InertiaCR(formerRotAngle));
         }
         IEnumerator InertiaCR(Vector3 formerRotAngle)
         {

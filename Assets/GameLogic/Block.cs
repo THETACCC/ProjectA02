@@ -75,6 +75,10 @@ public class Block : MonoBehaviour
     private GameObject LevelRight;
     private LevelRotation levelrotation;
 
+
+    //Get the outline effect
+    public Outline outlineEffect;
+    public GameObject outlineEffectOBJ;
     private void Awake()
     {
 
@@ -82,6 +86,16 @@ public class Block : MonoBehaviour
 
     private void Start()
     {
+        //instantiate outline effect
+        if (outlineEffectOBJ == null)
+        {
+            Transform childTransform = transform.Find("OutlineEffect");
+            outlineEffectOBJ = childTransform.gameObject;
+            outlineEffectOBJ.SetActive(true);
+        }
+
+
+
         LevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
         levelrotation = LevelLeft.GetComponent<LevelRotation>();
         LevelRight = GameObject.FindGameObjectWithTag("LevelRight");
@@ -215,6 +229,7 @@ public class Block : MonoBehaviour
             if (Input.GetMouseButtonUp(0))
             {
                 mouse_drag = false;
+                Debug.Log("On  End Draingg");
                 _OnEndDrag();
                 LevelController.instance.curDraggedblock = null;
             }
@@ -230,12 +245,12 @@ public class Block : MonoBehaviour
         int map = LevelLoader.PosToMapID(transform.position);
         if (map == 0)
         {
-            cld_0.SetActive(false);
+            cld_0.SetActive(true);
             cld_1.SetActive(true);
         }
         else
         {
-            cld_0.SetActive(false);
+            cld_0.SetActive(true);
             cld_1.SetActive(true);
         }
     }
@@ -247,12 +262,47 @@ public class Block : MonoBehaviour
 
     private void _OnMouseEnter()
     {
-        FX_HOVER.SetActive(true);
+        if((type == BlockType.Regular))
+        {
+            if(instantiated)
+            {
+
+                    B_blocka.outlineEffectOBJ.SetActive(true);
+                    B_blockb.outlineEffectOBJ.SetActive(true);
+
+            }
+        }
+        else
+        {
+
+                outlineEffectOBJ.SetActive(true);
+
+            
+        }
+        //FX_HOVER.SetActive(true);
     }
 
     private void _OnMouseExit()
     {
-        FX_HOVER.SetActive(false);
+        if ((type == BlockType.Regular))
+        {
+            if (instantiated)
+            {
+
+                    B_blocka.outlineEffectOBJ.SetActive(false);
+                    B_blockb.outlineEffectOBJ.SetActive(false);
+                    //outlineEffect.enabled = false;
+
+                
+            }
+        }
+        else
+        {
+
+                outlineEffectOBJ.SetActive(false);
+            
+        }
+        //FX_HOVER.SetActive(false);
     }
 
     public void _OnStartDrag()
@@ -504,6 +554,7 @@ public class Block : MonoBehaviour
         {
             if (blockb == null)
             {
+                Debug.Log("initial place");
                 cld_0.gameObject.SetActive(true);
                 cld_1.gameObject.SetActive(true);
                 cpos = LevelLoader.WorldToCellPos(this.transform.position);
@@ -558,7 +609,7 @@ public class Block : MonoBehaviour
                         LevelLoader.instance.OnMoveBlock(B_blocka, LevelLoader.WorldToCellPos(BlockA_Drag_Start_Pos), B_blocka.cpos);
                         LevelLoader.instance.OnMoveBlock(B_blockb, LevelLoader.WorldToCellPos(BlockB_Drag_Start_Pos), B_blockb.bcpos);
                         UpdateMapCollider();
-                        CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                         {
                             blocka.transform.position = Vector3.Lerp(B_blocka.npos, B_blocka.cpos, f);
                             blockb.transform.position = Vector3.Lerp(B_blockb.bnpos, B_blockb.bcpos, f);
@@ -568,7 +619,7 @@ public class Block : MonoBehaviour
                     }
                     else
                     {
-                        CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                         {
                             blocka.transform.position = Vector3.Lerp(B_blocka.npos, BlockA_Drag_Start_Pos, f);
                             blockb.transform.position = Vector3.Lerp(B_blockb.bnpos, BlockB_Drag_Start_Pos, f);
@@ -598,8 +649,8 @@ public class Block : MonoBehaviour
 
 
                 Vector3 nscale = transform.localScale;
-                CommonUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
-                CommonUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
+                SKUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
+                SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
                 {
                     transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
                 }, null, gameObject.GetInstanceID() + "mouse_over");
@@ -656,7 +707,7 @@ public class Block : MonoBehaviour
 
                 LevelLoader.instance.OnMoveBlock(this, LevelLoader.WorldToCellPos(drag_start_pos), cpos);
                 UpdateMapCollider();
-                CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                 {
                     transform.position = Vector3.Lerp(npos, cpos, f);
 
@@ -679,7 +730,7 @@ public class Block : MonoBehaviour
                     Debug.Log("Put Block Back");
                 }
 
-                CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                 {
                     transform.position = Vector3.Lerp(npos, drag_start_pos, f);
 
@@ -689,8 +740,8 @@ public class Block : MonoBehaviour
             }
             //Lerp the scale to the map scale
             Vector3 nscale = transform.localScale;
-            CommonUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
-            CommonUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
+            SKUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
+            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
             {
                 transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
             }, null, gameObject.GetInstanceID() + "mouse_over");
@@ -730,7 +781,7 @@ public class Block : MonoBehaviour
 
         LevelLoader.instance.OnMoveBlock(this, LevelLoader.WorldToCellPos(rotate_start_pos), Rcpos);
         UpdateMapCollider();
-        CommonUtils.StartProcedure(SKCurve.CubicIn, 0.05f, (f) =>
+        SKUtils.StartProcedure(SKCurve.CubicIn, 0.05f, (f) =>
         {
             transform.position = Vector3.Lerp(Rnpos, Rcpos, f);
 
@@ -792,6 +843,13 @@ public class Block : MonoBehaviour
         B_blockb.offsetz = offsetz;
         B_blockb.instantiated = true;
         instantiated = true;
+        B_blocka.cld_0.SetActive(true);
+        B_blockb.cld_0.SetActive(true);
+
+
+
+        //Get the outline stuff
+        //B_blockb.outlineEffect = GetComponentInChildren<Outline>();
 
 
         if (!LevelLoader.HasBlockOnCellPos(bcpos))
@@ -799,14 +857,14 @@ public class Block : MonoBehaviour
             //If there is no blocks in the position, then make the B block
             LevelLoader.instance.OnMoveBlockFromSelection(this, LevelLoader.WorldToCellPos(drag_start_pos), bcpos);
             UpdateMapCollider();
-            CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
             {
                 transform.position = Vector3.Lerp(bnpos, bcpos, f);
             }, null, gameObject.GetInstanceID() + "drag_success");
 
             Vector3 nscale = transform.localScale;
-            CommonUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
-            CommonUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
+            SKUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
+            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
             {
                 transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
             }, null, gameObject.GetInstanceID() + "mouse_over");
@@ -830,14 +888,14 @@ public class Block : MonoBehaviour
             //If there is no blocks in the position, then make the A block
             LevelLoader.instance.OnMoveBlockFromSelection(b.GetComponent<Block>(), LevelLoader.WorldToCellPos(drag_start_pos), cpos);
             UpdateMapCollider();
-            CommonUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
             {
                 b.transform.position = Vector3.Lerp(npos, cpos, f);
             }, null, gameObject.GetInstanceID() + "drag_success");
 
             Vector3 nscale = b.transform.localScale;
-            CommonUtils.StopProcedure(b.gameObject.GetInstanceID() + "mouse_over");
-            CommonUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
+            SKUtils.StopProcedure(b.gameObject.GetInstanceID() + "mouse_over");
+            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
             {
                 b.transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
             }, null, b.gameObject.GetInstanceID() + "mouse_over");
@@ -886,11 +944,6 @@ public class Block : MonoBehaviour
 
                     LevelLoader.instance.OnBlockToInventory(LevelLoader.WorldToCellPos(BlockA_Drag_Start_Pos));
                     LevelLoader.instance.OnBlockToInventory(LevelLoader.WorldToCellPos(BlockB_Drag_Start_Pos));
-
-                    blockb = null;
-                    B_blockb = null;
-                    linked = false;
-                    instantiated = false;
                     inventoryManager.ItemPicked(blocka);
                     Destroy(blockb);
                     Destroy(blocka);
