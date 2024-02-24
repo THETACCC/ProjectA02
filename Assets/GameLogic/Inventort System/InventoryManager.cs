@@ -53,7 +53,8 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
                 //Use this if the camera is not orthographic
                 //GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, position, new Quaternion());
 
-                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, new Vector3(position.x - 60,0, position.z - 60), new Quaternion());
+                //This code is for the instanitation of the dragged blocks, the magic numbers for position is to make sure it align correctly
+                GameObject newItem = Instantiate(draggedObject.GetComponent<InventoryItem>().ActualObject, new Vector3(position.x - 40,0, position.z - 40), new Quaternion());
                 Destroy(draggedObject);
                 //Instantiate draggable blocks in to the scene, make sure the block register the mouse and is moving
                 lastItemSlot.GetComponent<InventorySlots>().heldItem = null;
@@ -99,6 +100,7 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
             if (slot != null && slot.heldItem != null)
             {
                 draggedObject = slot.heldItem;
+                //change this for a idle object
                 slot.heldItem = null;
                 lastItemSlot = clickedObject;
             }
