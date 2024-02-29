@@ -17,7 +17,7 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
     [SerializeField] GameObject itemPrefab;
     bool isInventoryOpened = true;
 
-    GameObject draggedObject;
+    public GameObject draggedObject;
     GameObject lastItemSlot;
     
 

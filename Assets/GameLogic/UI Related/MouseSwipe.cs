@@ -7,12 +7,17 @@ using UnityEngine.EventSystems;
 public class MouseSwipe : MonoBehaviour
 {
 
-
+    public InventoryManager inventoryManager;
     public float xStart;
     public float xEnd;
 
     private bool isPosCheck = true;
     private bool isStartPosInPlace = false;
+
+    //bool for other scripts to access
+    public bool isSwipeLeft = false;
+    public bool isSwipeRight = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,25 +27,40 @@ public class MouseSwipe : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+
+        if(!inventoryManager.draggedObject)
         {
-            xStart = Input.mousePosition.x;
-            CheckForDropOnUIImage();
+            if (Input.GetMouseButtonDown(0))
+            {
+                xStart = Input.mousePosition.x;
+                CheckForDropOnUIImage();
+                isPosCheck = true;
+
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                xEnd = Input.mousePosition.x;
+                isPosCheck = false;
+            }
+        }
+
+
+
+
+        if ((xStart > xEnd) && (!isPosCheck) && isStartPosInPlace )
+        {
+            isSwipeLeft = true;
             isPosCheck = true;
-
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            xEnd = Input.mousePosition.x;
-            isPosCheck = false;
+            isStartPosInPlace = false;
+            xStart = 0;
+            xEnd = 0;
         }
 
 
-        if ((xStart > xEnd) && (!isPosCheck) && isStartPosInPlace)
+        if ((xStart < xEnd) && (!isPosCheck) && isStartPosInPlace )
         {
-
-            Debug.Log("MoveLeft");
+            isSwipeRight = true;
             isPosCheck = true;
             isStartPosInPlace = false;
             xStart = 0;
@@ -48,15 +68,14 @@ public class MouseSwipe : MonoBehaviour
         }
 
 
-        if ((xStart < xEnd) && (!isPosCheck) && isStartPosInPlace)
-        {
-            Debug.Log("MoveRight");
-            isPosCheck = true;
-            isStartPosInPlace = false;
-            xStart = 0;
-            xEnd = 0;
-        }
+    }
 
+    private void LateUpdate()
+    {
+
+
+        isSwipeLeft = false;
+        isSwipeRight = false;
     }
 
     void CheckForDropOnUIImage()
