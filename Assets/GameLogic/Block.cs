@@ -79,6 +79,10 @@ public class Block : MonoBehaviour
     //Get the outline effect
     public Outline outlineEffect;
     public GameObject outlineEffectOBJ;
+
+    //Visual Effects
+    public GameObject onDestroyParticle;
+
     private void Awake()
     {
 
@@ -945,6 +949,8 @@ public class Block : MonoBehaviour
                     LevelLoader.instance.OnBlockToInventory(LevelLoader.WorldToCellPos(BlockA_Drag_Start_Pos));
                     LevelLoader.instance.OnBlockToInventory(LevelLoader.WorldToCellPos(BlockB_Drag_Start_Pos));
                     inventoryManager.ItemPicked(blocka);
+                    Instantiate(onDestroyParticle, blocka.transform.position, Quaternion.identity);
+                    Instantiate(onDestroyParticle, blockb.transform.position, Quaternion.identity);
                     Destroy(blockb);
                     Destroy(blocka);
                     Destroy(this.gameObject);
@@ -955,6 +961,7 @@ public class Block : MonoBehaviour
             {
                 if (result.gameObject.CompareTag("BlockInventory")) // Ensure your UI Image has this tag
                 {
+                    Instantiate(onDestroyParticle, this.transform.position, Quaternion.identity);
                     LevelLoader.instance.OnBlockToInventory(LevelLoader.WorldToCellPos(drag_start_pos));
                 inventoryManager.ItemPicked(this.gameObject);
                 return;

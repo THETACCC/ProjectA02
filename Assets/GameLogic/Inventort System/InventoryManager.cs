@@ -161,6 +161,7 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
 
     //code for putting blocks back to the inventory
+    /*
     public void ItemPicked(GameObject Item)
     {
         GameObject emptyslot = null;
@@ -193,6 +194,45 @@ public class InventoryManager : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
 
     }
+    */
+    public void ItemPicked(GameObject Item)
+    {
+        GameObject nearestEmptySlot = FindNearestEmptySlotToMouse();
 
+        if (nearestEmptySlot != null)
+        {
+            GameObject newItem = Instantiate(itemPrefab);
+            newItem.GetComponent<InventoryItem>().itemScriptableObject = Item.GetComponent<ItemPickable>().itemScriptableOBJ;
 
+            newItem.transform.SetParent(nearestEmptySlot.transform.parent.parent.GetChild(1), false);
+            newItem.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f); // Set the scale of the item in the UI
+            nearestEmptySlot.GetComponent<InventorySlots>().SetHeldItem(newItem);
+
+            Destroy(Item);
+        }
+    }
+
+    private GameObject FindNearestEmptySlotToMouse()
+    {
+        GameObject nearestEmptySlot = null;
+        float nearestDistance = float.MaxValue;
+
+        foreach (GameObject slot in slots)
+        {
+            InventorySlots slotInfo = slot.GetComponent<InventorySlots>();
+            if (slotInfo.heldItem == null)
+            {
+                Vector2 slotPosition = RectTransformUtility.WorldToScreenPoint(null, slot.transform.position);
+                float distance = Vector2.Distance(slotPosition, Input.mousePosition);
+
+                if (distance < nearestDistance)
+                {
+                    nearestEmptySlot = slot;
+                    nearestDistance = distance;
+                }
+            }
+        }
+
+        return nearestEmptySlot;
+    }
 }

@@ -9,6 +9,10 @@ public class InventorySlots : MonoBehaviour
     public GameObject emptyItemDisplay;
     private RectTransform rectTransform;
 
+
+    //reference to the slot Pos
+    public GameObject slotPos;
+    public float thresholdDistance = 5f;
     public void Start()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -24,7 +28,7 @@ public class InventorySlots : MonoBehaviour
 
     public void Update()
     {
-
+        FindNearestSlot();
         if (heldItem != null)
         {
             heldItem.transform.position = transform.position;
@@ -41,7 +45,25 @@ public class InventorySlots : MonoBehaviour
         }
 
     }
+    void FindNearestSlot()
+    {
+        GameObject[] slots = GameObject.FindGameObjectsWithTag("SlotPos");
+        GameObject nearestSlot = null;
+        float minDistance = Mathf.Infinity;
+        Vector2 currentPosition = this.GetComponent<RectTransform>().anchoredPosition;
 
+        foreach (GameObject slot in slots)
+        {
+            Vector2 slotPosition = slot.GetComponent<RectTransform>().anchoredPosition;
+            float distance = Vector2.Distance(currentPosition, slotPosition);
+            if (distance < minDistance && distance <= thresholdDistance)
+            {
+                nearestSlot = slot;
+                minDistance = distance;
+                slotPos = nearestSlot;
+            }
+        }
+    }
 
     public void movePosition(Vector2 StartPos, Vector2 EndPos)
     {
