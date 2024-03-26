@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,10 @@ public class SwipeManager : MonoBehaviour
     public InventorySlots[] inventorySlots;
     
     public SlotPos[] slotPos;
+    private bool canSwipe = true;
+    [SerializeField] private float canSwipeTimer = 0.85f;
+
+    private float canSwipeTime = 0f;   
 
     // Start is called before the first frame update
     void Start()
@@ -19,14 +24,41 @@ public class SwipeManager : MonoBehaviour
 
     void Update()
     {
-        if (mouseSwipe.isSwipeRight && slotPos[slotPos.Length - 1].isPosEmpty)
+        if (mouseSwipe.isSwipeRight && slotPos[slotPos.Length - 1].isPosEmpty )
         {
-            MoveSlotsRight();
+            if ( canSwipe )
+            {
+                MoveSlotsRight();
+                canSwipe= false;
+            }
+            
+
+
         }
-        else if (mouseSwipe.isSwipeLeft && slotPos[0].isPosEmpty)
+        else if (mouseSwipe.isSwipeLeft && slotPos[0].isPosEmpty )
         {
-            MoveSlotsLeft();
+            if (canSwipe)
+            {
+                MoveSlotsLeft();
+                canSwipe = false;
+            }
+
         }
+
+
+        if(!canSwipe && (canSwipeTime < canSwipeTimer))
+        {
+            canSwipeTime += Time.deltaTime;
+
+        }
+        
+        if (canSwipeTime >= canSwipeTimer)
+        {
+            canSwipe = true;
+            canSwipeTime = 0f;
+        }
+
+
     }
 
     void MoveSlotsRight()
@@ -99,6 +131,7 @@ public class SwipeManager : MonoBehaviour
             slot.StartMovingPosition(newPosRect.anchoredPosition);
         }
     }
+
 
     // This function updates the internal tracking of slots' positions after a move.
     // You might need to adjust this logic based on how you're tracking slots' positions.
