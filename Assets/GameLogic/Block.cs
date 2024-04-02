@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using MoreMountains.Feedbacks;
 
 
 
@@ -82,7 +83,7 @@ public class Block : MonoBehaviour
 
     //Visual Effects
     public GameObject onDestroyParticle;
-
+    public MMFeedbacks init;
     private void Awake()
     {
 
@@ -90,6 +91,8 @@ public class Block : MonoBehaviour
 
     private void Start()
     {
+
+
         //instantiate outline effect
         if (outlineEffectOBJ == null)
         {
@@ -974,7 +977,13 @@ public class Block : MonoBehaviour
         Debug.Log("Not dropped on a UI Image.");
     }
 
-
+    public void PlayInit()
+    {
+        if (init != null)
+        {
+            init?.PlayFeedbacks();
+        }
+    }
 
 
 }

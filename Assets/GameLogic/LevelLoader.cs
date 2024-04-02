@@ -131,8 +131,9 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
             block.transform.position = best_pos;
             SKUtils.InsertOrUpdateKeyValueInDictionary(blockPos, best_pos, block.GetComponent<Block>());
 
-            block.transform.localScale = BLOCK_SCALE_MAP;
-            block.GetComponent<Block>().SyncLocalScale(BLOCK_SCALE_MAP);
+            //changed to zero to test
+            block.transform.localScale = Vector3.zero;
+            block.GetComponent<Block>().SyncLocalScale(Vector3.zero);
             //load start and end blocks
             bool isLeft = pos.x < center.x;
             Block b = block.GetComponent<Block>();

@@ -15,6 +15,8 @@ public class LevelPass : MonoBehaviour
     public GameObject rightfinish;
     private GameObject flowmanager;
 
+    public GameObject FinishUI;
+
     private bool startloading = false;
 
     private void Start()
@@ -31,18 +33,24 @@ public class LevelPass : MonoBehaviour
         if (left.leftreached && right.rightreached && !startloading)
         {
             Debug.Log("reached");
-            SKUtils.InvokeAction(0.2f, () =>
-            {
-
-
-                flowManager.LoadScene(new SceneInfo()
-                {
-                    index = scenetitle,
-                });
-            });
-            startloading = true;
+            FinishUI.SetActive(true);
         }
 
 
+    }
+
+    public void LoadNextLevel()
+    {
+
+        SKUtils.InvokeAction(0.2f, () =>
+        {
+
+
+            flowManager.LoadScene(new SceneInfo()
+            {
+                index = scenetitle,
+            });
+        });
+        startloading = true;
     }
 }
