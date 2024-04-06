@@ -102,6 +102,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         //align blocks
         blocks = GameObject.FindGameObjectsWithTag(CommonReference.TAG_BLOCK);
         BLOCK_SCALE_MAP = Vector3.one * BLOCK_SCALE_RATIO / levelDimensions.x;
+        print(BLOCK_SCALE_MAP);
         BLOCK_SCALE_SELECT_AREA = Vector3.one * DRAGGABLE_BLOCK_SCALE;
         foreach (GameObject block in blocks)
         {
@@ -332,6 +333,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         //align blocks
         blocks = GameObject.FindGameObjectsWithTag(CommonReference.TAG_BLOCK);
         BLOCK_SCALE_MAP = Vector3.one * BLOCK_SCALE_RATIO / levelDimensions.x;
+        print(BLOCK_SCALE_MAP);
         BLOCK_SCALE_SELECT_AREA = Vector3.one * DRAGGABLE_BLOCK_SCALE;
         foreach (GameObject block in blocks)
         {

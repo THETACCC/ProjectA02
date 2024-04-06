@@ -5,15 +5,18 @@ using UnityEngine;
 public class BlockIntro : MonoBehaviour
 {
     public GameObject[] mblocks;
-
+    public GameObject Player1;
+    public GameObject Player2;
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(PlayEffectsSequentially());
+        StartCoroutine(EnablePlayer());
     }
 
     IEnumerator PlayEffectsSequentially()
     {
+        yield return new WaitForSeconds(1.5f);
         // Loop through each GameObject in mblocks
         foreach (GameObject block in mblocks)
         {
@@ -24,6 +27,15 @@ public class BlockIntro : MonoBehaviour
             // Wait for 0.2 seconds before continuing to the next iteration of the loop
             yield return new WaitForSeconds(0.1f);
         }
+    }
+
+
+    IEnumerator EnablePlayer()
+    {
+        yield return new WaitForSeconds(3f);
+        Player1.SetActive(true);
+        Player2.SetActive(true);
+
     }
 
     void PlayVisualEffect(GameObject block)
