@@ -84,6 +84,10 @@ public class Block : MonoBehaviour
     //Visual Effects
     public GameObject onDestroyParticle;
     public MMFeedbacks init;
+
+    //player related
+    public bool isDragging = false;
+
     private void Awake()
     {
 
@@ -142,12 +146,14 @@ public class Block : MonoBehaviour
 
 
 
-        if (!draggable)
-            return;
+
+            UpdateMouseBehavior();
+
+        
 
         //enabled for now to allow mouse input
 
-        UpdateMouseBehavior();
+
 
         //else
         //{
@@ -191,11 +197,19 @@ public class Block : MonoBehaviour
         mouse_over = hit.collider == null ? false : hit.collider.gameObject == this.gameObject;
         if (!prev_mouseOver && mouse_over)
         {
-            _OnMouseEnter();
+            if(draggable)
+            {
+                _OnMouseEnter();
+            }
+
         }
         if (prev_mouseOver && !mouse_over)
         {
-            _OnMouseExit();
+            if(draggable)
+            {
+                _OnMouseExit();
+            }
+            isDragging = false;
         }
         if (!mouse_drag && LevelController.instance.curDraggedblock == null && mouse_over && Input.GetMouseButtonDown(0))
         {
@@ -229,7 +243,7 @@ public class Block : MonoBehaviour
 
         if (mouse_drag)
         {
-
+            isDragging = true;
 
 
             _OnMouseDrag();
