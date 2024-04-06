@@ -7,6 +7,10 @@ public class BlockIntro : MonoBehaviour
     public GameObject[] mblocks;
     public GameObject Player1;
     public GameObject Player2;
+
+    public Enterfinishleft LevelSuccessLeft;
+    public EnterFinishRight LevelSuccessRight;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,7 +39,8 @@ public class BlockIntro : MonoBehaviour
         yield return new WaitForSeconds(3f);
         Player1.SetActive(true);
         Player2.SetActive(true);
-
+        LevelSuccessLeft.SerachPlayer();    
+        LevelSuccessRight.SerachPlayer();
     }
 
     void PlayVisualEffect(GameObject block)

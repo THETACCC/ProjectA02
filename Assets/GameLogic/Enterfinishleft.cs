@@ -9,9 +9,15 @@ public class Enterfinishleft : MonoBehaviour
     private CharacterMovement movement;
     private void Start()
     {
+
+    }
+
+    public void SerachPlayer()
+    {
         player1 = GameObject.FindGameObjectWithTag("Player1");
         movement = player1.GetComponent<CharacterMovement>();
     }
+
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.tag == "Player1" || collision.gameObject.tag == "Player2")
