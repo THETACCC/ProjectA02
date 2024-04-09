@@ -82,9 +82,10 @@ public class Block : MonoBehaviour
     public GameObject outlineEffectOBJ;
 
     //Visual Effects
+    public int levelDimensions = 3;
     public GameObject onDestroyParticle;
     public MMFeedbacks init;
-
+    public MMFeedbacks init4x4;
     //player related
     public bool isDragging = false;
 
@@ -993,9 +994,19 @@ public class Block : MonoBehaviour
 
     public void PlayInit()
     {
-        if (init != null)
+
+
+        if (init != null && init4x4 != null)
         {
-            init?.PlayFeedbacks();
+            if(levelDimensions == 3)
+            {
+                init?.PlayFeedbacks();
+            }
+            else if(levelDimensions == 4)
+            {
+                init4x4?.PlayFeedbacks();
+            }
+
         }
     }
 

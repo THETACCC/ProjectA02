@@ -168,8 +168,11 @@ MonoBehaviour:
   inventoryManager: {fileID: 0}
   outlineEffect: {fileID: 0}
   outlineEffectOBJ: {fileID: 0}
+  levelDimensions: 3
   onDestroyParticle: {fileID: 0}
   init: {fileID: 1735033949821754722}
+  init4x4: {fileID: 3379087181535745074}
+  isDragging: 0
 --- !u!114 &4081722548178466651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,6 +447,10 @@ PrefabInstance:
       propertyPath: managedReferences[1390800891739897856].AnimateScaleTarget
       value: 
       objectReference: {fileID: 9109979730166448907}
+    - target: {fileID: 7649895747162469660, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
+      propertyPath: managedReferences[1390800891739897856].AnimateScaleTarget
+      value: 
+      objectReference: {fileID: 9109979730166448907}
     - target: {fileID: 8382052264459997127, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -493,6 +500,17 @@ PrefabInstance:
 --- !u!114 &1735033949821754722 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6690407766399269964, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
+  m_PrefabInstance: {fileID: 4957634457589801262}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3379087181535745074 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7649895747162469660, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
   m_PrefabInstance: {fileID: 4957634457589801262}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}

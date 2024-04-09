@@ -39,6 +39,9 @@ public class CharacterMovement : MonoBehaviour
     private bool collided = false;
     private bool counting = false;
 
+
+    //Animator
+    public Animator playerAnimator;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -85,7 +88,14 @@ public class CharacterMovement : MonoBehaviour
 
         // Log the magnitude of delta_pos for debugging
 
-
+        if(is_sliding)
+        {
+            playerAnimator.SetBool("isRunning", true);
+        }
+        else
+        {
+            playerAnimator.SetBool("isRunning", false);
+        }
 
     }
     private void FixedUpdate()

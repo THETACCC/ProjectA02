@@ -76,8 +76,11 @@ MonoBehaviour:
   inventoryManager: {fileID: 0}
   outlineEffect: {fileID: 0}
   outlineEffectOBJ: {fileID: 0}
+  levelDimensions: 3
   onDestroyParticle: {fileID: 0}
   init: {fileID: 8393522382592595210}
+  init4x4: {fileID: 4794981130302725210}
+  isDragging: 0
 --- !u!114 &5304078469508973617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,6 +510,10 @@ PrefabInstance:
       propertyPath: managedReferences[1390800891739897856].AnimateScaleTarget
       value: 
       objectReference: {fileID: 5304078469508973619}
+    - target: {fileID: 7649895747162469660, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
+      propertyPath: managedReferences[1390800891739897856].AnimateScaleTarget
+      value: 
+      objectReference: {fileID: 5304078469508973619}
     - target: {fileID: 8382052264459997127, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -553,6 +560,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
+--- !u!114 &4794981130302725210 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7649895747162469660, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
+  m_PrefabInstance: {fileID: 2928133915799906630}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &6697374190454138497 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8382052264459997127, guid: 86f02a4bd3dc3ce4899b21aeac453e67, type: 3}
