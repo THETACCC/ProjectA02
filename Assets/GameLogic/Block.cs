@@ -72,14 +72,18 @@ public class Block : MonoBehaviour
     public InventoryManager inventoryManager;
 
     //Get the map OBJ
+    [SerializeField]
     private GameObject LevelLeft;
+    [SerializeField]
     private GameObject LevelRight;
+    [SerializeField]
     private LevelRotation levelrotation;
-
+    private bool rotationFound = false;
 
     //Get the outline effect
     public Outline outlineEffect;
     public GameObject outlineEffectOBJ;
+    public bool allowOutline = true;
 
     //Visual Effects
     public int levelDimensions = 3;
@@ -101,16 +105,17 @@ public class Block : MonoBehaviour
         //instantiate outline effect
         if (outlineEffectOBJ == null)
         {
-            Transform childTransform = transform.Find("OutlineEffect");
-            outlineEffectOBJ = childTransform.gameObject;
-            outlineEffectOBJ.SetActive(true);
+            if(allowOutline)
+            {
+                Transform childTransform = transform.Find("OutlineEffect");
+                outlineEffectOBJ = childTransform.gameObject;
+                outlineEffectOBJ.SetActive(true);
+            }
+
         }
 
 
 
-        LevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
-        levelrotation = LevelLeft.GetComponent<LevelRotation>();
-        LevelRight = GameObject.FindGameObjectWithTag("LevelRight");
 
 
         //get the inventory manager at start
@@ -144,11 +149,14 @@ public class Block : MonoBehaviour
 
     private void Update()
     {
+        if(!rotationFound)
+        {
+            FindLevelRot();
+        }
 
 
 
-
-            UpdateMouseBehavior();
+        UpdateMouseBehavior();
 
         
 
@@ -1009,6 +1017,22 @@ public class Block : MonoBehaviour
 
         }
     }
+
+    public void FindLevelRot()
+    {
+        if(LevelLeft== null)
+        {
+            LevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
+            levelrotation = LevelLeft.GetComponent<LevelRotation>();
+            LevelRight = GameObject.FindGameObjectWithTag("LevelRight");
+        }
+        else
+        {
+            rotationFound = true;
+            return;
+        }
+    }
+
 
 
 }
