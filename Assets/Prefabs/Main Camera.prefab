@@ -163,7 +163,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9033388050637779461}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.1857002, z: 1.2456}
   m_ConstrainProportionsScale: 0
@@ -171,7 +171,7 @@ Transform:
   - {fileID: 9033388050339340924}
   m_Father: {fileID: 9033388051470850120}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 45, y: 45, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9033388050637779460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,7 +194,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 30
-    OrthographicSize: 55
+    OrthographicSize: 36.3
     NearClipPlane: 0.3
     FarClipPlane: 3000
     Dutch: 0
@@ -268,8 +268,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9033388051470850120}
+  - component: {fileID: 656011624978577418}
   - component: {fileID: 9033388051470850165}
-  - component: {fileID: 9033388051470850166}
   - component: {fileID: 9033388051470850167}
   - component: {fileID: 9033388051470850164}
   m_Layer: 0
@@ -297,6 +297,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 45, y: 45, z: 0}
+--- !u!114 &656011624978577418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9033388051470850121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6117fb175424e44892900e7880e20fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 0}
+  offset: {x: -50, y: 0, z: -50}
 --- !u!20 &9033388051470850165
 Camera:
   m_ObjectHideFlags: 0
@@ -307,7 +321,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.26731533, g: 0.4813051, b: 0.5849056, a: 0}
+  m_BackGroundColor: {r: 0.07058824, g: 0.24705882, b: 0.4, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -324,7 +338,7 @@ Camera:
   far clip plane: 3000
   field of view: 30
   orthographic: 1
-  orthographic size: 55
+  orthographic size: 36.3
   m_Depth: 17.4
   m_CullingMask:
     serializedVersion: 2
@@ -340,14 +354,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &9033388051470850166
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9033388051470850121}
-  m_Enabled: 1
 --- !u!114 &9033388051470850167
 MonoBehaviour:
   m_ObjectHideFlags: 0
