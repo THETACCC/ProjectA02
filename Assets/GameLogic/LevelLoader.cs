@@ -318,10 +318,10 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
 
         LevelLoader l = LevelLoader.instance;
         
-        //foreach (Vector3 c in l.blockPos.Keys)
-        //{
-        //    print(c);
-        //}
+        foreach (Vector3 c in l.blockPos.Keys)
+        {
+            print(c);
+        }
 
         //return l.blockPos.ContainsKey(cpos) && l.blockPos[cpos] != null;
         return l.blockPos.ContainsKey(cpos);

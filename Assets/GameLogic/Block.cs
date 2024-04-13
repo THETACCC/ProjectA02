@@ -662,10 +662,10 @@ public class Block : MonoBehaviour
                 {
                     if (LevelLoader.HasBlockOnCellPos(cpos))
                     {
-
+                        //LevelLoader.instance.OnBlockToInventory(cpos);
                         //When there are objects on the intended place position, put the block back to the inventory
                         inventoryManager.ItemPicked(this.gameObject);
-
+                        Debug.Log("ItemPicked");
                     }
                     else
                     {
@@ -760,6 +760,11 @@ public class Block : MonoBehaviour
                     Debug.Log("Put Block Back");
                 }
 
+                //if(this.gameObject == null)
+                //{
+                 //   return;
+                //}
+
                 SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                 {
                     transform.position = Vector3.Lerp(npos, drag_start_pos, f);
@@ -828,6 +833,7 @@ public class Block : MonoBehaviour
 
     public void instantiateBlocks()
     {
+        Debug.Log("Before test");
         Vector3 cpos = LevelLoader.WorldToCellPos(this.transform.position);
         Vector3 npos = this.transform.position;
         //Block a = this;
@@ -876,12 +882,53 @@ public class Block : MonoBehaviour
         B_blocka.cld_0.SetActive(true);
         B_blockb.cld_0.SetActive(true);
 
-
+ 
 
         //Get the outline stuff
         //B_blockb.outlineEffect = GetComponentInChildren<Outline>();
 
 
+
+
+
+
+
+
+        if (!LevelLoader.HasBlockOnCellPos(cpos) && !LevelLoader.HasBlockOnCellPos(bcpos))
+        {
+            //If there is no blocks in the position, then make the A block
+            LevelLoader.instance.OnMoveBlockFromSelection(b.GetComponent<Block>(), LevelLoader.WorldToCellPos(drag_start_pos), cpos);
+            UpdateMapCollider();
+            if (b == null)
+            {
+                return;
+            }
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            {
+                b.transform.position = Vector3.Lerp(npos, cpos, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
+
+            Vector3 nscale = b.transform.localScale;
+            SKUtils.StopProcedure(b.gameObject.GetInstanceID() + "mouse_over");
+            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
+            {
+                b.transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
+            }, null, b.gameObject.GetInstanceID() + "mouse_over");
+        }
+        else
+        {
+            //Put it back to the inventory if there is a block in it's way
+            if (blockb != null)
+            {
+                Debug.Log("Releas POS");
+                LevelLoader.instance.OnBlockToInventory(cpos);
+                inventoryManager.ItemPicked(blocka);
+                Destroy(blockb);
+                return;
+            }
+        }
+
+        
         if (!LevelLoader.HasBlockOnCellPos(bcpos))
         {
             //If there is no blocks in the position, then make the B block
@@ -904,43 +951,13 @@ public class Block : MonoBehaviour
             //Put it back to the inventory if there is a block in it's way
             if (blockb != null)
             {
+                Debug.Log("Releas POS");
+                LevelLoader.instance.OnBlockToInventory(cpos);
                 inventoryManager.ItemPicked(blocka);
                 Destroy(blockb);
             }
         }
-
-
-
-
-
-        if (!LevelLoader.HasBlockOnCellPos(cpos))
-        {
-            //If there is no blocks in the position, then make the A block
-            LevelLoader.instance.OnMoveBlockFromSelection(b.GetComponent<Block>(), LevelLoader.WorldToCellPos(drag_start_pos), cpos);
-            UpdateMapCollider();
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                b.transform.position = Vector3.Lerp(npos, cpos, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-
-            Vector3 nscale = b.transform.localScale;
-            SKUtils.StopProcedure(b.gameObject.GetInstanceID() + "mouse_over");
-            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
-            {
-                b.transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
-            }, null, b.gameObject.GetInstanceID() + "mouse_over");
-        }
-        else
-        {
-            //Put it back to the inventory if there is a block in it's way
-            if (blockb != null)
-            {
-                inventoryManager.ItemPicked(blocka);
-                Destroy(blockb);
-            }
-        }
-
-
+        
     }
 
 

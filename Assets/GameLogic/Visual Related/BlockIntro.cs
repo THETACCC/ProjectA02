@@ -11,11 +11,16 @@ public class BlockIntro : MonoBehaviour
     public Enterfinishleft LevelSuccessLeft;
     public EnterFinishRight LevelSuccessRight;
 
-
+    public LevelLoader LevelLoader;
 
     // Start is called before the first frame update
     void Start()
     {
+        GameObject LevelLoaderOBJ = GameObject.FindGameObjectWithTag("LevelLoader");
+        if (LevelLoaderOBJ != null )
+        {
+            LevelLoader = LevelLoaderOBJ.GetComponent<LevelLoader>();   
+        }    
         StartCoroutine(PlayEffectsSequentially());
         StartCoroutine(EnablePlayer());
     }
@@ -40,9 +45,11 @@ public class BlockIntro : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         Player1.SetActive(true);
+
         Player2.SetActive(true);
         LevelSuccessLeft.SerachPlayer();    
         LevelSuccessRight.SerachPlayer();
+        LevelLoader.LoadCharacter();
     }
 
     void PlayVisualEffect(GameObject block)
