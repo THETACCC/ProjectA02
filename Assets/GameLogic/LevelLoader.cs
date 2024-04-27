@@ -54,7 +54,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         Debug.Log(center);
         //center.x = (mapLeft.position.x + mapRight.position.x) / 2.0f;
         LoadMap();
-        LoadCharacter();
+        //LoadCharacter();
     }
     public void LoadMap()
     {
