@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 4332675529609384697}
   - component: {fileID: 6407909688324840181}
   - component: {fileID: 1759949098}
-  - component: {fileID: 6017560640566539047}
+  - component: {fileID: 7835021450925289497}
   m_Layer: 9
   m_Name: Block_102
   m_TagString: Block
@@ -98,8 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3649f2395c0ff648995bfb5a5763b43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 3
-  draggable: 1
+  type: 2
+  draggable: 0
   cld_0: {fileID: 0}
   cld_1: {fileID: 0}
   mouse_drag: 0
@@ -121,8 +121,12 @@ MonoBehaviour:
   DragsuccessB: 0
   inventoryManagerOBJ: {fileID: 0}
   inventoryManager: {fileID: 0}
+  LevelLeft: {fileID: 0}
+  LevelRight: {fileID: 0}
+  levelrotation: {fileID: 0}
   outlineEffect: {fileID: 0}
   outlineEffectOBJ: {fileID: 0}
+  allowOutline: 0
   levelDimensions: 3
   onDestroyParticle: {fileID: 0}
   init: {fileID: 4019472803510485095}
@@ -160,7 +164,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!65 &6017560640566539047
+--- !u!65 &7835021450925289497
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -169,10 +173,10 @@ BoxCollider:
   m_GameObject: {fileID: 4332675529609384699}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 11.83567, y: 3.995648, z: 11.74249}
-  m_Center: {x: -0.0028190613, y: 2.038531, z: 0.053557873}
+  m_Size: {x: 12.379757, y: 4.7374253, z: 11.660108}
+  m_Center: {x: -0.16548824, y: 1.8687127, z: -0.06558561}
 --- !u!1 &4332675530037461832
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,13 +277,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7627678691971122723, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 236.32574
+      objectReference: {fileID: 0}
+    - target: {fileID: 7627678691971122723, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 236.32571
+      objectReference: {fileID: 0}
+    - target: {fileID: 7627678691971122723, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 236.32574
+      objectReference: {fileID: 0}
+    - target: {fileID: 7627678691971122723, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 867
+      objectReference: {fileID: 0}
+    - target: {fileID: 7627678691971122723, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -716
+      objectReference: {fileID: 0}
     - target: {fileID: 8231875795099761035, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8231875795099761035, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
       propertyPath: m_VersionIndex
-      value: 301
+      value: 355
       objectReference: {fileID: 0}
     - target: {fileID: 9158804968153805734, guid: a3013da1c49b86f47a68c77b10bd0a10, type: 3}
       propertyPath: m_Name
@@ -348,8 +372,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3965161521363525916, guid: 4713f4df42144db4e9ceda715571ab69, type: 3}
+      propertyPath: Parent
+      value: 
+      objectReference: {fileID: 4332675529609384699}
+    - target: {fileID: 3965161521363525916, guid: 4713f4df42144db4e9ceda715571ab69, type: 3}
       propertyPath: blockCld
       value: 
+      objectReference: {fileID: 7835021450925289497}
+    - target: {fileID: 3965161521363525916, guid: 4713f4df42144db4e9ceda715571ab69, type: 3}
+      propertyPath: elevation
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4713f4df42144db4e9ceda715571ab69, type: 3}
