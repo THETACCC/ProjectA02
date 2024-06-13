@@ -153,7 +153,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         }
         Debug.Log(blockposLeft[0,1]);
         //align block selection area
-        AlignBlockSelection();
+        //AlignBlockSelection();
     }
     public void AlignBlockSelection()
     {

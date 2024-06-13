@@ -36,7 +36,7 @@ public class LevelController : SKMonoSingleton<LevelController>
         
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            levelLoader.AlignBlockSelection();
+            //levelLoader.AlignBlockSelection();
             if (levelLoader.checkindex == 0)
             {
                 Debug.Log("pressed- Go");
