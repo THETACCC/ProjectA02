@@ -57,6 +57,11 @@ public static class GlobalLibrary
 
 
         }},
+        {SceneTitle.Level1_10, new SceneSpecifics()
+        {
+
+
+        }},
         {SceneTitle.Chapter1World, new SceneSpecifics()
         {
 
@@ -72,7 +77,7 @@ public static class GlobalLibrary
     public static readonly Dictionary<SceneCategory, SceneTitle[]> G_SCENE_CATEGORY_DICT = new Dictionary<SceneCategory, SceneTitle[]>
     {
         {SceneCategory.Common, new SceneTitle[]{SceneTitle.MainMenu,SceneTitle.Level1_1} },
-        {SceneCategory.Chapter1, new SceneTitle[]{SceneTitle.Level1_1, SceneTitle.Level1_2, SceneTitle.Level1_3, SceneTitle.Level1_4, SceneTitle.Level1_5, SceneTitle.Level1_6, SceneTitle.Level1_7, SceneTitle.Level1_8, SceneTitle.Level1_9, SceneTitle.Chapter1World } },
+        {SceneCategory.Chapter1, new SceneTitle[]{SceneTitle.Level1_1, SceneTitle.Level1_2, SceneTitle.Level1_3, SceneTitle.Level1_4, SceneTitle.Level1_5, SceneTitle.Level1_6, SceneTitle.Level1_7, SceneTitle.Level1_8, SceneTitle.Level1_9, SceneTitle.Level1_10, SceneTitle.Chapter1World } },
 
     };
 
@@ -87,6 +92,7 @@ public static class GlobalLibrary
         {SceneTitle.Level1_7, "1-7" },
         {SceneTitle.Level1_8, "1-8" },
         {SceneTitle.Level1_9, "1-9" },
+        {SceneTitle.Level1_10, "1-10" },
         {SceneTitle.Chapter1World, "Chapter1World" }
     };
 
