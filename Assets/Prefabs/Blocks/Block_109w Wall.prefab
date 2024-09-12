@@ -339,9 +339,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3254015091543437192}
   - component: {fileID: 3254015091543437195}
-  - component: {fileID: 2263305804555380732}
   - component: {fileID: 1426460785}
   - component: {fileID: 1612651196981463858}
+  - component: {fileID: 3222332540900288009}
   m_Layer: 9
   m_Name: Block_109w Wall
   m_TagString: Block
@@ -418,18 +418,6 @@ MonoBehaviour:
   init: {fileID: 1899450050885315760}
   init4x4: {fileID: 3219169994390644192}
   isDragging: 0
---- !u!114 &2263305804555380732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3254015091543437193}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5fd016f3871c174289ba3cd6300c306, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &1426460785
 Animator:
   serializedVersion: 4
@@ -463,6 +451,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemScriptableOBJ: {fileID: 11400000, guid: 6bdae2dfddd0fe443b72f68ac2773cee, type: 2}
+--- !u!65 &3222332540900288009
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3254015091543437193}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 12.463651, y: 11.477787, z: 12.473362}
+  m_Center: {x: 0.0403924, y: 5.2388926, z: 0.009372711}
 --- !u!1 &4695564907851384246
 GameObject:
   m_ObjectHideFlags: 0

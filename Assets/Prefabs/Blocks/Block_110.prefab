@@ -266,9 +266,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6857147303061184713}
   - component: {fileID: 6857147303061184714}
-  - component: {fileID: 284641053599313514}
   - component: {fileID: 1942245321}
   - component: {fileID: 6059049136823774583}
+  - component: {fileID: 2692915147035211350}
   m_Layer: 9
   m_Name: Block_110
   m_TagString: Block
@@ -332,6 +332,9 @@ MonoBehaviour:
   DragsuccessB: 0
   inventoryManagerOBJ: {fileID: 0}
   inventoryManager: {fileID: 0}
+  LevelLeft: {fileID: 0}
+  LevelRight: {fileID: 0}
+  levelrotation: {fileID: 0}
   outlineEffect: {fileID: 0}
   outlineEffectOBJ: {fileID: 0}
   allowOutline: 1
@@ -340,18 +343,6 @@ MonoBehaviour:
   init: {fileID: 3805887339131949200}
   init4x4: {fileID: 153618897977743808}
   isDragging: 0
---- !u!114 &284641053599313514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6857147303061184712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5fd016f3871c174289ba3cd6300c306, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &1942245321
 Animator:
   serializedVersion: 4
@@ -385,6 +376,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemScriptableOBJ: {fileID: 11400000, guid: fe016e940b2205d4e8920b3113a9985d, type: 2}
+--- !u!65 &2692915147035211350
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6857147303061184712}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 12.463651, y: 11.477787, z: 12.473362}
+  m_Center: {x: 0.0403924, y: 5.2388926, z: 0.009372711}
 --- !u!1 &6857147303235243619
 GameObject:
   m_ObjectHideFlags: 0

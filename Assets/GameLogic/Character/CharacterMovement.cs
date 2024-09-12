@@ -44,6 +44,8 @@ public class CharacterMovement : MonoBehaviour
     public Animator playerAnimator;
     void Start()
     {
+        GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
+        controller = controllerOBJ.GetComponent<LevelController>();
         rb = GetComponent<Rigidbody>();
         visualTF = transform.Find("Visual");
         upperCld = SKCldResponderManager.GetResponder("PLAYER_UPPER_CLD");
@@ -150,10 +152,10 @@ public class CharacterMovement : MonoBehaviour
 
                 rb.velocity = new Vector3(visualTF.forward.x * moveSpeed * cur_spd_boost, rb.velocity.y, visualTF.forward.z * moveSpeed * cur_spd_boost);
 
-                if (cur_sliding_time > .5f)
+                if (cur_sliding_time > .25f)
                 {
 
-                    if (delta_pos.magnitude < 0.01f)
+                    if (delta_pos.magnitude < .1f) //This determines how fast the player will consider itself stopped moving
                     {
                         Debug.Log("stop");
                         counting = false;
@@ -176,7 +178,7 @@ public class CharacterMovement : MonoBehaviour
     private void RotateTo(Vector3 rot)
     {
         Vector3 orot = visualTF.rotation.eulerAngles;
-        SKUtils.StartProcedure(SKCurve.QuadraticDoubleIn, 0.2f, (f) =>
+        SKUtils.StartProcedure(SKCurve.QuadraticDoubleIn, 0.1f, (f) =>
         {
             visualTF.rotation = Quaternion.Euler(Vector3.Lerp(orot, rot, f));
         });
@@ -221,7 +223,7 @@ public class CharacterMovement : MonoBehaviour
     {
         isRotating = true;
 
-        float rotationSpeed = 10f;
+        float rotationSpeed = 20f; //Determines how fast the player will turn
         float targetYRotation = visualTF.eulerAngles.y + 90 * axis_x;
 
         // Normalize the target rotation to be within 0 to 360 degrees

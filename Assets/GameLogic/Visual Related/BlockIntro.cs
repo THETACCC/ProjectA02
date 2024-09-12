@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class BlockIntro : MonoBehaviour
 {
@@ -16,6 +17,13 @@ public class BlockIntro : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //get player and disable player for visual effects
+        Player1 = GameObject.FindGameObjectWithTag("Player1");
+        Player2 = GameObject.FindGameObjectWithTag("Player2");
+        Player1.SetActive(false);
+        Player2.SetActive(false);
+
+
         GameObject LevelLoaderOBJ = GameObject.FindGameObjectWithTag("LevelLoader");
         if (LevelLoaderOBJ != null )
         {
