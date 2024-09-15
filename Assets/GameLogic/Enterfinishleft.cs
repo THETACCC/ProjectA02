@@ -7,6 +7,10 @@ public class Enterfinishleft : MonoBehaviour
     public bool leftreached = false;
     private GameObject player1;
     private CharacterMovement movement;
+
+    private PlayerWinVisual playerWinVisual;
+    private GameObject PlayerWin;
+
     private void Start()
     {
 
@@ -16,6 +20,8 @@ public class Enterfinishleft : MonoBehaviour
     {
         player1 = GameObject.FindGameObjectWithTag("Player1");
         movement = player1.GetComponent<CharacterMovement>();
+        PlayerWin = GameObject.FindGameObjectWithTag("PlayerWinVisual2");
+        playerWinVisual = PlayerWin.GetComponent<PlayerWinVisual>();
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -25,6 +31,7 @@ public class Enterfinishleft : MonoBehaviour
             movement.canmove = false;
             movement.is_sliding = false;
             leftreached = true;
+            playerWinVisual.isPlayerWin = true;
         }
     }
 }

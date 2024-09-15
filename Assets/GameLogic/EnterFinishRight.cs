@@ -9,6 +9,8 @@ public class EnterFinishRight : MonoBehaviour
     private GameObject player2;
     private CharacterMovement movement;
 
+    private PlayerWinVisual playerWinVisual;
+    private GameObject PlayerWinVisual2;
     private void Start()
     {
 
@@ -17,6 +19,8 @@ public class EnterFinishRight : MonoBehaviour
     {
         player2 = GameObject.FindGameObjectWithTag("Player2");
         movement = player2.GetComponent<CharacterMovement>();
+        PlayerWinVisual2 = GameObject.FindGameObjectWithTag("PlayerWinVisual2");
+        playerWinVisual = PlayerWinVisual2.GetComponent<PlayerWinVisual>();
     }
     private void OnTriggerEnter(Collider collision)
     {
@@ -25,6 +29,7 @@ public class EnterFinishRight : MonoBehaviour
             movement.canmove = false;
             movement.is_sliding = false;
             rightreached = true;
+            playerWinVisual.isPlayerWin = true;
         }
     }
 }
