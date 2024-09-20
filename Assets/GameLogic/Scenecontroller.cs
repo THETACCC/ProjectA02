@@ -75,7 +75,8 @@ public enum SceneTitle
     Level1_8 = 8,
     Level1_9 = 9,
     Level1_10 = 10,
-    Chapter1World = 11
+    Chapter1World = 11,
+    Level1_1_MapTest = 12
 }
 
 public enum SceneCategory

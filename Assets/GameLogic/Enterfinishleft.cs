@@ -20,7 +20,7 @@ public class Enterfinishleft : MonoBehaviour
     {
         player1 = GameObject.FindGameObjectWithTag("Player1");
         movement = player1.GetComponent<CharacterMovement>();
-        PlayerWin = GameObject.FindGameObjectWithTag("PlayerWinVisual2");
+        PlayerWin = GameObject.FindGameObjectWithTag("PlayerWinVisual");
         playerWinVisual = PlayerWin.GetComponent<PlayerWinVisual>();
     }
 

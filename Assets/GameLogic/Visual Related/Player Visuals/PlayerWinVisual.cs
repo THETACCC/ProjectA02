@@ -74,7 +74,7 @@ public class PlayerWinVisual : MonoBehaviour
 public MeshRenderer myRenderer;
 private Material myMaterial;
 
-public bool isPlayerWin = false;     // Set this to true when the player wins
+public bool isPlayerWin = false; // Set this to true when the player wins
 private bool isEffectPlayed = false; // This becomes true after the effect is completed
 private bool isEffectReversed = false;
     private bool isFeedbackPlayed = false;

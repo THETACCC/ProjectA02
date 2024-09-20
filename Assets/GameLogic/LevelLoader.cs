@@ -98,7 +98,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
                 blockposRight[i, j] = pos;
             }
         }
-
+        /*
         //align blocks
         blocks = GameObject.FindGameObjectsWithTag(CommonReference.TAG_BLOCK);
         BLOCK_SCALE_MAP = Vector3.one * BLOCK_SCALE_RATIO / levelDimensions.x;
@@ -154,6 +154,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         Debug.Log(blockposLeft[0,1]);
         //align block selection area
         //AlignBlockSelection();
+        */
     }
     public void AlignBlockSelection()
     {

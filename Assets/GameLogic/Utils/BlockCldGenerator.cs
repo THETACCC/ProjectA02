@@ -13,8 +13,10 @@ public class BlockCldGenerator : MonoBehaviour
     public static Vector3[] blockRefCenters = new Vector3[9];
 
     private Vector3 base_center = new Vector3(0,0.73f,0);
+
+    //private Vector3 base_center = new Vector3(0,50f,0);
     //private Vector3 base_size = new Vector3(11.8f, 2.46f, 11.8f);
-    private Vector3 base_size = new Vector3(2, 12f, 2);
+    private Vector3 base_size = new Vector3(10, 2f, 10);
     private void Awake()
     {
         block = GetComponent<Block>();  
