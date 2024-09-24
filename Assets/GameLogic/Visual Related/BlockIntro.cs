@@ -31,6 +31,10 @@ public class BlockIntro : MonoBehaviour
         }    
         StartCoroutine(PlayEffectsSequentially());
         StartCoroutine(EnablePlayer());
+        foreach (GameObject block in mblocks)
+        {
+            block.transform.localScale = Vector3.zero;
+        }
     }
 
     IEnumerator PlayEffectsSequentially()

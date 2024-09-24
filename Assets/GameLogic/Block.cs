@@ -44,8 +44,8 @@ public class Block : MonoBehaviour
     [SerializeField] public GameObject blockb;
     [SerializeField] private Block B_blocka;
     [SerializeField] private Block B_blockb;
-    [SerializeField] private float offset;
-    [SerializeField] private float offsetz;
+     private float offset = 60.1f;
+    private float offsetz =  -60.1f;
     [SerializeField] private bool linked = false;
     private Vector3 bcpos;
     private Vector3 bnpos;
@@ -104,6 +104,7 @@ public class Block : MonoBehaviour
 
     private void Start()
     {
+
 
 
         //instantiate outline effect
@@ -825,7 +826,14 @@ public class Block : MonoBehaviour
                 if(!alignment.isBlocked )
                 {
                     myAlignedBrick = alignment;
-                    transform.position = nearestBlock.transform.position;
+
+                    //This is the code that gives the transform a smooth effect
+                    SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                    {
+                        transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                    }, null, gameObject.GetInstanceID() + "drag_success");
+
+                    //transform.position = nearestBlock.transform.position;
                     alignment.isBlocked = true;
                 }
                 else
@@ -987,8 +995,8 @@ public class Block : MonoBehaviour
 
 
         //The initiation of block link
-        offset = dist;
-        offsetz = distz;
+        //offset = dist;
+        //offsetz = distz;
         blocka = a.gameObject;
         blockb = b.gameObject;
         B_blocka = this.GetComponent<Block>();
@@ -1202,7 +1210,12 @@ public class Block : MonoBehaviour
             if (!alignment.isBlocked)
             {
                 myAlignedBrick = alignment;
-                transform.position = nearestBlock.transform.position;
+                //This is the code that gives the transform a smooth effect
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                //transform.position = nearestBlock.transform.position;
                 alignment.isBlocked = true;
             }
             else
@@ -1282,7 +1295,7 @@ public class Block : MonoBehaviour
             float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
             BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 10f)
+            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 5f)
             {
                 nearestDistanceA = distanceA;
                 nearestBlockA = levelBrickA;
@@ -1294,7 +1307,7 @@ public class Block : MonoBehaviour
             float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
             BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 10f)
+            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 5f)
             {
                 nearestDistanceB = distanceB;
                 nearestBlockB = levelBrickB;
@@ -1309,45 +1322,54 @@ public class Block : MonoBehaviour
             {
                 B_blocka.myAlignedBrick = alignmentA;
                 B_blockb.myAlignedBrick = alignmentB;
-                blocka.transform.position = nearestBlockA.transform.position;
-                blockb.transform.position = nearestBlockB.transform.position;
+
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, nearestBlockA.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, nearestBlockB.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                //blocka.transform.position = nearestBlockA.transform.position;
+                //blockb.transform.position = nearestBlockB.transform.position;
                 alignmentA.isBlocked = true;
                 alignmentB.isBlocked = true;
                 Debug.Log("Put Block");
             }
             else
             {
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
 
-                blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-                blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                //blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
+                //blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
                 B_blockb.myAlignedBrick.isBlocked = true;
                 B_blockb.myAlignedBrick.isBlocked = true;
 
             }
         }
-        else if (nearestBlockA == null && nearestBlockB != null)
+        else 
         {
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            {
+                blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
 
-            blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-            blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
-            B_blockb.myAlignedBrick.isBlocked = true;
-            B_blockb.myAlignedBrick.isBlocked = true;
-
-        }
-        else if (nearestBlockA != null && nearestBlockB == null)
-        {
-
-            blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-            blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
-            B_blockb.myAlignedBrick.isBlocked = true;
-            B_blockb.myAlignedBrick.isBlocked = true;
-
-        }
-        else if (nearestBlockA == null && nearestBlockB == null)
-        {
-
-            blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-            blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            {
+                blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
+            //blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
+            //blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
             B_blockb.myAlignedBrick.isBlocked = true;
             B_blockb.myAlignedBrick.isBlocked = true;
 
