@@ -115,9 +115,6 @@ public class Block : MonoBehaviour
     {
         StartCoroutine(ExecuteAfterDelay(0.1f));
 
-
-
-
         cld_0 = transform.Find("CLD_0")?.gameObject;
         cld_1 = transform.Find("CLD_1")?.gameObject;
         cld_0.tag = "Wall";
@@ -204,8 +201,10 @@ public class Block : MonoBehaviour
             gameLevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
             gameLevelRight = GameObject.FindGameObjectWithTag("LevelRight");
 
-            offset = Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) - 24.7521f;
-            offsetz = -Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) + 24.7521f;
+            offset = Mathf.Abs(gameLevelLeft.transform.position.x - gameLevelRight.transform.position.x);
+            offsetz = -Mathf.Abs(gameLevelLeft.transform.position.z - gameLevelRight.transform.position.z);
+            //offset = Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) - 24.7521f;
+            //offsetz = -Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) + 24.7521f;
             Debug.Log(offset);
         }
     }
