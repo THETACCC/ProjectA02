@@ -1,4 +1,5 @@
 using SKCell;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,7 +12,10 @@ using MoreMountains.Feedbacks;
 public class Block : MonoBehaviour
 {
     static float MOUSE_OVER_SCALE = 1.15f;
+    //This is the type of the block
     public BlockType type;
+    //This determines whether the block is in the inventory area
+    public bool isInventory = false;
     public bool draggable = true;
 
     public GameObject cld_0, cld_1;
@@ -97,6 +101,11 @@ public class Block : MonoBehaviour
     //New Method for Block Alignment
     public BlockAlignment myAlignedBrick;
     private bool isOutofBound_Mirror = false;
+
+    //Regular Block offest Calculations
+    private GameObject gameLevelLeft;
+    private GameObject gameLevelRight;
+
     private void Awake()
     {
 
@@ -104,9 +113,19 @@ public class Block : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(ExecuteAfterDelay(0.1f));
 
 
 
+
+        cld_0 = transform.Find("CLD_0")?.gameObject;
+        cld_1 = transform.Find("CLD_1")?.gameObject;
+        cld_0.tag = "Wall";
+        cld_1.tag = "Wall";
+        subBlock = transform.Find("SubBlock");
+        effectContainer = subBlock.Find("Effects");
+        FX_HOVER = effectContainer.Find("FX_HOVER").gameObject;
+        
         //instantiate outline effect
         if (outlineEffectOBJ == null)
         {
@@ -119,10 +138,6 @@ public class Block : MonoBehaviour
 
         }
 
-
-
-
-
         //get the inventory manager at start
         inventoryManagerOBJ = GameObject.FindGameObjectWithTag("Inventory");
         inventoryManager = inventoryManagerOBJ.GetComponent<InventoryManager>();
@@ -134,64 +149,79 @@ public class Block : MonoBehaviour
         GameObject level_loader = GameObject.Find("LevelLoader");
         levelLoader = level_loader.GetComponent<LevelLoader>();
 
-
         GameObject level_controller = GameObject.Find("LevelController");
         controller = level_controller.GetComponent<LevelController>();
 
 
 
-        cld_0 = transform.Find("CLD_0")?.gameObject;
-        cld_1 = transform.Find("CLD_1")?.gameObject;
-        cld_0.tag = "Wall";
-        cld_1.tag = "Wall";
-        subBlock = transform.Find("SubBlock");
-        effectContainer = subBlock.Find("Effects");
-        FX_HOVER = effectContainer.Find("FX_HOVER").gameObject;
-
         UpdateMapCollider();
         oScale = transform.localScale;
+
+        //Align Blocks
+        if(isInventory)
+        {
+            GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
+            GameObject nearestBlock = null;
+            float nearestDistance = Mathf.Infinity;
+            foreach (GameObject levelBrick in inventoryBricks)
+            {
+                float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
+                BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+                // Check if this block is closer than the previously found ones and within the threshold
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearestBlock = levelBrick;
+                }
+            }
+
+            // Align with the nearest block if it's within range
+            if (nearestBlock != null)
+            {
+
+                BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
+                myAlignedBrick = alignment;
+                alignment.isBlocked = true;
+
+            }
+        }
+
+
+    }
+    IEnumerator ExecuteAfterDelay(float delay)
+    {
+        // Wait for the specified amount of time (0.1 seconds)
+        yield return new WaitForSeconds(delay);
+
+        // Call the function you want to execute after the delay
+        CalculateOffset();
     }
 
+    private void CalculateOffset()
+    {
+        if (type == BlockType.Regular)
+        {
+            gameLevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
+            gameLevelRight = GameObject.FindGameObjectWithTag("LevelRight");
+
+            offset = Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) - 24.7521f;
+            offsetz = -Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) + 24.7521f;
+            Debug.Log(offset);
+        }
+    }
     private void Update()
     {
-        if(!rotationFound)
+
+        if (!rotationFound)
         {
             FindLevelRot();
         }
 
-
-
         UpdateMouseBehavior();
 
-        
+        //Controlls the Block Rotation When Right Clicked
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
 
-        //enabled for now to allow mouse input
-
-
-
-        //else
-        //{
-        //    FX_HOVER.SetActive(false);
-        //}
-
-
-        //This is the code for controlling the block rotation with the level rotation, to make sure that the block is rotating after the level rotated, and do not rotate while the level is rotating
-        if (!levelrotation.isRotating)
-        {
-
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
-        }
-        else
-        {
-        }
-
-
-        //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(rotate), Time.deltaTime* rotatespeed);
-        //check if the block is end
-        if (type == BlockType.End)
-        {
-
-        }
     }
 
     public void OnCollisionEnter(Collision collision)
@@ -236,6 +266,7 @@ public class Block : MonoBehaviour
 
             if (type == BlockType.Regular)
             {
+                Debug.Log("Rotating");
                 B_blocka.rotate += new Vector3(0, 90, 0);
                 B_blocka.rotated = true;
                 B_blockb.rotate += new Vector3(0, 90, 0);
@@ -297,171 +328,225 @@ public class Block : MonoBehaviour
 
     private void _OnMouseEnter()
     {
-        if((type == BlockType.Regular))
+        Debug.Log(myAlignedBrick);
+        if (!isInventory)
         {
-            if(instantiated)
+            if ((type == BlockType.Regular))
             {
+                if (instantiated)
+                {
 
                     B_blocka.outlineEffectOBJ.SetActive(true);
                     B_blockb.outlineEffectOBJ.SetActive(true);
+
+                }
+            }
+            else
+            {
+
+                outlineEffectOBJ.SetActive(true);
+
 
             }
         }
         else
         {
-
-                outlineEffectOBJ.SetActive(true);
-
-            
+            outlineEffectOBJ.SetActive(true);
         }
+
         //FX_HOVER.SetActive(true);
     }
 
     private void _OnMouseExit()
     {
-        if ((type == BlockType.Regular))
+        if (!isInventory)
         {
-            if (instantiated)
+            if ((type == BlockType.Regular))
             {
+                if (instantiated)
+                {
 
                     B_blocka.outlineEffectOBJ.SetActive(false);
                     B_blockb.outlineEffectOBJ.SetActive(false);
                     //outlineEffect.enabled = false;
 
-                
+
+                }
+            }
+            else
+            {
+
+                outlineEffectOBJ.SetActive(false);
+
             }
         }
         else
         {
-
-                outlineEffectOBJ.SetActive(false);
-            
+            outlineEffectOBJ.SetActive(false);
         }
         //FX_HOVER.SetActive(false);
     }
 
     public void _OnStartDrag()
     {
-        if (type == BlockType.Regular)
+        if (!isInventory)
         {
-            //These controlls the information that is instantiated for both blocks when dragging
-            if (instantiated)
+            if (type == BlockType.Regular)
             {
-                //disable the collision box
-                B_blocka.cld_0.gameObject.SetActive(false);
-                B_blocka.cld_1.gameObject.SetActive(false);
-                B_blockb.cld_0.gameObject.SetActive(false);
-                B_blockb.cld_1.gameObject.SetActive(false);
+                //These controlls the information that is instantiated for both blocks when dragging
+                if (instantiated)
+                {
+                    //disable the collision box
+                    B_blocka.cld_0.gameObject.SetActive(false);
+                    B_blocka.cld_1.gameObject.SetActive(false);
+                    B_blockb.cld_0.gameObject.SetActive(false);
+                    B_blockb.cld_1.gameObject.SetActive(false);
+                    if (myAlignedBrick != null)
+                    {
+                        B_blocka.myAlignedBrick.isBlocked = false;
+                        B_blockb.myAlignedBrick.isBlocked = false;
+                    }
+                    if (this == B_blocka) // If this is the original block
+                    {
+                        float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                        drag_start_pos = transform.position;
+                        BlockA_Drag_Start_Pos = blocka.transform.position;
+                        BlockB_Drag_Start_Pos = blockb.transform.position;
+                        B_blockb.BlockA_Drag_Start_Pos = blocka.transform.position;
+                        B_blockb.BlockB_Drag_Start_Pos = blockb.transform.position;
+                        is_drag_start_in_select_area = false;
+                        moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                        drag_offset = transform.position - moveposition;
+                        drag_offset.y = 0;
+
+
+                        bool isLeft = blockb.transform.position.x < LevelLoader.center.x;
+                        B_blockb.drag_start_pos = blockb.transform.position;
+                        B_blockb.is_drag_start_in_select_area = false;
+                        B_blockb.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
+                        B_blockb.drag_offset = blockb.transform.position - B_blockb.moveposition;
+                        B_blockb.drag_offset.y = 0;
+
+                    }
+                    else if (this == B_blockb)
+                    {
+                        float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                        drag_start_pos = transform.position;
+                        BlockA_Drag_Start_Pos = blocka.transform.position;
+                        BlockB_Drag_Start_Pos = blockb.transform.position;
+                        B_blocka.BlockA_Drag_Start_Pos = blocka.transform.position;
+                        B_blocka.BlockB_Drag_Start_Pos = blockb.transform.position;
+                        is_drag_start_in_select_area = false;
+                        moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                        drag_offset = transform.position - moveposition;
+                        drag_offset.y = 0;
+
+
+                        bool isLeft = blocka.transform.position.x < LevelLoader.center.x;
+                        B_blocka.drag_start_pos = blocka.transform.position;
+                        B_blocka.is_drag_start_in_select_area = false;
+                        B_blocka.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
+                        B_blocka.drag_offset = blocka.transform.position - B_blocka.moveposition;
+                        B_blocka.drag_offset.y = 0;
+
+                    }
+
+                    if (this == B_blocka)
+                    {
+                        Debug.Log("Dragged Block A");
+                    }
+                    else
+                    {
+                        Debug.Log("Dragged Block B");
+                    }
+                    if (this.gameObject == blocka)
+                    {
+                        Debug.Log("Dragged Block A OBJ");
+                    }
+                    else
+                    {
+                        Debug.Log("Dragged Block B OBJ");
+                    }
+                }
+                else
+                {
+
+
+
+                    drag_start_pos = transform.position;
+                    is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
+                    float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                    moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                    drag_offset = transform.position - moveposition;
+                    drag_offset.y = 0;
+                    //disable collision
+                    cld_0.gameObject.SetActive(false);
+                    cld_1.gameObject.SetActive(false);
+                }
+
+
+            }
+            else if (type == BlockType.Free)
+            {
                 if (myAlignedBrick != null)
                 {
-                    B_blocka.myAlignedBrick.isBlocked = false;
-                    B_blockb.myAlignedBrick.isBlocked = false;
+                    myAlignedBrick.isBlocked = false;
                 }
-                if (this == B_blocka) // If this is the original block
-                {
-                    float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
-                    drag_start_pos = transform.position;
-                    BlockA_Drag_Start_Pos = blocka.transform.position;
-                    BlockB_Drag_Start_Pos = blockb.transform.position;
-                    B_blockb.BlockA_Drag_Start_Pos = blocka.transform.position;
-                    B_blockb.BlockB_Drag_Start_Pos = blockb.transform.position;
-                    is_drag_start_in_select_area = false;
-                    moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-                    drag_offset = transform.position - moveposition;
-                    drag_offset.y = 0;
+                drag_start_pos = LevelLoader.WorldToCellPos(this.transform.position);
+                is_drag_start_in_select_area = false;
+                float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                drag_offset = transform.position - moveposition;
+                drag_offset.y = 0f;
+                //disable collision
+                cld_0.gameObject.SetActive(false);
+                cld_1.gameObject.SetActive(false);
 
-
-                    bool isLeft = blockb.transform.position.x < LevelLoader.center.x;
-                    B_blockb.drag_start_pos = blockb.transform.position;
-                    B_blockb.is_drag_start_in_select_area = false;
-                    B_blockb.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
-                    B_blockb.drag_offset = blockb.transform.position - B_blockb.moveposition;
-                    B_blockb.drag_offset.y = 0;
-
-                }
-                else if (this == B_blockb)
-                {
-                    float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
-                    drag_start_pos = transform.position;
-                    BlockA_Drag_Start_Pos = blocka.transform.position;
-                    BlockB_Drag_Start_Pos = blockb.transform.position;
-                    B_blocka.BlockA_Drag_Start_Pos = blocka.transform.position;
-                    B_blocka.BlockB_Drag_Start_Pos = blockb.transform.position;
-                    is_drag_start_in_select_area = false;
-                    moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-                    drag_offset = transform.position - moveposition;
-                    drag_offset.y = 0;
-
-
-                    bool isLeft = blocka.transform.position.x < LevelLoader.center.x;
-                    B_blocka.drag_start_pos = blocka.transform.position;
-                    B_blocka.is_drag_start_in_select_area = false;
-                    B_blocka.moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x + (isLeft ? offset : -offset), Input.mousePosition.y, distance_to_screen));
-                    B_blocka.drag_offset = blocka.transform.position - B_blocka.moveposition;
-                    B_blocka.drag_offset.y = 0;
-
-                }
-
-                if (this == B_blocka)
-                {
-                    Debug.Log("Dragged Block A");
-                }
-                else
-                {
-                    Debug.Log("Dragged Block B");
-                }
-                if (this.gameObject == blocka)
-                {
-                    Debug.Log("Dragged Block A OBJ");
-                }
-                else
-                {
-                    Debug.Log("Dragged Block B OBJ");
-                }
             }
-            else
+
+        }
+        else if (isInventory)
+        {
+            if (type == BlockType.Free)
             {
+                //Make the aligned block Free
+                if (myAlignedBrick != null)
+                {
+                    myAlignedBrick.isBlocked = false;
+                }
 
+                //Dragging Operations
+                drag_start_pos = LevelLoader.WorldToCellPos(this.transform.position);
+                float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                drag_offset = transform.position - moveposition;
+                drag_offset.y = 0f;
+                //disable collision
+                cld_0.gameObject.SetActive(false);
+                cld_1.gameObject.SetActive(false);
+            }
+            else if (type == BlockType.Regular)
+            {
+                //Make the aligned block Free
+                if (myAlignedBrick != null)
+                {
+                    myAlignedBrick.isBlocked = false;
+                }
 
-
+                //Dragging Operations
                 drag_start_pos = transform.position;
                 is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 drag_offset = transform.position - moveposition;
                 drag_offset.y = 0;
+
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
             }
 
-
         }
-        else if (type == BlockType.Free)
-        {
-            if (myAlignedBrick != null)
-            {
-                myAlignedBrick.isBlocked = false;
-            }
-            drag_start_pos = LevelLoader.WorldToCellPos(this.transform.position);
-            is_drag_start_in_select_area = false;
-            float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
-            moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-            drag_offset = transform.position - moveposition;
-            drag_offset.y = 0f;
-            //disable collision
-            cld_0.gameObject.SetActive(false);
-            cld_1.gameObject.SetActive(false);
-
-
-
-        }
-
-
-
-
-
-
 
     }
 
@@ -471,8 +556,11 @@ public class Block : MonoBehaviour
 
         float testPos = 0;
         testPos = transform.position.z + transform.position.x;
-        if (type == BlockType.Regular)
+
+        if(!isInventory)
         {
+            if (type == BlockType.Regular)
+            {
 
                 if (blockb != null)
                 {
@@ -480,118 +568,145 @@ public class Block : MonoBehaviour
 
                 }
 
+                // Calculate the distance to the screen to maintain the block's depth in the scene
+                float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+
+                // Convert mouse position to world position using the same depth as the block
+                Vector3 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+
+                // Create a modified position vector that maintains the block's original Y position but updates X and Z
+                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+
+                // Determine if the block is on the left side of the screen
+                //bool isLeft = this.transform.position.x < LevelLoader.center.x;
+                bool isLeft = IsBlockOnLeftSideOfScreen();
+                // Convert the block's position to screen space
+                Vector3 screenPos = CommonReference.mainCam.WorldToScreenPoint(mpos);
+                Vector3 npos = transform.position;
+                if (!instantiated)
+                {
+                    //disable collision
+                    cld_0.gameObject.SetActive(false);
+                    cld_1.gameObject.SetActive(false);
+                    transform.position = mpos;
+                }
+                if (linked)
+                {
+                    if (this == B_blocka) // If this is the original block
+                    {
+
+                        if (isLeft)
+                        {
+                            // Clamp the Y position to not exceed half of the screen height
+                            screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
+
+                            // Convert the clamped screen position back to world space
+                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
+                        }
+                        else
+                        {
+                            // Clamp the Y position to not exceed half of the screen height
+                            screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
+
+                            // Convert the clamped screen position back to world space
+                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
+                        }
+
+                        blocka.transform.position = mpos;
+                        if (blockb != null) // Make sure blockb (the clone) is not null
+                        {
+
+                            blockb.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
+
+                        }
+                    }
+                    else if (this == B_blockb) // If this is the clone
+                    {
+                        if (isLeft)
+                        {
+                            // Clamp the Y position to not exceed half of the screen height
+                            screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
+
+                            // Convert the clamped screen position back to world space
+                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
+                        }
+                        else
+                        {
+                            // Clamp the Y position to not exceed half of the screen height
+                            screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
+
+                            // Convert the clamped screen position back to world space
+                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
+                        }
+
+
+                        blockb.transform.position = mpos;
+                        if (blocka != null) // Make sure blocka (the original) is not null
+                        {
+
+                            blocka.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
+                        }
+                    }
+                }
 
 
 
 
-            // Calculate the distance to the screen to maintain the block's depth in the scene
-            float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
 
-            // Convert mouse position to world position using the same depth as the block
-            Vector3 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-
-            // Create a modified position vector that maintains the block's original Y position but updates X and Z
-            Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
-
-            // Determine if the block is on the left side of the screen
-            //bool isLeft = this.transform.position.x < LevelLoader.center.x;
-            bool isLeft = IsBlockOnLeftSideOfScreen();
-            // Convert the block's position to screen space
-            Vector3 screenPos = CommonReference.mainCam.WorldToScreenPoint(mpos);
-            Vector3 npos = transform.position;
-            if (!instantiated)
+            }
+            else if (type == BlockType.Free)
             {
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
+                float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+                Vector3 npos = transform.position;
+                bool isLeft = this.transform.position.x < LevelLoader.center.x;
                 transform.position = mpos;
-            }
-            if (linked)
-            {
-                if (this == B_blocka) // If this is the original block
-                {
 
-                    if (isLeft)
-                    {
-                        // Clamp the Y position to not exceed half of the screen height
-                        screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
-
-                        // Convert the clamped screen position back to world space
-                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                    }
-                    else
-                    {
-                        // Clamp the Y position to not exceed half of the screen height
-                        screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
-
-                        // Convert the clamped screen position back to world space
-                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                    }
-
-                    blocka.transform.position = mpos;
-                    if (blockb != null) // Make sure blockb (the clone) is not null
-                    {
-
-                        blockb.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
-
-                    }
-                }
-                else if (this == B_blockb) // If this is the clone
-                {
-                    if (isLeft)
-                    {
-                        // Clamp the Y position to not exceed half of the screen height
-                        screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
-
-                        // Convert the clamped screen position back to world space
-                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                    }
-                    else
-                    {
-                        // Clamp the Y position to not exceed half of the screen height
-                        screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
-
-                        // Convert the clamped screen position back to world space
-                        mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                    }
-
-
-                    blockb.transform.position = mpos;
-                    if (blocka != null) // Make sure blocka (the original) is not null
-                    {
-
-                        blocka.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
-                    }
-                }
-            }
-
-
-
-
-
-        }
-        else if (type == BlockType.Free)
-        {
-            //disable collision
-            cld_0.gameObject.SetActive(false);
-            cld_1.gameObject.SetActive(false);
-            float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
-            moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-            Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
-            Vector3 npos = transform.position;
-            bool isLeft = this.transform.position.x < LevelLoader.center.x;
-            transform.position = mpos;
-
-            //Put the block back to inventory
+                //Put the block back to inventory
 
                 if (instantiated)
                 {
                     CheckForDropOnUIImage();
                 }
 
-            
 
+
+            }
         }
+        else if (isInventory)
+        {
+            if (type == BlockType.Free)
+            {
+                //disable collision
+                cld_0.gameObject.SetActive(false);
+                cld_1.gameObject.SetActive(false);
+                //Dragging
+                float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+                Vector3 npos = transform.position;
+                bool isLeft = this.transform.position.x < LevelLoader.center.x;
+                transform.position = mpos;
+            }
+            else if(type == BlockType.Regular)
+            {
+                //disable collision
+                cld_0.gameObject.SetActive(false);
+                cld_1.gameObject.SetActive(false);
+                //Dragging
+                float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
+                moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
+                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+                Vector3 npos = transform.position;
+                bool isLeft = this.transform.position.x < LevelLoader.center.x;
+                transform.position = mpos;
+            }
+        }
+
 
 
 
@@ -599,112 +714,73 @@ public class Block : MonoBehaviour
     }
     public void _OnEndDrag()
     {
-        if (type == BlockType.Regular)
+        if(!isInventory)
         {
-            if (blockb == null)
+            if (type == BlockType.Regular)
             {
-                Debug.Log("initial place");
-                cld_0.gameObject.SetActive(true);
-                cld_1.gameObject.SetActive(true);
-                cpos = LevelLoader.WorldToCellPos(this.transform.position);
-                npos = this.transform.position;
-
-            }
-            else
-            {
-                Debug.Log("run COde");
-                //enable the collision box
-                B_blocka.cld_0.gameObject.SetActive(true);
-                B_blocka.cld_1.gameObject.SetActive(true);
-                B_blockb.cld_0.gameObject.SetActive(true);
-                B_blockb.cld_1.gameObject.SetActive(true);
-
-
-
-                B_blocka.cpos = LevelLoader.WorldToCellPos(blocka.transform.position);
-                B_blocka.npos = blocka.transform.position;
-                B_blockb.bcpos = LevelLoader.WorldToCellPos(blockb.transform.position);
-                B_blockb.bnpos = blockb.transform.position;
-
-            }
-
-
-            //Map to Map Block moving
-            if (!LevelLoader.IsPosInSelectionArea(npos) || !LevelLoader.IsPosInSelectionArea(bnpos))
-            {
-                /*
-                // Check if the drag operation is valid for both blocks
-                if (blockb != null)
+                if (blockb == null)
                 {
-                    B_blockb.DragsuccessB = !LevelLoader.HasBlockOnCellPos(B_blockb.bcpos) && B_blockb.bcpos != Vector3.one * -1;
-                    B_blocka.DragsuccessA = !LevelLoader.HasBlockOnCellPos(B_blocka.cpos) && B_blocka.cpos != Vector3.one * -1;
+                    Debug.Log("initial place");
+                    cld_0.gameObject.SetActive(true);
+                    cld_1.gameObject.SetActive(true);
+                    cpos = LevelLoader.WorldToCellPos(this.transform.position);
+                    npos = this.transform.position;
 
                 }
                 else
                 {
-                    DragsuccessA = false;
-                    DragsuccessB = false;
+                    Debug.Log("run COde");
+                    //enable the collision box
+                    B_blocka.cld_0.gameObject.SetActive(true);
+                    B_blocka.cld_1.gameObject.SetActive(true);
+                    B_blockb.cld_0.gameObject.SetActive(true);
+                    B_blockb.cld_1.gameObject.SetActive(true);
+
                 }
-                */
 
-                if (blockb != null)
-                {
-                    /*
-                    if (B_blocka.DragsuccessA && B_blockb.DragsuccessB)
+
+                //Map to Map Block moving
+
+                    if (blockb != null)
                     {
-                        //Debug.Log("Drag success");
-
-
-                        LevelLoader.instance.OnMoveBlock(B_blocka, LevelLoader.WorldToCellPos(BlockA_Drag_Start_Pos), B_blocka.cpos);
-                        LevelLoader.instance.OnMoveBlock(B_blockb, LevelLoader.WorldToCellPos(BlockB_Drag_Start_Pos), B_blockb.bcpos);
-                        UpdateMapCollider();
-                        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                        {
-                            blocka.transform.position = Vector3.Lerp(B_blocka.npos, B_blocka.cpos, f);
-                            blockb.transform.position = Vector3.Lerp(B_blockb.bnpos, B_blockb.bcpos, f);
-
-                        }, null, gameObject.GetInstanceID() + "drag_success");
-
+                        B_blocka.BlockAlignmentMirrorInMap();
+                        B_blockb.BlockAlignmentMirrorInMap();
                     }
                     else
                     {
-                        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                        {
-                            blocka.transform.position = Vector3.Lerp(B_blocka.npos, BlockA_Drag_Start_Pos, f);
-                            blockb.transform.position = Vector3.Lerp(B_blockb.bnpos, BlockB_Drag_Start_Pos, f);
-                        }, null, gameObject.GetInstanceID() + "drag_fail");
 
-                    }
-                    */
-                    B_blocka.BlockAlignmentMirrorInMap();
-                    B_blockb.BlockAlignmentMirrorInMap();
-                }
-                else
-                {
-
-                    if (canlink && !instantiated)
-                    {
-                        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
-                        GameObject nearestBlock = null;
-                        float nearestDistance = Mathf.Infinity;
-                        foreach (GameObject levelBrick in levelBricks)
+                        if (canlink && !instantiated)
                         {
-                            float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
-                            BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
-                            // Check if this block is closer than the previously found ones and within the threshold
-                            if (distance < nearestDistance && (!alignment.isBlocked) && distance <= 10f)
+                            GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+                            GameObject nearestBlock = null;
+                            float nearestDistance = Mathf.Infinity;
+                            foreach (GameObject levelBrick in levelBricks)
                             {
-                                nearestDistance = distance;
-                                nearestBlock = levelBrick;
+                                float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
+                                BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+                                // Check if this block is closer than the previously found ones and within the threshold
+                                if (distance < nearestDistance && (!alignment.isBlocked) && distance <= 10f)
+                                {
+                                    nearestDistance = distance;
+                                    nearestBlock = levelBrick;
+                                }
                             }
-                        }
 
-                        // Align with the nearest block if it's within range
-                        if (nearestBlock != null)
-                        {
-                            BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
-                            if (!alignment.isBlocked)
+                            // Align with the nearest block if it's within range
+                            if (nearestBlock != null)
                             {
+                                BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
+                                if (!alignment.isBlocked)
+                                {
+
+                                }
+                                else
+                                {
+                                    inventoryManager.ItemPicked(this.gameObject);
+                                    Destroy(gameObject);
+                                    return;
+                                }
+
 
                             }
                             else
@@ -715,383 +791,478 @@ public class Block : MonoBehaviour
                             }
 
 
+                            //instantiateBlocks();
+                            Debug.Log("Start Instantiation");
+                        }
+
+                        if (!instantiated)
+                        {
+                            instantiated = true;
+                        }
+
+                    
+
+                        //Add Connection to the map here, make parents
+                        if (instantiated)
+                        {
+                        float DistanceToLevelLeftBlockA = Vector3.Distance(blocka.transform.position, LevelLeft.transform.position);
+                        float DistanceToLevelRightBlockA = Vector3.Distance(blocka.transform.position, LevelRight.transform.position);
+                        if (DistanceToLevelLeftBlockA < DistanceToLevelRightBlockA)
+                        {
+                            blocka.transform.SetParent(LevelLeft.transform);
+                            isBlockALeft = true;
                         }
                         else
                         {
-                            inventoryManager.ItemPicked(this.gameObject);
-                            Destroy(gameObject);
-                            return;
+                            blocka.transform.SetParent(LevelRight.transform);
+                            isBlockALeft = false;
                         }
 
-
-                        instantiateBlocks();
-                        Debug.Log("Start Instantiation");
-                    }
-
-                    if (!instantiated)
-                    {
-                        instantiated = true;
-                    }
-                    /*
-                    if (LevelLoader.HasBlockOnCellPos(cpos))
-                    {
-                        //LevelLoader.instance.OnBlockToInventory(cpos);
-                        //When there are objects on the intended place position, put the block back to the inventory
-                        inventoryManager.ItemPicked(this.gameObject);
-                        Debug.Log("ItemPicked");
-                    }
-                    else
-                    {
-                        if (canlink && !instantiated)
+                        float DistanceToLevelLeftBlockB = Vector3.Distance(blockb.transform.position, LevelLeft.transform.position);
+                        float DistanceToLevelRightBlockB = Vector3.Distance(blockb.transform.position, LevelRight.transform.position);
+                        if (DistanceToLevelLeftBlockB < DistanceToLevelRightBlockB)
                         {
-                            instantiateBlocks();
-                            Debug.Log("Start Instantiation");
+                            blockb.transform.SetParent(LevelLeft.transform);
+
+                        }
+                        else
+                        {
+                            blockb.transform.SetParent(LevelRight.transform);
+
+                        }
+
+                    }
+
+                }
+
+            }
+            else if (type == BlockType.Free)
+            {
+                //This is a new methodology for free blocks to align
+                //enable collision
+                cld_0.gameObject.SetActive(true);
+                cld_1.gameObject.SetActive(true);
+                Debug.Log("Dropped Free Block");
+
+                GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+                GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
+                List<GameObject> allBricks = new List<GameObject>();
+                allBricks.AddRange(levelBricks);
+                allBricks.AddRange(inventoryBricks);
+                GameObject[] combinedBricksArray = allBricks.ToArray();
+
+                GameObject nearestBlock = null;
+                float nearestDistance = Mathf.Infinity;
+                foreach (GameObject levelBrick in combinedBricksArray)
+                {
+                    float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
+                    BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+                    // Check if this block is closer than the previously found ones and within the threshold
+                    if (distance < nearestDistance && (!alignment.isBlocked))
+                    {
+                        nearestDistance = distance;
+                        nearestBlock = levelBrick;
+                    }
+                }
+
+                // Align with the nearest block if it's within range
+                if (nearestBlock != null)
+                {
+
+
+
+
+                    BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
+                    if (!alignment.isBlocked)
+                    {
+                        myAlignedBrick = alignment;
+                        if (myAlignedBrick.gameObject.tag == "LevelBrickInventory")
+                        {
+                            Debug.Log("InventoryBlock");
+                            //This is the code that gives the transform a smooth effect
+                            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                            {
+                                transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                            }, null, gameObject.GetInstanceID() + "drag_success");
+
+                            //transform.position = nearestBlock.transform.position;
+                            alignment.isBlocked = true;
+                            isInventory = true;
+
+                            //Make the inventory the parent again
+                            GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+                            if (levelInventory != null)
+                            {
+                                transform.SetParent(levelInventory.transform);
+                            }
+
+                        }
+                        else if (myAlignedBrick.gameObject.tag == "LevelBrick")
+                        {
+                            //This is the code that gives the transform a smooth effect
+                            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                            {
+                                transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                            }, null, gameObject.GetInstanceID() + "drag_success");
+
+                            //transform.position = nearestBlock.transform.position;
+                            alignment.isBlocked = true;
+                            isInventory = false;
+
+
+
+
                         }
                     }
-                    */
-                }
-
-                /*
-                Vector3 nscale = transform.localScale;
-                SKUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
-                SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
-                {
-                    transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
-                }, null, gameObject.GetInstanceID() + "mouse_over");
-                */
-
-                //Add Connection to the map here, make parents
-                if (instantiated)
-                {
-                    float DistanceToLevelLeftBlockA = Vector3.Distance(blocka.transform.position, LevelLeft.transform.position);
-                    float DistanceToLevelRightBlockA = Vector3.Distance(blocka.transform.position, LevelRight.transform.position);
-                    if (DistanceToLevelLeftBlockA < DistanceToLevelRightBlockA)
-                    {
-                        blocka.transform.SetParent(LevelLeft.transform);
-                        isBlockALeft = true;
-                    }
                     else
                     {
-                        blocka.transform.SetParent(LevelRight.transform);
-                        isBlockALeft = false;
+                        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                        {
+                            transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
+                        }, null, gameObject.GetInstanceID() + "drag_success");
+
+                        myAlignedBrick.isBlocked = true;
                     }
 
-                    float DistanceToLevelLeftBlockB = Vector3.Distance(blockb.transform.position, LevelLeft.transform.position);
-                    float DistanceToLevelRightBlockB = Vector3.Distance(blockb.transform.position, LevelRight.transform.position);
-                    if (DistanceToLevelLeftBlockB < DistanceToLevelRightBlockB)
-                    {
-                        blockb.transform.SetParent(LevelLeft.transform);
 
-                    }
-                    else
-                    {
-                        blockb.transform.SetParent(LevelRight.transform);
-
-                    }
-
-                }
-
-
-
-            }
-
-        }
-        else if (type == BlockType.Free)
-        {
-            //This is a new methodology for free blocks to align
-            //enable collision
-            cld_0.gameObject.SetActive(true);
-            cld_1.gameObject.SetActive(true);
-            Debug.Log("Dropped Free Block");
-
-            GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
-            GameObject nearestBlock = null;
-            float nearestDistance = Mathf.Infinity;
-            foreach (GameObject levelBrick in levelBricks)
-            {
-                float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
-                BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
-                // Check if this block is closer than the previously found ones and within the threshold
-                if (distance < nearestDistance && (!alignment.isBlocked ))
-                {
-                    nearestDistance = distance;
-                    nearestBlock = levelBrick;
-                }
-            }
-
-            // Align with the nearest block if it's within range
-            if (nearestBlock != null)
-            {
-                BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
-                if(!alignment.isBlocked )
-                {
-                    myAlignedBrick = alignment;
-
-                    //This is the code that gives the transform a smooth effect
-                    SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                    {
-                        transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
-                    }, null, gameObject.GetInstanceID() + "drag_success");
-
-                    //transform.position = nearestBlock.transform.position;
-                    alignment.isBlocked = true;
                 }
                 else
                 {
-                    inventoryManager.ItemPicked(this.gameObject);
-                    Debug.Log("Put Block Back");
+                    SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                    {
+                        transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
+                    }, null, gameObject.GetInstanceID() + "drag_success");
+
+                    myAlignedBrick.isBlocked = true;
                 }
-
-
-            }
-            else
-            {
-                inventoryManager.ItemPicked(this.gameObject);
-                Debug.Log("Put Block Back");
-            }
-
-            if (!instantiated)
-            {
-                instantiated = true;
-            }
-
-            //cpos = LevelLoader.WorldToCellPos(this.transform.position);
-            //npos = this.transform.position;
-            /*
-            if (!LevelLoader.HasBlockOnCellPos(cpos) && cpos != Vector3.one * -1)
-            {
-                Debug.Log("Drag success");
-
-                LevelLoader.instance.OnMoveBlock(this, LevelLoader.WorldToCellPos(drag_start_pos), cpos);
-                UpdateMapCollider();
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    transform.position = Vector3.Lerp(npos, cpos, f);
-
-
-                }, null, gameObject.GetInstanceID() + "drag_success");
 
                 if (!instantiated)
                 {
                     instantiated = true;
                 }
 
-            }
-            else
-            {
-                if (!instantiated)
+                if(!isInventory)
                 {
-                    //When there are objects on the intended place position, put the block back to the inventory
+                    float DistanceToLevelLeft = Vector3.Distance(transform.position, LevelLeft.transform.position);
+                    float DistanceToLevelRight = Vector3.Distance(transform.position, LevelRight.transform.position);
+                    if (DistanceToLevelLeft < DistanceToLevelRight)
+                    {
+                        transform.SetParent(LevelLeft.transform);
 
-                    inventoryManager.ItemPicked(this.gameObject);
-                    Debug.Log("Put Block Back");
+                    }
+                    else
+                    {
+                        transform.SetParent(LevelRight.transform);
+
+                    }
                 }
 
-                //if(this.gameObject == null)
-                //{
-                 //   return;
-                //}
 
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            }
+
+        }
+        else if (isInventory)
+        {
+            if (type == BlockType.Free)
+            {
+                //This is a new methodology for free blocks to align
+                //enable collision
+                cld_0.gameObject.SetActive(true);
+                cld_1.gameObject.SetActive(true);
+                Debug.Log("Dropped Free Block");
+
+                GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+                GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
+                List<GameObject> allBricks = new List<GameObject>();
+                allBricks.AddRange(levelBricks);
+                allBricks.AddRange(inventoryBricks);
+                GameObject[] combinedBricksArray = allBricks.ToArray();
+
+                GameObject nearestBlock = null;
+                float nearestDistance = Mathf.Infinity;
+                foreach (GameObject levelBrick in combinedBricksArray)
                 {
-                    transform.position = Vector3.Lerp(npos, drag_start_pos, f);
+                    float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
+                    BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+                    // Check if this block is closer than the previously found ones and within the threshold
+                    if (distance < nearestDistance && (!alignment.isBlocked))
+                    {
+                        nearestDistance = distance;
+                        nearestBlock = levelBrick;
+                    }
+                }
 
-                }, null, gameObject.GetInstanceID() + "drag_fail");
+                // Align with the nearest block if it's within range
+                if (nearestBlock != null)
+                {
+                    BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
+                    if (!alignment.isBlocked)
+                    {
 
+                        myAlignedBrick = alignment;
+                        if(myAlignedBrick.gameObject.tag == "LevelBrickInventory")
+                        {
+                            Debug.Log("InventoryBlock");
+                            //This is the code that gives the transform a smooth effect
+                            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                            {
+                                transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                            }, null, gameObject.GetInstanceID() + "drag_success");
+
+                            //transform.position = nearestBlock.transform.position;
+                            alignment.isBlocked = true;
+                            isInventory = true;
+
+                            //Make the inventory the parent again
+                            GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+                            if (levelInventory != null)
+                            {
+                                transform.SetParent(levelInventory.transform);
+                            }
+
+
+                        }
+                        else if (myAlignedBrick.gameObject.tag == "LevelBrick")
+                        {
+                            //This is the code that gives the transform a smooth effect
+                            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                            {
+                                transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                            }, null, gameObject.GetInstanceID() + "drag_success");
+
+                            //transform.position = nearestBlock.transform.position;
+                            alignment.isBlocked = true;
+                            isInventory = false;
+                        }
+
+
+                    }
+                    else
+                    {
+
+                        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                        {
+                            transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
+                        }, null, gameObject.GetInstanceID() + "drag_success");
+
+                        myAlignedBrick.isBlocked = true;
+
+                    }
+
+
+                }
+                else
+                {
+                    SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                    {
+                        transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
+                    }, null, gameObject.GetInstanceID() + "drag_success");
+
+                    myAlignedBrick.isBlocked = true;
+
+                }
+
+                if (!instantiated)
+                {
+                instantiated = true;
+                }
+
+                //Add Connection to the map here, make parents
+                if(!isInventory)
+                {
+                    float DistanceToLevelLeft = Vector3.Distance(transform.position, LevelLeft.transform.position);
+                    float DistanceToLevelRight = Vector3.Distance(transform.position, LevelRight.transform.position);
+                    if (DistanceToLevelLeft < DistanceToLevelRight)
+                    {
+                        transform.SetParent(LevelLeft.transform);
+
+                    }
+                    else
+                    {
+                        transform.SetParent(LevelRight.transform);
+
+                    }
+                }
 
             }
-            */
-            //Lerp the scale to the map scale
-
-
-            /*
-            Vector3 nscale = transform.localScale;
-            SKUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
-            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
+            else if (type == BlockType.Regular)
             {
-                transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
-            }, null, gameObject.GetInstanceID() + "mouse_over");
-            */
+                //enable collision
+                Debug.Log("dropped Regular Block");
+                cld_0.gameObject.SetActive(true);
+                cld_1.gameObject.SetActive(true);
 
-            //Add Connection to the map here, make parents
-            float DistanceToLevelLeft = Vector3.Distance(transform.position, LevelLeft.transform.position);
-            float DistanceToLevelRight = Vector3.Distance(transform.position, LevelRight.transform.position);
-            if (DistanceToLevelLeft < DistanceToLevelRight)
-            {
-                transform.SetParent(LevelLeft.transform);
+                if (canlink && !instantiated)
+                {
+                    GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+                    GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
+                    List<GameObject> allBricks = new List<GameObject>();
+                    allBricks.AddRange(levelBricks);
+                    allBricks.AddRange(inventoryBricks);
+                    GameObject[] combinedBricksArray = allBricks.ToArray();
+
+                    GameObject nearestBlock = null;
+                    float nearestDistance = Mathf.Infinity;
+                    foreach (GameObject levelBrick in combinedBricksArray)
+                    {
+                        float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
+                        BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+                        // Check if this block is closer than the previously found ones and within the threshold
+                        if (distance < nearestDistance && (!alignment.isBlocked))
+                        {
+                            nearestDistance = distance;
+                            nearestBlock = levelBrick;
+                        }
+                    }
+
+                    // Align with the nearest block if it's within range
+                    if (nearestBlock != null)
+                    {
+                        BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
+                        if (!alignment.isBlocked)
+                        {
+
+
+                            if (alignment.gameObject.tag == "LevelBrickInventory")
+                            {
+                                Debug.Log("InventoryBlock123 + Changed Aligned Block");
+                                myAlignedBrick = alignment;
+                                //This is the code that gives the transform a smooth effect
+                                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                                {
+                                    transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                                //transform.position = nearestBlock.transform.position;
+                                alignment.isBlocked = true;
+                                isInventory = true;
+
+                                //Make the inventory the parent again
+                                GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+                                if (levelInventory != null)
+                                {
+                                    transform.SetParent(levelInventory.transform);
+                                }
+
+
+                            }
+                            else if (alignment.gameObject.tag == "LevelBrick")
+                            {
+                                /*
+                                //This is the code that gives the transform a smooth effect
+                                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                                {
+                                    transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                                //transform.position = nearestBlock.transform.position;
+                                alignment.isBlocked = true;
+                                isInventory = false;
+                                */
+                                Debug.Log("Start Instantiation");
+                                instantiateBlocks();
+
+
+                            }
+
+
+                        }
+                        else
+                        {
+
+                            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                            {
+                                transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
+                            }, null, gameObject.GetInstanceID() + "drag_success");
+
+                            myAlignedBrick.isBlocked = true;
+
+                        }
+
+
+                    }
+                    else
+                    {
+                        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                        {
+                            transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
+                        }, null, gameObject.GetInstanceID() + "drag_success");
+
+                        myAlignedBrick.isBlocked = true;
+
+                    }
+
+                }
 
             }
-            else
-            {
-                transform.SetParent(LevelRight.transform);
-
-            }
-
-
-
-
-
-
-
 
         }
 
 
+}
 
-    }
+public void EndMapRotation()
+{
+    Vector3 Rcpos = LevelLoader.WorldToCellPos(this.transform.position);
+    Vector3 Rnpos = this.transform.position;
 
-    public void EndMapRotation()
+    LevelLoader.instance.OnMoveBlock(this, LevelLoader.WorldToCellPos(rotate_start_pos), Rcpos);
+    UpdateMapCollider();
+    SKUtils.StartProcedure(SKCurve.CubicIn, 0.05f, (f) =>
     {
-        Vector3 Rcpos = LevelLoader.WorldToCellPos(this.transform.position);
-        Vector3 Rnpos = this.transform.position;
-
-        LevelLoader.instance.OnMoveBlock(this, LevelLoader.WorldToCellPos(rotate_start_pos), Rcpos);
-        UpdateMapCollider();
-        SKUtils.StartProcedure(SKCurve.CubicIn, 0.05f, (f) =>
-        {
-            transform.position = Vector3.Lerp(Rnpos, Rcpos, f);
+        transform.position = Vector3.Lerp(Rnpos, Rcpos, f);
 
 
-        }, null, gameObject.GetInstanceID() + "drag_success");
-        Debug.Log("Rotation Started");
-    }
+    }, null, gameObject.GetInstanceID() + "drag_success");
+    Debug.Log("Rotation Started");
+}
 
-    public void StartMapRotation()
-    {
-        rotate_start_pos = this.transform.position;
-        LevelLoader.instance.OnBlockRotation(LevelLoader.WorldToCellPos(rotate_start_pos));
-    }
+public void StartMapRotation()
+{
+    rotate_start_pos = this.transform.position;
+    LevelLoader.instance.OnBlockRotation(LevelLoader.WorldToCellPos(rotate_start_pos));
+}
 
-    public void instantiateBlocks()
-    {
+public void instantiateBlocks()
+{
 
-        Debug.Log("Before test");
-        Vector3 cpos = LevelLoader.WorldToCellPos(this.transform.position);
-        Vector3 npos = this.transform.position;
-        //Block a = this;
-        //Block b = Instantiate(this.gameObject).GetComponent<Block>();
+    Debug.Log("Before test");
 
-        instantiated = true;
-        GameObject a = this.gameObject;
-        GameObject b = Instantiate(this.gameObject);
+    GameObject a = this.gameObject;
+    GameObject b = Instantiate(this.gameObject);
 
+    Vector3 l_pos = LevelLoader.CellToWorldPos(false, 0, 0);
+    Vector3 r_pos = LevelLoader.CellToWorldPos(true, 0, 0);
 
-        Vector3 l_pos = LevelLoader.CellToWorldPos(false, 0, 0);
-        Vector3 r_pos = LevelLoader.CellToWorldPos(true, 0, 0);
+    float dist = l_pos.x - r_pos.x;
+    float distz = l_pos.z - r_pos.z;
+    bool isLeft = transform.position.x < LevelLoader.center.x;
 
-        float dist = l_pos.x - r_pos.x;
-        float distz = l_pos.z - r_pos.z;
-        bool isLeft = transform.position.x < LevelLoader.center.x;
+    //this moves the clone to its position.
+    b.transform.position = new Vector3(transform.position.x + (isLeft ? dist : -dist), 0, transform.position.z + (isLeft ? distz : -distz));
 
-        //this moves the clone to its position.
-        b.transform.position = new Vector3(transform.position.x + (isLeft ? dist : -dist), 0, transform.position.z + (isLeft ? distz : -distz));
+    blocka = a.gameObject;
+    blockb = b.gameObject;
+    B_blocka = this.GetComponent<Block>();
+    B_blockb = b.GetComponent<Block>();
+    linked = true;
+    B_blockb.linked = true;
+    B_blockb.B_blockb = blockb.GetComponent<Block>();
+    B_blockb.B_blocka = blocka.GetComponent<Block>();
+    B_blockb.blocka = blocka;
+    B_blockb.blockb = blockb;
+    B_blockb.offset = offset;
+    B_blockb.offsetz = offsetz;
+    B_blockb.instantiated = true;
+    instantiated = true;
+    B_blocka.cld_0.SetActive(true);
+    B_blockb.cld_0.SetActive(true);
 
-
-
-        Vector3 bcpos = LevelLoader.WorldToCellPos(b.transform.position);
-        Vector3 bnpos = b.transform.position;
-        //Debug.Log(bnpos);
-        //Debug.Log(npos);
-
-
-        //The initiation of block link
-        //offset = dist;
-        //offsetz = distz;
-        blocka = a.gameObject;
-        blockb = b.gameObject;
-        B_blocka = this.GetComponent<Block>();
-        B_blockb = b.GetComponent<Block>();
-        linked = true;
-        B_blockb.linked = true;
-        B_blockb.B_blockb = blockb.GetComponent<Block>();
-        B_blockb.B_blocka = blocka.GetComponent<Block>();
-        B_blockb.blocka = blocka;
-        B_blockb.blockb = blockb;
-        B_blockb.offset = offset;
-        B_blockb.offsetz = offsetz;
-        B_blockb.instantiated = true;
-        instantiated = true;
-        B_blocka.cld_0.SetActive(true);
-        B_blockb.cld_0.SetActive(true);
-
-
-
-        //Get the outline stuff
-        B_blockb.outlineEffect = GetComponentInChildren<Outline>();
-
-
-        BlockAlignment();
-        B_blockb.BlockAlignment();
-
-
-
-
-        /*
-        if (!LevelLoader.HasBlockOnCellPos(cpos) && !LevelLoader.HasBlockOnCellPos(bcpos))
-        {
-            //If there is no blocks in the position, then make the A block
-            LevelLoader.instance.OnMoveBlockFromSelection(b.GetComponent<Block>(), LevelLoader.WorldToCellPos(drag_start_pos), cpos);
-            UpdateMapCollider();
-            if (b == null)
-            {
-                return;
-            }
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                b.transform.position = Vector3.Lerp(npos, cpos, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-
-            Vector3 nscale = b.transform.localScale;
-            SKUtils.StopProcedure(b.gameObject.GetInstanceID() + "mouse_over");
-            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
-            {
-                b.transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
-            }, null, b.gameObject.GetInstanceID() + "mouse_over");
-        }
-        else
-        {
-            //Put it back to the inventory if there is a block in it's way
-            if (blockb != null)
-            {
-                Debug.Log("Releas POS");
-                LevelLoader.instance.OnBlockToInventory(cpos);
-                inventoryManager.ItemPicked(blocka);
-                Destroy(blockb);
-                return;
-            }
-        }
-
-        
-        if (!LevelLoader.HasBlockOnCellPos(bcpos))
-        {
-            //If there is no blocks in the position, then make the B block
-            LevelLoader.instance.OnMoveBlockFromSelection(this, LevelLoader.WorldToCellPos(drag_start_pos), bcpos);
-            UpdateMapCollider();
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                transform.position = Vector3.Lerp(bnpos, bcpos, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-
-            Vector3 nscale = transform.localScale;
-            SKUtils.StopProcedure(gameObject.GetInstanceID() + "mouse_over");
-            SKUtils.StartProcedure(SKCurve.QuadraticOut, 0.1f, (f) =>
-            {
-                transform.localScale = Vector3.Lerp(LevelLoader.BLOCK_SCALE_MAP, nscale, f);
-            }, null, gameObject.GetInstanceID() + "mouse_over");
-        }
-        else
-        {
-            //Put it back to the inventory if there is a block in it's way
-            if (blockb != null)
-            {
-                Debug.Log("Releas POS");
-                LevelLoader.instance.OnBlockToInventory(cpos);
-                inventoryManager.ItemPicked(blocka);
-                Destroy(blockb);
-            }
-        }
-        */
-    }
+    //Get the outline stuff
+    B_blockb.outlineEffect = blockb.GetComponentInChildren<Outline>();
+    B_blocka.BlockAlignment();
+    //B_blockb.BlockAlignment();
+}
 
 
     bool IsBlockOnLeftSideOfScreen()
@@ -1186,95 +1357,105 @@ public class Block : MonoBehaviour
     public void BlockAlignment()
     {
 
+        GameObject[] levelBricksA = GameObject.FindGameObjectsWithTag("LevelBrick");
+        GameObject[] levelBricksB = GameObject.FindGameObjectsWithTag("LevelBrick");
+        GameObject nearestBlockA = null;
+        GameObject nearestBlockB = null;
+        float nearestDistanceA = Mathf.Infinity;
+        float nearestDistanceB = Mathf.Infinity;
 
-        
-        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
-        GameObject nearestBlock = null;
-        float nearestDistance = Mathf.Infinity;
-        foreach (GameObject levelBrick in levelBricks)
+
+        foreach (GameObject levelBrickA in levelBricksA)
         {
-            float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
-            BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+            float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
+            BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distance < nearestDistance && (!alignment.isBlocked) && distance <= 10f)
+            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 10f)
             {
-                nearestDistance = distance;
-                nearestBlock = levelBrick;
+                nearestDistanceA = distanceA;
+                nearestBlockA = levelBrickA;
             }
         }
 
-        // Align with the nearest block if it's within range
-        if (nearestBlock != null)
+        foreach (GameObject levelBrickB in levelBricksB)
         {
-            BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
-            if (!alignment.isBlocked)
+            float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
+            BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
+            // Check if this block is closer than the previously found ones and within the threshold
+            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 10f)
             {
-                myAlignedBrick = alignment;
-                //This is the code that gives the transform a smooth effect
+                nearestDistanceB = distanceB;
+                nearestBlockB = levelBrickB;
+                Debug.Log(nearestBlockB);
+            }
+        }
+
+        if (nearestBlockA != null && nearestBlockB != null)
+        {
+            BlockAlignment alignmentA = nearestBlockA.GetComponent<BlockAlignment>();
+            BlockAlignment alignmentB = nearestBlockB.GetComponent<BlockAlignment>();
+            if (!alignmentA.isBlocked && !alignmentB.isBlocked)
+            {
+                //Make the inventory clear
+                B_blocka.myAlignedBrick.isBlocked = false;
+
+                B_blocka.myAlignedBrick = alignmentA;
+                B_blockb.myAlignedBrick = alignmentB;
+                Debug.Log("Changed Alignment");
+
                 SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                 {
-                    transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, nearestBlockA.transform.position, f);
                 }, null, gameObject.GetInstanceID() + "drag_success");
-                //transform.position = nearestBlock.transform.position;
-                alignment.isBlocked = true;
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, nearestBlockB.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                alignmentA.isBlocked = true;
+                alignmentB.isBlocked = true;
+
+                //Blocks are Put into the Map
+                B_blocka.isInventory = false;
+                B_blockb.isInventory = false;
+                RegularBlockMapAlign();
+                Debug.Log("Put Block");
             }
             else
             {
-                if (B_blocka.myAlignedBrick != null)
+                Debug.Log("Testfailed");
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
                 {
-                    B_blocka.myAlignedBrick.isBlocked = false;
-                }
-                if (B_blockb.myAlignedBrick != null)
-                {
-                    B_blockb.myAlignedBrick.isBlocked = false;
-                }
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
 
-                inventoryManager.ItemPicked(this.gameObject);
+                B_blocka.myAlignedBrick.isBlocked = true;
+                B_blocka.isInventory= true;
+                B_blocka.instantiated = false;
 
                 if (blockb != null)
                 {
-                    Destroy(blockb);
-                }
-                if (blocka != null)
-                {
-                    Destroy(blocka);
+                    Destroy(blockb);    
                 }
 
-                //Debug.Log("Put Block Back");
             }
-
-
         }
         else
         {
-            Debug.Log("Put Block Back1");
-
-            if(B_blocka.myAlignedBrick!= null)
+            Debug.Log("Testfailed2");
+            Debug.Log(myAlignedBrick);
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
             {
-                B_blocka.myAlignedBrick.isBlocked= false;
-            }
-            if (B_blockb.myAlignedBrick != null)
-            {
-                B_blockb.myAlignedBrick.isBlocked= false;
-            }
+                blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
 
-            if(B_blocka != null && B_blockb != null)
-            {
-
-            }
+            B_blocka.myAlignedBrick.isBlocked = true;
+            B_blocka.isInventory = true;
+            B_blocka.instantiated = false;
             if (blockb != null)
             {
                 Destroy(blockb);
             }
-            if (blocka != null)
-            {
-
-                Destroy(blocka);
-            }
-            inventoryManager.ItemPicked(this.gameObject);
-
-
-
 
         }
 
@@ -1282,6 +1463,255 @@ public class Block : MonoBehaviour
     }
     public void BlockAlignmentMirrorInMap()
     {
+        //Find all the inventory bricks and Level Bricks
+        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+        GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
+        List<GameObject> allBricks = new List<GameObject>();
+        allBricks.AddRange(levelBricks);
+        allBricks.AddRange(inventoryBricks);
+        GameObject[] levelBricksA = allBricks.ToArray();
+        GameObject[] levelBricksB = allBricks.ToArray();
+
+        GameObject nearestBlockA = null;
+        GameObject nearestBlockB = null;
+        float nearestDistanceA = Mathf.Infinity;
+        float nearestDistanceB = Mathf.Infinity;
+
+
+        foreach (GameObject levelBrickA in levelBricksA)
+        {
+            float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
+            BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
+            // Check if this block is closer than the previously found ones and within the threshold
+            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 10f)
+            {
+                nearestDistanceA = distanceA;
+                nearestBlockA = levelBrickA;
+            }
+        }
+
+        foreach (GameObject levelBrickB in levelBricksB)
+        {
+            float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
+            BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
+            // Check if this block is closer than the previously found ones and within the threshold
+            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 10f)
+            {
+                nearestDistanceB = distanceB;
+                nearestBlockB = levelBrickB;
+            }
+        }
+
+        if (nearestBlockA != null && nearestBlockB != null)
+        {
+            BlockAlignment alignmentA = nearestBlockA.GetComponent<BlockAlignment>();
+            BlockAlignment alignmentB = nearestBlockB.GetComponent<BlockAlignment>();
+            if ((!alignmentA.isBlocked && alignmentA.gameObject.tag == "LevelBrick") && (!alignmentB.isBlocked && alignmentB.gameObject.tag == "LevelBrick"))
+            {
+                //Make the inventory clear
+                B_blocka.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick.isBlocked = false;
+
+                B_blocka.myAlignedBrick = alignmentA;
+                B_blockb.myAlignedBrick = alignmentB;
+
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, nearestBlockA.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, nearestBlockB.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                alignmentA.isBlocked = true;
+                alignmentB.isBlocked = true;
+
+                //Blocks are Put into the Map
+                B_blocka.isInventory = false;
+                B_blockb.isInventory = false;
+                RegularBlockMapAlign();
+                Debug.Log("Put Block");
+            }
+            else if ((!alignmentA.isBlocked && alignmentA.gameObject.tag == "LevelBrickInventory"))
+            {
+                //Make the inventory clear
+                B_blocka.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick.isBlocked = false;
+                B_blocka.myAlignedBrick = alignmentA;
+                Debug.Log("Block A Back to Inventory");
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                B_blocka.myAlignedBrick.isBlocked = true;
+                B_blocka.isInventory = true;
+                B_blocka.instantiated = false;
+
+                if (blockb != null)
+                {
+                    Destroy(blockb);
+                }
+
+            }
+            else if ((!alignmentB.isBlocked && alignmentB.gameObject.tag == "LevelBrickInventory"))
+            {
+                //Make the inventory clear
+                B_blocka.myAlignedBrick.isBlocked = false;
+                Debug.Log(B_blockb.myAlignedBrick);
+                B_blockb.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick = alignmentA;
+                Debug.Log("Block A Back to Inventory");
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                B_blockb.myAlignedBrick.isBlocked = true;
+                B_blockb.isInventory = true;
+                B_blockb.instantiated = false;
+
+                if (blocka != null)
+                {
+                    Destroy(blocka);
+                }
+            }
+            else
+            {
+                Debug.Log("Still In Map with one of the block Nool");
+                Debug.Log(myAlignedBrick);
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                B_blocka.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick.isBlocked = false;
+            }
+        }
+        else if(nearestBlockA != null)
+        {
+            BlockAlignment alignmentA = nearestBlockA.GetComponent<BlockAlignment>();
+            if ((!alignmentA.isBlocked && alignmentA.gameObject.tag == "LevelBrickInventory"))
+            {
+                //Make the inventory clear
+                B_blocka.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick.isBlocked = false;
+                B_blocka.myAlignedBrick = alignmentA;
+                Debug.Log("Block A Back to Inventory");
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                B_blocka.myAlignedBrick.isBlocked = true;
+                B_blocka.isInventory = true;
+                B_blocka.instantiated = false;
+                //Make the inventory the parent again
+                GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+                if (levelInventory != null)
+                {
+                    B_blocka.transform.SetParent(levelInventory.transform);
+                }
+
+                if (blockb != null)
+                {
+                    Destroy(blockb);
+                }
+
+            }
+            else
+            {
+                Debug.Log("Still In Map Block A");
+                Debug.Log(myAlignedBrick);
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                B_blocka.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick.isBlocked = false;
+            }
+
+        }
+        else if (nearestBlockB != null)
+        {
+            BlockAlignment alignmentB = nearestBlockB.GetComponent<BlockAlignment>();
+            if ((!alignmentB.isBlocked && alignmentB.gameObject.tag == "LevelBrickInventory"))
+            {
+                //Make the inventory clear
+                B_blocka.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick = alignmentB;
+                Debug.Log("Block A Back to Inventory");
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                B_blockb.myAlignedBrick.isBlocked = true;
+                B_blockb.isInventory = true;
+                B_blockb.instantiated = false;
+                //Make the inventory the parent again
+                GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+                if (levelInventory != null)
+                {
+                    B_blockb.transform.SetParent(levelInventory.transform);
+                }
+
+                if (blocka != null)
+                {
+                    Destroy(blocka);
+                }
+                Outline blockB_Outline = B_blockb.outlineEffect;
+                blockB_Outline.RemakeMaterial();
+
+            }
+            else
+            {
+                Debug.Log("Still In Map Block B");
+                Debug.Log(myAlignedBrick);
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+
+                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+                {
+                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+                }, null, gameObject.GetInstanceID() + "drag_success");
+                B_blocka.myAlignedBrick.isBlocked = false;
+                B_blockb.myAlignedBrick.isBlocked = false;
+            }
+        }
+        else if ((nearestBlockA == null && nearestBlockB == null && blocka != null && blockb != null))
+        {
+            Debug.Log(this.gameObject.name);
+            Debug.Log("Still In Map");
+            Debug.Log(myAlignedBrick);
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            {
+                blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
+
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            {
+                blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
+            B_blocka.myAlignedBrick.isBlocked = false;
+            B_blockb.myAlignedBrick.isBlocked = false;
+        }
+        /*
         GameObject[] levelBricksA = GameObject.FindGameObjectsWithTag("LevelBrick");
         GameObject[] levelBricksB = GameObject.FindGameObjectsWithTag("LevelBrick");
         GameObject nearestBlockA = null;
@@ -1333,8 +1763,6 @@ public class Block : MonoBehaviour
                 {
                     blockb.transform.position = Vector3.Lerp(blockb.transform.position, nearestBlockB.transform.position, f);
                 }, null, gameObject.GetInstanceID() + "drag_success");
-                //blocka.transform.position = nearestBlockA.transform.position;
-                //blockb.transform.position = nearestBlockB.transform.position;
                 alignmentA.isBlocked = true;
                 alignmentB.isBlocked = true;
                 Debug.Log("Put Block");
@@ -1350,8 +1778,6 @@ public class Block : MonoBehaviour
                 {
                     blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
                 }, null, gameObject.GetInstanceID() + "drag_success");
-                //blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-                //blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
                 B_blockb.myAlignedBrick.isBlocked = true;
                 B_blockb.myAlignedBrick.isBlocked = true;
 
@@ -1368,62 +1794,46 @@ public class Block : MonoBehaviour
             {
                 blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
             }, null, gameObject.GetInstanceID() + "drag_success");
-            //blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-            //blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
             B_blockb.myAlignedBrick.isBlocked = true;
             B_blockb.myAlignedBrick.isBlocked = true;
 
         }
-        /*
-        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
-        GameObject nearestBlock = null;
-        float nearestDistance = Mathf.Infinity;
-        foreach (GameObject levelBrick in levelBricks)
-        {
-            float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
-            BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
-            // Check if this block is closer than the previously found ones and within the threshold
-            if (distance < nearestDistance && (!alignment.isBlocked) && distance <= 5f)
-            {
-                nearestDistance = distance;
-                nearestBlock = levelBrick;
-            }
-        }
+        */
+    }
 
-        // Align with the nearest block if it's within range
-        if (nearestBlock != null)
-        {
-            BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
-            if (!alignment.isBlocked)
+    private void RegularBlockMapAlign()
+    {
+        //Add Connection to the map here, make parents
+            float DistanceToLevelLeftBlockA = Vector3.Distance(blocka.transform.position, LevelLeft.transform.position);
+            float DistanceToLevelRightBlockA = Vector3.Distance(blocka.transform.position, LevelRight.transform.position);
+            if (DistanceToLevelLeftBlockA < DistanceToLevelRightBlockA)
             {
-                myAlignedBrick = alignment;
-                transform.position = nearestBlock.transform.position;
-                alignment.isBlocked = true;
+                blocka.transform.SetParent(LevelLeft.transform);
+                isBlockALeft = true;
             }
             else
             {
-
-                blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-                blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
-                B_blockb.myAlignedBrick.isBlocked = true;
-                B_blockb.myAlignedBrick.isBlocked = true;
-                //Debug.Log("Put Block Back");
+                blocka.transform.SetParent(LevelRight.transform);
+                isBlockALeft = false;
             }
 
+            float DistanceToLevelLeftBlockB = Vector3.Distance(blockb.transform.position, LevelLeft.transform.position);
+            float DistanceToLevelRightBlockB = Vector3.Distance(blockb.transform.position, LevelRight.transform.position);
+            if (DistanceToLevelLeftBlockB < DistanceToLevelRightBlockB)
+            {
+                blockb.transform.SetParent(LevelLeft.transform);
 
-        }
-        else
-        {
-            blocka.transform.position = B_blocka.myAlignedBrick.transform.position;
-            blockb.transform.position = B_blockb.myAlignedBrick.transform.position;
-            B_blockb.myAlignedBrick.isBlocked = true;
-            B_blockb.myAlignedBrick.isBlocked = true;
+            }
+            else
+            {
+                blockb.transform.SetParent(LevelRight.transform);
 
-        }
+            }
 
-        */
-
+        
     }
+
+
 }
 
 public enum BlockType

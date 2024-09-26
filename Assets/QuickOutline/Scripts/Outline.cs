@@ -99,6 +99,43 @@ public class Outline : MonoBehaviour {
     needsUpdate = true;
   }
 
+
+    public void RemakeMaterial()
+    {
+        // Cache renderers
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+
+        // Loop through each renderer and clear existing materials
+        foreach (Renderer renderer in renderers)
+        {
+            // Optionally destroy existing materials to free up memory
+            foreach (Material mat in renderer.materials)
+            {
+                if (mat != null)
+                {
+                    Destroy(mat);
+                }
+            }
+
+            // Clear materials
+            renderer.materials = new Material[0];
+        }
+
+        // Instantiate outline materials
+        outlineMaskMaterial = Instantiate(Resources.Load<Material>(@"Materials/OutlineMask"));
+        outlineFillMaterial = Instantiate(Resources.Load<Material>(@"Materials/OutlineFill"));
+
+        outlineMaskMaterial.name = "OutlineMask (Instance)";
+        outlineFillMaterial.name = "OutlineFill (Instance)";
+
+        // Retrieve or generate smooth normals
+        LoadSmoothNormals();
+
+        // Apply material properties immediately
+        needsUpdate = true;
+    }
+
+
   void OnEnable() {
     foreach (var renderer in renderers) {
 

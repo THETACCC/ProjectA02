@@ -5,7 +5,7 @@ using static Beautify.Universal.Beautify;
 
 public class BlockAlignment : MonoBehaviour
 {
-
+    public bool isInventoryBrick = false;
     public bool isBlocked = false;
 
     // The distance threshold within which the object will align with the block
@@ -46,6 +46,13 @@ public class BlockAlignment : MonoBehaviour
         if (nearestBlock != null)
         {
             AlignPosition(nearestBlock.transform);
+            Block mBlock = nearestBlock.GetComponent<Block>();
+            if(mBlock != null && isInventoryBrick) 
+            {
+
+                mBlock.isInventory = true;
+            }
+
             isBlocked = true;
         }
     }
