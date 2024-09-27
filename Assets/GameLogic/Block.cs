@@ -94,6 +94,7 @@ public class Block : MonoBehaviour
     public GameObject onDestroyParticle;
     public MMFeedbacks init;
     public MMFeedbacks init4x4;
+    private float lerpSpeed = 10f;
     //player related
     public bool isDragging = false;
 
@@ -136,18 +137,18 @@ public class Block : MonoBehaviour
         }
 
         //get the inventory manager at start
-        inventoryManagerOBJ = GameObject.FindGameObjectWithTag("Inventory");
-        inventoryManager = inventoryManagerOBJ.GetComponent<InventoryManager>();
+        //inventoryManagerOBJ = GameObject.FindGameObjectWithTag("Inventory");
+        //inventoryManager = inventoryManagerOBJ.GetComponent<InventoryManager>();
 
         rotate = transform.rotation.eulerAngles;
 
         canlink = true;
 
-        GameObject level_loader = GameObject.Find("LevelLoader");
-        levelLoader = level_loader.GetComponent<LevelLoader>();
+        //GameObject level_loader = GameObject.Find("LevelLoader");
+        //levelLoader = level_loader.GetComponent<LevelLoader>();
 
-        GameObject level_controller = GameObject.Find("LevelController");
-        controller = level_controller.GetComponent<LevelController>();
+        //GameObject level_controller = GameObject.Find("LevelController");
+        //controller = level_controller.GetComponent<LevelController>();
 
 
 
@@ -594,56 +595,36 @@ public class Block : MonoBehaviour
                     if (this == B_blocka) // If this is the original block
                     {
 
-                        if (isLeft)
-                        {
-                            // Clamp the Y position to not exceed half of the screen height
-                            screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
 
-                            // Convert the clamped screen position back to world space
-                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                        }
-                        else
-                        {
-                            // Clamp the Y position to not exceed half of the screen height
-                            screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
-
-                            // Convert the clamped screen position back to world space
-                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                        }
-
+                        ClampMousePosition(ref screenPos, isLeft);
+                        // Set the position of blocka
                         blocka.transform.position = mpos;
-                        if (blockb != null) // Make sure blockb (the clone) is not null
+
+                        if (blockb != null) // Ensure blockb (the clone) is not null
                         {
+                            // Position blockb with an offset, keeping in mind the isometric axis adjustments
+                            //blockb.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
+                            Vector3 targetPosition = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
 
-                            blockb.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
-
+                            // Smoothly interpolate the current position to the target position
+                            blockb.transform.position = Vector3.Lerp(blockb.transform.position, targetPosition, Time.deltaTime * lerpSpeed);
                         }
                     }
                     else if (this == B_blockb) // If this is the clone
                     {
-                        if (isLeft)
-                        {
-                            // Clamp the Y position to not exceed half of the screen height
-                            screenPos.x = Mathf.Clamp(screenPos.x, 100, Screen.width / 2 - 100);
 
-                            // Convert the clamped screen position back to world space
-                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                        }
-                        else
-                        {
-                            // Clamp the Y position to not exceed half of the screen height
-                            screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2 + 100, Screen.width - 100);
-
-                            // Convert the clamped screen position back to world space
-                            mpos = CommonReference.mainCam.ScreenToWorldPoint(screenPos);
-                        }
-
-
+                        ClampMousePosition(ref screenPos, isLeft);
+                        // Set the position of blockb
                         blockb.transform.position = mpos;
-                        if (blocka != null) // Make sure blocka (the original) is not null
-                        {
 
-                            blocka.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz)); // Assuming offset is the distance between original and clone
+                        if (blocka != null) // Ensure blocka (the original) is not null
+                        {
+                            // Position blocka with an offset, keeping in mind the isometric axis adjustments
+                            //blocka.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
+                            Vector3 targetPosition = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
+
+                            // Smoothly interpolate the current position to the target position
+                            blocka.transform.position = Vector3.Lerp(blocka.transform.position, targetPosition, Time.deltaTime * lerpSpeed);
                         }
                     }
                 }
@@ -711,6 +692,24 @@ public class Block : MonoBehaviour
 
 
     }
+
+    void ClampMousePosition(ref Vector3 screenPos, bool isLeft)
+    {
+        if (isLeft)
+        {
+            // Clamp the X position of the mouse to the left side of the screen
+            screenPos.x = Mathf.Clamp(screenPos.x, 0, Screen.width / 2);
+        }
+        else
+        {
+            // Clamp the X position of the mouse to the right side of the screen
+            screenPos.x = Mathf.Clamp(screenPos.x, Screen.width / 2, Screen.width);
+        }
+
+        // Optionally, you can also clamp the Y position if needed, for example:
+        // screenPos.y = Mathf.Clamp(screenPos.y, 0, Screen.height); 
+    }
+
     public void _OnEndDrag()
     {
         if(!isInventory)
@@ -758,7 +757,7 @@ public class Block : MonoBehaviour
                                 float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
                                 BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
                                 // Check if this block is closer than the previously found ones and within the threshold
-                                if (distance < nearestDistance && (!alignment.isBlocked) && distance <= 10f)
+                                if (distance < nearestDistance && (!alignment.isBlocked) && distance <= 7.5f)
                                 {
                                     nearestDistance = distance;
                                     nearestBlock = levelBrick;
@@ -1147,17 +1146,7 @@ public class Block : MonoBehaviour
                             }
                             else if (alignment.gameObject.tag == "LevelBrick")
                             {
-                                /*
-                                //This is the code that gives the transform a smooth effect
-                                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                                {
-                                    transform.position = Vector3.Lerp(transform.position, nearestBlock.transform.position, f);
-                                }, null, gameObject.GetInstanceID() + "drag_success");
 
-                                //transform.position = nearestBlock.transform.position;
-                                alignment.isBlocked = true;
-                                isInventory = false;
-                                */
                                 Debug.Log("Start Instantiation");
                                 instantiateBlocks();
 
@@ -1230,15 +1219,11 @@ public void instantiateBlocks()
     GameObject a = this.gameObject;
     GameObject b = Instantiate(this.gameObject);
 
-    Vector3 l_pos = LevelLoader.CellToWorldPos(false, 0, 0);
-    Vector3 r_pos = LevelLoader.CellToWorldPos(true, 0, 0);
 
-    float dist = l_pos.x - r_pos.x;
-    float distz = l_pos.z - r_pos.z;
     bool isLeft = transform.position.x < LevelLoader.center.x;
-
+    Vector3 targetPosition = new Vector3(transform.position.x + (isLeft ? offset : -offset), transform.position.y, transform.position.z + (isLeft ? offsetz : -offsetz));
     //this moves the clone to its position.
-    b.transform.position = new Vector3(transform.position.x + (isLeft ? dist : -dist), 0, transform.position.z + (isLeft ? distz : -distz));
+    b.transform.position = new Vector3(transform.position.x + (isLeft ? offset : -offset), 0, transform.position.z + (isLeft ? offsetz : -offsetz));
 
     blocka = a.gameObject;
     blockb = b.gameObject;
@@ -1369,7 +1354,7 @@ public void instantiateBlocks()
             float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
             BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 10f)
+            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 7.5f)
             {
                 nearestDistanceA = distanceA;
                 nearestBlockA = levelBrickA;
@@ -1381,7 +1366,7 @@ public void instantiateBlocks()
             float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
             BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 10f)
+            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 7.5f)
             {
                 nearestDistanceB = distanceB;
                 nearestBlockB = levelBrickB;
@@ -1482,7 +1467,7 @@ public void instantiateBlocks()
             float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
             BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 10f)
+            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 7.5f)
             {
                 nearestDistanceA = distanceA;
                 nearestBlockA = levelBrickA;
@@ -1494,7 +1479,7 @@ public void instantiateBlocks()
             float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
             BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 10f)
+            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 7.5f)
             {
                 nearestDistanceB = distanceB;
                 nearestBlockB = levelBrickB;
@@ -1710,94 +1695,6 @@ public void instantiateBlocks()
             B_blocka.myAlignedBrick.isBlocked = false;
             B_blockb.myAlignedBrick.isBlocked = false;
         }
-        /*
-        GameObject[] levelBricksA = GameObject.FindGameObjectsWithTag("LevelBrick");
-        GameObject[] levelBricksB = GameObject.FindGameObjectsWithTag("LevelBrick");
-        GameObject nearestBlockA = null;
-        GameObject nearestBlockB = null;
-        float nearestDistanceA = Mathf.Infinity;
-        float nearestDistanceB = Mathf.Infinity;
-
-
-        foreach (GameObject levelBrickA in levelBricksA)
-        {
-            float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
-            BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
-            // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 5f)
-            {
-                nearestDistanceA = distanceA;
-                nearestBlockA = levelBrickA;
-            }
-        }
-
-        foreach (GameObject levelBrickB in levelBricksB)
-        {
-            float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
-            BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
-            // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 5f)
-            {
-                nearestDistanceB = distanceB;
-                nearestBlockB = levelBrickB;
-            }
-        }
-
-        if (nearestBlockA != null && nearestBlockB != null)
-        {
-            BlockAlignment alignmentA = nearestBlockA.GetComponent<BlockAlignment>();
-            BlockAlignment alignmentB = nearestBlockB.GetComponent<BlockAlignment>();
-            if (!alignmentA.isBlocked && !alignmentB.isBlocked)
-            {
-                B_blocka.myAlignedBrick = alignmentA;
-                B_blockb.myAlignedBrick = alignmentB;
-
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, nearestBlockA.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, nearestBlockB.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-                alignmentA.isBlocked = true;
-                alignmentB.isBlocked = true;
-                Debug.Log("Put Block");
-            }
-            else
-            {
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-                B_blockb.myAlignedBrick.isBlocked = true;
-                B_blockb.myAlignedBrick.isBlocked = true;
-
-            }
-        }
-        else 
-        {
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-            B_blockb.myAlignedBrick.isBlocked = true;
-            B_blockb.myAlignedBrick.isBlocked = true;
-
-        }
-        */
     }
 
     private void RegularBlockMapAlign()
