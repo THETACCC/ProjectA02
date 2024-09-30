@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.Collections.AllocatorManager;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class BlockIntro : MonoBehaviour
@@ -17,6 +18,9 @@ public class BlockIntro : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        mblocks = GameObject.FindGameObjectsWithTag("Block");
+
         //get player and disable player for visual effects
         Player1 = GameObject.FindGameObjectWithTag("Player1");
         Player2 = GameObject.FindGameObjectWithTag("Player2");
