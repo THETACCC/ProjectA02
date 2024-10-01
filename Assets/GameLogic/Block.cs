@@ -116,8 +116,8 @@ public class Block : MonoBehaviour
     {
         StartCoroutine(ExecuteAfterDelay(0.1f));
 
-        cld_0 = transform.Find("CLD_0")?.gameObject;
-        cld_1 = transform.Find("CLD_1")?.gameObject;
+        cld_0 = transform.Find("Lower")?.gameObject;
+        cld_1 = transform.Find("Upper")?.gameObject;
         cld_0.tag = "Wall";
         cld_1.tag = "Wall";
         subBlock = transform.Find("SubBlock");
