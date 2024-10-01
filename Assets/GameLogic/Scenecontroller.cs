@@ -79,6 +79,7 @@ public enum SceneTitle
     Level1_1_MapTest = 12,
     Chapter1Base3x3 = 14,
     Chapter1Base4x4 = 15,
+    Chapter1BaseVisualGym = 16,
     //Common Scenes
     Main_Menu = 13,
 
