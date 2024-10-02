@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 5659354966730844154}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -12.7, y: 15.3, z: -15.93}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5659354967035649733}
@@ -101,7 +101,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.8335571
+  m_Radius: 2
   m_Height: 8.268195
   m_Direction: 1
   m_Center: {x: -0.011703491, y: 3.4148993, z: 0}
@@ -277,6 +277,42 @@ PrefabInstance:
       propertyPath: PlayerVisual
       value: 
       objectReference: {fileID: 5659354967035649730}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[1].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[1].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 4906203479241619492, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
+      propertyPath: effectCurve.m_Curve.Array.data[1].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
     - target: {fileID: 8736246270313795365, guid: eaa132d08fda1504c9b3557ff2ac6ce3, type: 3}
       propertyPath: m_Name
       value: WinVisual

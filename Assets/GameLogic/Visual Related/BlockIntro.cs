@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.Collections.AllocatorManager;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class BlockIntro : MonoBehaviour
@@ -8,6 +9,10 @@ public class BlockIntro : MonoBehaviour
     public GameObject[] mblocks;
     public GameObject Player1;
     public GameObject Player2;
+
+
+    public GameObject LevelSuccessOBJ_Left;
+    public GameObject LevelSuccessOBJ_Right;
 
     public Enterfinishleft LevelSuccessLeft;
     public EnterFinishRight LevelSuccessRight;
@@ -17,12 +22,18 @@ public class BlockIntro : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        mblocks = GameObject.FindGameObjectsWithTag("Block");
+
         //get player and disable player for visual effects
         Player1 = GameObject.FindGameObjectWithTag("Player1");
         Player2 = GameObject.FindGameObjectWithTag("Player2");
         Player1.SetActive(false);
         Player2.SetActive(false);
-
+        LevelSuccessOBJ_Left = GameObject.FindGameObjectWithTag("FinishLeft");
+        LevelSuccessOBJ_Right = GameObject.FindGameObjectWithTag("FinishRight");
+        LevelSuccessLeft = LevelSuccessOBJ_Left.GetComponent<Enterfinishleft>();
+        LevelSuccessRight = LevelSuccessOBJ_Right.GetComponent<EnterFinishRight>();
 
         GameObject LevelLoaderOBJ = GameObject.FindGameObjectWithTag("LevelLoader");
         if (LevelLoaderOBJ != null )
