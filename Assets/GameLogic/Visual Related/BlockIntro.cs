@@ -10,6 +10,10 @@ public class BlockIntro : MonoBehaviour
     public GameObject Player1;
     public GameObject Player2;
 
+
+    public GameObject LevelSuccessOBJ_Left;
+    public GameObject LevelSuccessOBJ_Right;
+
     public Enterfinishleft LevelSuccessLeft;
     public EnterFinishRight LevelSuccessRight;
 
@@ -26,7 +30,10 @@ public class BlockIntro : MonoBehaviour
         Player2 = GameObject.FindGameObjectWithTag("Player2");
         Player1.SetActive(false);
         Player2.SetActive(false);
-
+        LevelSuccessOBJ_Left = GameObject.FindGameObjectWithTag("FinishLeft");
+        LevelSuccessOBJ_Right = GameObject.FindGameObjectWithTag("FinishRight");
+        LevelSuccessLeft = LevelSuccessOBJ_Left.GetComponent<Enterfinishleft>();
+        LevelSuccessRight = LevelSuccessOBJ_Right.GetComponent<EnterFinishRight>();
 
         GameObject LevelLoaderOBJ = GameObject.FindGameObjectWithTag("LevelLoader");
         if (LevelLoaderOBJ != null )
