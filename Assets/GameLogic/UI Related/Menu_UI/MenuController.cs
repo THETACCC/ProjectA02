@@ -25,6 +25,7 @@ public class MenuController : MonoBehaviour
         LoadNextLevel(sceneToLoad);
     }
 
+    /*
     public void LoadGameDialogYes()
     {
         if (PlayerPrefs.HasKey("SavedLevel"))
@@ -39,6 +40,7 @@ public class MenuController : MonoBehaviour
             noSavedGameDialog.SetActive(true);
         }
     }
+    */
 
     public void ExitButton()
     {
