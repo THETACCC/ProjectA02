@@ -82,6 +82,7 @@ public enum SceneTitle
     Chapter1BaseVisualGym = 16,
     Chapter1_Level1 = 17,
     Chapter1_Level2 = 18,
+    Chapter1_Level3 = 19,
     //Common Scenes
     Main_Menu = 13,
 
