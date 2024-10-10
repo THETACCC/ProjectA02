@@ -31,6 +31,8 @@ public class CharacterMovement : MonoBehaviour
     //Code when cannot move
     public bool canmove = true;
 
+
+
     private bool isRotating = false;
 
 
@@ -38,6 +40,8 @@ public class CharacterMovement : MonoBehaviour
     public float checkDistance = 3f;
     private bool collided = false;
     private bool counting = false;
+
+
 
 
     //Animator

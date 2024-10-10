@@ -220,7 +220,11 @@ public class Block : MonoBehaviour
         UpdateMouseBehavior();
 
         //Controlls the Block Rotation When Right Clicked
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+        if(type != BlockType.Obstacle)
+        {
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+        }
+
 
     }
 
