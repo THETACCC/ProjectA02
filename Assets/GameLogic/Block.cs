@@ -24,7 +24,9 @@ public class Block : MonoBehaviour
     private Coroutine CR_mouseOver;
 
     public bool mouse_drag, is_drag_start_in_select_area;
-    private bool mouse_over, prev_mouseOver;
+    [HideInInspector]
+    public bool mouse_over, prev_mouseOver;
+
     private Vector3 drag_offset, drag_start_pos, rotate_start_pos;
 
     public Vector3 moveposition = Vector3.zero;
@@ -217,10 +219,15 @@ public class Block : MonoBehaviour
             FindLevelRot();
         }
 
-        UpdateMouseBehavior();
+
 
         //Controlls the Block Rotation When Right Clicked
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+        if(type != BlockType.Obstacle)
+        {
+            UpdateMouseBehavior();
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+        }
+
 
     }
 

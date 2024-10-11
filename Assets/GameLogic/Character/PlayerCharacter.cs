@@ -23,15 +23,33 @@ public class PlayerCharacter : MonoBehaviour
     private CharacterMovement _player1Movement;
     private CharacterMovement _player2Movement;
 
-
+    public LevelController controller;
+    //Reference to Outline
+    public Outline outlineLeft;
+    public Outline outlineRight;
+    public GameObject outlineOBJLeft;
+    public GameObject outlineOBJRight;
+    float minThreshold = 1f;
+    public float OutlineSpeed = 10f;
     void Start()
     {
+        outlineOBJLeft = GameObject.FindGameObjectWithTag("PlayerLeftOutline");
+        outlineLeft = outlineOBJLeft.GetComponent<Outline>();
+        outlineOBJRight = GameObject.FindGameObjectWithTag("PlayerRightOutline");
+        outlineRight = outlineOBJRight.GetComponent<Outline>();
+        outlineRight.outlineWidth = 0f;
+        outlineLeft.outlineWidth = 0f;
+        //Get the Level Controller
+        GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
+        controller = controllerOBJ.GetComponent<LevelController>();
+
         _player1 = GameObject.FindGameObjectWithTag("Player1");
         _player1Movement = _player1.GetComponent<CharacterMovement>();
         _player2 = GameObject.FindGameObjectWithTag("Player2");
         _player2Movement = _player2.GetComponent<CharacterMovement>();
         SwitchPlayer();
     }
+
 
 
     public void SwitchPlayer()
@@ -56,11 +74,52 @@ public class PlayerCharacter : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G)) 
+        if(controller.phase == LevelPhase.Running)
         {
-            SwitchPlayer();
-            Debug.Log("Switched to: " + currentPlayer);
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                SwitchPlayer();
+                Debug.Log("Switched to: " + currentPlayer);
+            }
+
+            if(currentPlayer == Player.Player1)
+            {
+                outlineRight.needsUpdate = true;
+                outlineLeft.needsUpdate = true;
+                //outlineRight.outlineWidth = 0f;
+                //outlineLeft.outlineWidth = 10f;
+                
+
+                outlineRight.outlineWidth = Mathf.Lerp(outlineRight.outlineWidth, 10f, OutlineSpeed * Time.deltaTime);
+
+                // Lerp the left outline to 0
+                outlineLeft.outlineWidth = Mathf.Lerp(outlineLeft.outlineWidth, 0f, OutlineSpeed * Time.deltaTime);
+                if (Mathf.Abs(outlineLeft.outlineWidth - 0f) < minThreshold)
+                {
+                    outlineLeft.outlineWidth = 0f; // Snap to exact 0 when close enough
+                }
+            }
+            else
+            {
+                outlineRight.needsUpdate = true;
+                outlineLeft.needsUpdate = true;
+                //outlineRight.outlineWidth = 10f;
+                //outlineLeft.outlineWidth = 0f;
+
+                outlineLeft.outlineWidth = Mathf.Lerp(outlineLeft.outlineWidth, 10f, OutlineSpeed * Time.deltaTime);
+                outlineRight.outlineWidth = Mathf.Lerp(outlineRight.outlineWidth, 0f, OutlineSpeed * Time.deltaTime);
+                if (Mathf.Abs(outlineRight.outlineWidth - 0f) < minThreshold)
+                {
+                    outlineRight.outlineWidth = 0f; // Snap to exact 0 when close enough
+                }
+
+            }
+
         }
+
+
+
+
     }
 
 }
