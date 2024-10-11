@@ -8,6 +8,8 @@ public class BlockAlignment : MonoBehaviour
     public bool isInventoryBrick = false;
     public bool isBlocked = false;
 
+
+    public GameObject PlaceIndicator;
     // The distance threshold within which the object will align with the block
     public float proximityThreshold = 1.0f;
 
