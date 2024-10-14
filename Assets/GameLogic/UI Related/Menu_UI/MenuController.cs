@@ -122,17 +122,23 @@ public class MenuController : MonoBehaviour
     private void Start()
     {
         flowmanager = GameObject.Find("FlowManager");
-        flowManager = flowmanager.GetComponent<FlowManager>();
-
-        // Set the layer mask to include only the UI layer
-        uiLayerMask = LayerMask.GetMask("UI");
+        if (flowmanager != null)
+        {
+            flowManager = flowmanager.GetComponent<FlowManager>();
+        }
+        else
+        {
+            Debug.LogError("FlowManager GameObject not found!");
+        }
     }
+
 
     public void newGameDialogYes()
     {
-        // Load the scene with a delay using the SceneTitle
         LoadNextLevel(sceneToLoad_Chp1_World);
+        print("LOADING LEVEL! " + sceneToLoad_Chp1_World);
     }
+
 
     public void ExitButton()
     {
@@ -210,7 +216,6 @@ public class MenuController : MonoBehaviour
             dragObject.enabled = !disable;  // Disable drag functionality while paused
         }
 
-        
         var playerMoveScripts = FindObjectsOfType<SubPositionIndicator>();  // Example, adjust for your player scripts
         foreach (var script in playerMoveScripts)
         {
