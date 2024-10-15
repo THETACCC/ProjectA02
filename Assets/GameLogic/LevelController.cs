@@ -29,9 +29,11 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     public GameObject[] mLevelbrick;
     public BlockAlignment[] malignment;
+    public RegularBlockPlacement[] mRegularPlacement;
+
 
     public bool isAnyBlockBeingDragged = false;
-
+    public bool isAnyBlockDragging = false;
 
     public AnimationCurve IndicatoreffectCurve;   // The curve controlling the transition
     public float transitionDuration = 1f; // Total time to complete the effect (forward or backward)
@@ -39,6 +41,12 @@ public class LevelController : SKMonoSingleton<LevelController>
     private float transitionTimerReverse = 0f;
     public MeshRenderer myRenderer;
     public Material myMaterial;
+
+    //Left Right Player Controll Related
+    public bool isPlayingRight = true;
+    public PlayerCharacter playerLeft;
+    public PlayerCharacter playerRight;
+
     private void Start()
     {
         //Controlls the indicator material
@@ -54,13 +62,14 @@ public class LevelController : SKMonoSingleton<LevelController>
         // Initialize the mblockCode array with the same size as mblocks
         mblockCode = new Block[mblocks.Length];
         malignment = new BlockAlignment[mLevelbrick.Length];
+        mRegularPlacement = new RegularBlockPlacement[mLevelbrick.Length];
 
         //The Logic to get all the alignment 
         for (int i = 0; i < mLevelbrick.Length; i++)
         {
 
             malignment[i] = mLevelbrick[i].GetComponent<BlockAlignment>();
-
+            mRegularPlacement[i] = mLevelbrick[i].GetComponent<RegularBlockPlacement>();
             if (malignment[i] == null)
             {
                 Debug.LogWarning("Block component missing on GameObject: " + malignment[i].name);
@@ -93,7 +102,26 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private void Update()
     {
+        if(phase == LevelPhase.Running)
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                playerRight.SwitchPlayer();
+
+                if (isPlayingRight)
+                {
+                    isPlayingRight = false;
+                }
+                else if (!isPlayingRight)
+                {
+                    isPlayingRight = true;
+                }
+            }
+        }
+
+
         isAnyBlockBeingDragged = false;
+        isAnyBlockDragging = false;
         // Ensure the transition timer remains within [0, 1] bounds for Evaluate() usage
         transitionTimer = Mathf.Clamp01(transitionTimer);
         transitionTimerReverse = Mathf.Clamp01(transitionTimerReverse);
@@ -102,17 +130,49 @@ public class LevelController : SKMonoSingleton<LevelController>
             // Check if the block is dragging
             if (block != null && block.mouse_over)
             {
-                isAnyBlockBeingDragged = true;
-                foreach (BlockAlignment mAlign in malignment)
+
+                if (block.type == BlockType.Regular)
                 {
-                    if(mAlign != null && mAlign.isBlocked == false)
+                    isAnyBlockBeingDragged = true;
+                    foreach (RegularBlockPlacement mRegularBlockPlace in mRegularPlacement)
                     {
-                        mAlign.PlaceIndicator.SetActive(true);
+                        if (mRegularBlockPlace != null && mRegularBlockPlace.isRegularCanPlace == true)
+                        {
+                            mRegularBlockPlace.PlaceIndicator.SetActive(true);
+                        }
                     }
+
+                    if(block.isDragging)
+                    {
+                        isAnyBlockDragging = true;
+                    }
+
+                    // Send a debug message when isDragging is true
+                    Debug.Log("Block is being dragged: " + block.gameObject.name);
                 }
-                
-                // Send a debug message when isDragging is true
-                Debug.Log("Block is being dragged: " + block.gameObject.name);
+                else if(block.type == BlockType.Free)
+                {
+                    isAnyBlockBeingDragged = true;
+                    foreach (BlockAlignment mAlign in malignment)
+                    {
+                        if (mAlign != null && mAlign.isBlocked == false)
+                        {
+                            Debug.Log("Block is being dragged: " + block.gameObject.name);
+                            Debug.Log(isAnyBlockBeingDragged);
+                            mAlign.PlaceIndicator.SetActive(true);
+                        }
+                    }
+
+                    if (block.isDragging)
+                    {
+                        isAnyBlockDragging = true;
+                    }
+                    // Send a debug message when isDragging is true
+
+                }
+
+
+
             }
             /*
             else if (block != null && !block.isDragging)
@@ -167,11 +227,10 @@ public class LevelController : SKMonoSingleton<LevelController>
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //levelLoader.AlignBlockSelection();
-            if (levelLoader.checkindex == 0)
-            {
+
                 Debug.Log("pressed- Go");
                 phase = LevelPhase.Running;
-            }
+            
 
 
         }

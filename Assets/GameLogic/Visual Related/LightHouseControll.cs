@@ -10,6 +10,8 @@ public class LightHouseControll : MonoBehaviour
     public float rotationSpeed = 2.0f;
     private Quaternion targetRotation;
     private bool isRight = true;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,19 +32,9 @@ public class LightHouseControll : MonoBehaviour
         }
         if (controller.phase == LevelPhase.Running)
         {
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                if (isRight)
-                {
-                    isRight = false;
-                }
-                else if (!isRight)
-                {
-                    isRight = true;
-                }
-            }
 
-            if (isRight)
+
+            if (!controller.isPlayingRight)
             {
                 targetRotation = Quaternion.Euler(myLight.transform.eulerAngles.x, 180, myLight.transform.eulerAngles.z);
             }
