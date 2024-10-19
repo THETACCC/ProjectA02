@@ -76,11 +76,13 @@ public class PlayerCharacter : MonoBehaviour
     {
         if(controller.phase == LevelPhase.Running)
         {
+            /*
             if (Input.GetKeyDown(KeyCode.G))
             {
                 SwitchPlayer();
                 Debug.Log("Switched to: " + currentPlayer);
             }
+            */
 
             if(currentPlayer == Player.Player1)
             {

@@ -268,6 +268,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9033388051470850120}
+  - component: {fileID: 2726878973724023937}
   - component: {fileID: 656011624978577418}
   - component: {fileID: 9033388051470850165}
   - component: {fileID: 9033388051470850167}
@@ -297,6 +298,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 45, y: 45, z: 0}
+--- !u!114 &2726878973724023937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9033388051470850121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e12a2fea864ccde40a6c1341f18e1b2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelController: {fileID: 0}
+  myCamera: {fileID: 9033388051470850121}
+  lerpSpeed: 3
 --- !u!114 &656011624978577418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -338,7 +354,7 @@ Camera:
   far clip plane: 3000
   field of view: 30
   orthographic: 1
-  orthographic size: 36.3
+  orthographic size: 45
   m_Depth: 17.4
   m_CullingMask:
     serializedVersion: 2

@@ -127,13 +127,13 @@ public class Block : MonoBehaviour
         FX_HOVER = effectContainer.Find("FX_HOVER").gameObject;
         
         //instantiate outline effect
-        if (outlineEffectOBJ == null)
+        if (outlineEffectOBJ != null)
         {
             if(allowOutline)
             {
                 Transform childTransform = transform.Find("OutlineEffect");
                 outlineEffectOBJ = childTransform.gameObject;
-                outlineEffectOBJ.SetActive(true);
+                outlineEffectOBJ.SetActive(false);
             }
 
         }
