@@ -84,6 +84,8 @@ public enum SceneTitle
     Chapter1_Level2 = 18,
     Chapter1_Level3 = 19,
     Chapter1_Level6_0 = 20,
+    Chapter1_Level8_0 = 21,
+
 
     //Common Scenes
     Main_Menu = 13,
