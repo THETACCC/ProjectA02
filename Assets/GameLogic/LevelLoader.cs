@@ -186,8 +186,9 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         PlayerCharacter[] chars = GameObject.FindObjectsOfType<PlayerCharacter>();
 
         CommonReference.playerCharacters = chars;
-        print(CommonReference.playerCharacters[0]);
-        print(CommonReference.playerCharacters[1]);
+        Debug.Log(CommonReference.playerCharacters[0]);
+        Debug.Log(CommonReference.playerCharacters[1]);
+        /*
         foreach (PlayerCharacter character in chars)
         {
             bool isLeft = character.transform.position.x< center.x; 
@@ -206,6 +207,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
                 character.gameObject.layer = CommonReference.LAYER_MAP_1;
             }
         }
+        */
     }
     public void OnMoveBlock(Block block, Vector3 from, Vector3 to)
     {
@@ -273,7 +275,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
     /// </summary>
     public static int PosToMapID(Vector3 pos)
     {
-        return pos.x < center.x ? 0 : 1;
+        return pos.x > center.x ? 0 : 1;
     }
     public static bool IsPosInSelectionArea(Vector3 pos)
     {

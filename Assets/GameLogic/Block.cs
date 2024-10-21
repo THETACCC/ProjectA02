@@ -120,8 +120,17 @@ public class Block : MonoBehaviour
 
         cld_0 = transform.Find("Lower")?.gameObject;
         cld_1 = transform.Find("Upper")?.gameObject;
-        cld_0.tag = "Wall";
-        cld_1.tag = "Wall";
+
+        if(cld_0 != null)
+        {
+            cld_0.tag = "Wall";
+        }
+
+        if(cld_1 != null)
+        {
+            cld_1.tag = "Wall";
+        }
+
         subBlock = transform.Find("SubBlock");
         effectContainer = subBlock.Find("Effects");
         FX_HOVER = effectContainer.Find("FX_HOVER").gameObject;
@@ -154,7 +163,7 @@ public class Block : MonoBehaviour
 
 
 
-        UpdateMapCollider();
+        //UpdateMapCollider();
         oScale = transform.localScale;
 
         //Align Blocks
@@ -527,7 +536,7 @@ public class Block : MonoBehaviour
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 drag_offset = transform.position - moveposition;
-                drag_offset.y = 0f;
+                drag_offset.y = 0;
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
@@ -569,11 +578,8 @@ public class Block : MonoBehaviour
             if (type == BlockType.Regular)
             {
 
-                if (blockb != null)
-                {
-                    CheckForDropOnUIImage();
-
-                }
+                //Makes the block a little bit higher compare to other blocks
+                float yOffset = drag_start_pos.y + 4f;
 
                 // Calculate the distance to the screen to maintain the block's depth in the scene
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
@@ -582,7 +588,7 @@ public class Block : MonoBehaviour
                 Vector3 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
 
                 // Create a modified position vector that maintains the block's original Y position but updates X and Z
-                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+                Vector3 mpos = new Vector3(moveposition.x, yOffset, moveposition.z) + drag_offset;
 
                 // Determine if the block is on the left side of the screen
                 //bool isLeft = this.transform.position.x < LevelLoader.center.x;
@@ -648,17 +654,15 @@ public class Block : MonoBehaviour
                 cld_1.gameObject.SetActive(false);
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+                //Makes the block a little bit higher compare to other blocks
+                float yOffset = drag_start_pos.y + 4f;
+
+                Vector3 mpos = new Vector3(moveposition.x, yOffset, moveposition.z) + drag_offset;
                 Vector3 npos = transform.position;
                 bool isLeft = this.transform.position.x < LevelLoader.center.x;
                 transform.position = mpos;
 
-                //Put the block back to inventory
 
-                if (instantiated)
-                {
-                    CheckForDropOnUIImage();
-                }
 
 
 
@@ -674,7 +678,10 @@ public class Block : MonoBehaviour
                 //Dragging
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+                //Makes the block a little bit higher compare to other blocks
+                float yOffset = drag_start_pos.y + 4f;
+
+                Vector3 mpos = new Vector3(moveposition.x, yOffset, moveposition.z) + drag_offset;
                 Vector3 npos = transform.position;
                 bool isLeft = this.transform.position.x < LevelLoader.center.x;
                 transform.position = mpos;
@@ -687,7 +694,10 @@ public class Block : MonoBehaviour
                 //Dragging
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
-                Vector3 mpos = new Vector3(moveposition.x, transform.position.y, moveposition.z) + drag_offset;
+                //Makes the block a little bit higher compare to other blocks
+                float yOffset = drag_start_pos.y + 4f;
+
+                Vector3 mpos = new Vector3(moveposition.x, yOffset, moveposition.z) + drag_offset;
                 Vector3 npos = transform.position;
                 bool isLeft = this.transform.position.x < LevelLoader.center.x;
                 transform.position = mpos;
@@ -1202,7 +1212,7 @@ public void EndMapRotation()
     Vector3 Rnpos = this.transform.position;
 
     LevelLoader.instance.OnMoveBlock(this, LevelLoader.WorldToCellPos(rotate_start_pos), Rcpos);
-    UpdateMapCollider();
+    //UpdateMapCollider();
     SKUtils.StartProcedure(SKCurve.CubicIn, 0.05f, (f) =>
     {
         transform.position = Vector3.Lerp(Rnpos, Rcpos, f);

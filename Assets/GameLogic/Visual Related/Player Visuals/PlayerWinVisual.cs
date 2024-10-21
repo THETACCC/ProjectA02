@@ -85,6 +85,7 @@ public float transitionDuration = 1f; // Total time to complete the effect (forw
 private float transitionTimer = 0f;
 
 public GameObject PlayerVisual;
+    public GameObject IndicatorVisual;
 
 private bool isForward = true;  // To control the direction of the curve
 public MMFeedbacks playerWin;
@@ -133,6 +134,7 @@ void Update()
                 isForward = false;  // Start reversing the effect
                 transitionTimer = 0f;  // Reset the timer
                 PlayerVisual.SetActive(false);  // Deactivate PlayerVisual
+                IndicatorVisual.SetActive(false);
             }
         }
         else
