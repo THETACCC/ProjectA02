@@ -52,11 +52,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  isInventory: 0
   draggable: 1
   cld_0: {fileID: 0}
   cld_1: {fileID: 0}
   mouse_drag: 0
   is_drag_start_in_select_area: 0
+  mouse_over: 0
+  prev_mouseOver: 0
   moveposition: {x: 0, y: 0, z: 0}
   rotatespeed: 10
   rotate: {x: 0, y: 0, z: 0}
@@ -67,8 +70,6 @@ MonoBehaviour:
   blockb: {fileID: 0}
   B_blocka: {fileID: 0}
   B_blockb: {fileID: 0}
-  offset: 0
-  offsetz: 0
   linked: 0
   DragsuccessA: 0
   DragsuccessB: 0
@@ -85,6 +86,7 @@ MonoBehaviour:
   init: {fileID: 4217798995760852134}
   init4x4: {fileID: 898564997583398390}
   isDragging: 0
+  myAlignedBrick: {fileID: 0}
 --- !u!114 &876531993921377653
 MonoBehaviour:
   m_ObjectHideFlags: 0
