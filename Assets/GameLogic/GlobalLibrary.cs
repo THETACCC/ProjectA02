@@ -48,12 +48,67 @@ public static class GlobalLibrary
 
 
         }},
+        {SceneTitle.Chapter1_Level4, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level5, new SceneSpecifics()
+        {
+
+
+        }},
         {SceneTitle.Chapter1_Level6_0, new SceneSpecifics()
         {
 
 
         }},
+        {SceneTitle.Chapter1_Level6_1, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level7_1, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level7_2, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level7_3, new SceneSpecifics()
+        {
+
+
+        }},
         {SceneTitle.Chapter1_Level8_0, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level8_1, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level8_2, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level9, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level10, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter1_Level10_1, new SceneSpecifics()
         {
 
 
@@ -131,7 +186,7 @@ public static class GlobalLibrary
     public static readonly Dictionary<SceneCategory, SceneTitle[]> G_SCENE_CATEGORY_DICT = new Dictionary<SceneCategory, SceneTitle[]>
     {
         {SceneCategory.Common, new SceneTitle[]{SceneTitle.MainMenu,SceneTitle.Level1_1, SceneTitle.Main_Menu } },
-        {SceneCategory.Chapter1, new SceneTitle[]{ SceneTitle.Chapter1Base3x3, SceneTitle.Chapter1BaseVisualGym, SceneTitle.Chapter1_Level1, SceneTitle.Chapter1_Level2, SceneTitle.Chapter1_Level3, SceneTitle.Chapter1_Level6_0, SceneTitle.Chapter1_Level8_0, SceneTitle.Chapter1Base4x4, SceneTitle.Level1_1, SceneTitle.Level1_2, SceneTitle.Level1_3, SceneTitle.Level1_4, SceneTitle.Level1_5, SceneTitle.Level1_6, SceneTitle.Level1_7, SceneTitle.Level1_8, SceneTitle.Level1_9, SceneTitle.Level1_10, SceneTitle.Level1_1_MapTest, SceneTitle.Chapter1World } },
+        {SceneCategory.Chapter1, new SceneTitle[]{ SceneTitle.Chapter1Base3x3, SceneTitle.Chapter1BaseVisualGym, SceneTitle.Chapter1_Level1, SceneTitle.Chapter1_Level2, SceneTitle.Chapter1_Level3, SceneTitle.Chapter1_Level4, SceneTitle.Chapter1_Level5, SceneTitle.Chapter1_Level6_0, SceneTitle.Chapter1_Level6_1, SceneTitle.Chapter1_Level7_1, SceneTitle.Chapter1_Level7_2, SceneTitle.Chapter1_Level7_3, SceneTitle.Chapter1_Level8_0, SceneTitle.Chapter1_Level8_1, SceneTitle.Chapter1_Level8_2, SceneTitle.Chapter1_Level9, SceneTitle.Chapter1_Level10, SceneTitle.Chapter1_Level10_1, SceneTitle.Chapter1Base4x4, SceneTitle.Level1_1, SceneTitle.Level1_2, SceneTitle.Level1_3, SceneTitle.Level1_4, SceneTitle.Level1_5, SceneTitle.Level1_6, SceneTitle.Level1_7, SceneTitle.Level1_8, SceneTitle.Level1_9, SceneTitle.Level1_10, SceneTitle.Level1_1_MapTest, SceneTitle.Chapter1World } },
 
     };
 
@@ -148,6 +203,17 @@ public static class GlobalLibrary
         {SceneTitle.Chapter1_Level1, "Chapter1_Level1" },
         {SceneTitle.Chapter1_Level2, "Chapter1_Level2" },
         {SceneTitle.Chapter1_Level3, "Chapter1_Level3" },
+        {SceneTitle.Chapter1_Level4, "Chapter1_Level4" },
+        {SceneTitle.Chapter1_Level5, "Chapter1_Level5" },
+        {SceneTitle.Chapter1_Level6_1, "Chapter1_Level6_1" },
+        {SceneTitle.Chapter1_Level7_1, "Chapter1_Level7_1" },
+        {SceneTitle.Chapter1_Level7_2, "Chapter1_Level7_2" },
+        {SceneTitle.Chapter1_Level7_3, "Chapter1_Level7_3" },
+        {SceneTitle.Chapter1_Level8_1, "Chapter1_Level8_1" },
+        {SceneTitle.Chapter1_Level8_2, "Chapter1_Level8_2" },
+        {SceneTitle.Chapter1_Level9, "Chapter1_Level9" },
+        {SceneTitle.Chapter1_Level10, "Chapter1_Level10" },
+        {SceneTitle.Chapter1_Level10_1, "Chapter1_Level10_1" },
 
         {SceneTitle.Chapter1_Level6_0, "Chapter1_Level6_0" },
 
