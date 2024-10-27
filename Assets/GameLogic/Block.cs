@@ -158,8 +158,8 @@ public class Block : MonoBehaviour
         //GameObject level_loader = GameObject.Find("LevelLoader");
         //levelLoader = level_loader.GetComponent<LevelLoader>();
 
-        //GameObject level_controller = GameObject.Find("LevelController");
-        //controller = level_controller.GetComponent<LevelController>();
+        GameObject level_controller = GameObject.Find("LevelController");
+        controller = level_controller.GetComponent<LevelController>();
 
 
 
@@ -222,21 +222,23 @@ public class Block : MonoBehaviour
     }
     private void Update()
     {
-
-        if (!rotationFound)
+        //If speaking then the player cannot move the blocks
+        if(controller.phase != LevelPhase.Speaking)
         {
-            FindLevelRot();
+            if (!rotationFound)
+            {
+                FindLevelRot();
+            }
+
+
+
+            //Controlls the Block Rotation When Right Clicked
+            if (type != BlockType.Obstacle)
+            {
+                UpdateMouseBehavior();
+                transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+            }
         }
-
-
-
-        //Controlls the Block Rotation When Right Clicked
-        if(type != BlockType.Obstacle)
-        {
-            UpdateMouseBehavior();
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
-        }
-
 
     }
 

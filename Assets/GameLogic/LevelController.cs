@@ -265,5 +265,6 @@ public enum LevelPhase
 {
     Loading,
     Placing,
+    Speaking,
     Running
 }
