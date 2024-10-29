@@ -4602,6 +4602,12 @@ MonoBehaviour:
   currentPlayer: 0
   _player1: {fileID: 0}
   _player2: {fileID: 0}
+  controller: {fileID: 0}
+  outlineLeft: {fileID: 0}
+  outlineRight: {fileID: 0}
+  outlineOBJLeft: {fileID: 0}
+  outlineOBJRight: {fileID: 0}
+  OutlineSpeed: 10
 --- !u!43 &858122907
 Mesh:
   m_ObjectHideFlags: 0
@@ -6677,6 +6683,8 @@ MonoBehaviour:
   - {fileID: 2069853594094646730}
   Player1: {fileID: 413153139}
   Player2: {fileID: 1279518766}
+  LevelSuccessOBJ_Left: {fileID: 0}
+  LevelSuccessOBJ_Right: {fileID: 0}
   LevelSuccessLeft: {fileID: 1136502668}
   LevelSuccessRight: {fileID: 1821394253}
   LevelLoader: {fileID: 0}
@@ -13153,6 +13161,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   phase: 1
   curDraggedblock: {fileID: 0}
+  mblocks: []
+  mblockCode: []
+  mLevelbrick: []
+  malignment: []
+  mRegularPlacement: []
+  isAnyBlockBeingDragged: 0
+  isAnyBlockDragging: 0
+  IndicatoreffectCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  transitionDuration: 1
+  myRenderer: {fileID: 0}
+  myMaterial: {fileID: 0}
+  isPlayingRight: 1
+  playerLeft: {fileID: 0}
+  playerRight: {fileID: 0}
 --- !u!1001 &651735420519374813
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14184,6 +14211,8 @@ MonoBehaviour:
   cld_1: {fileID: 0}
   mouse_drag: 0
   is_drag_start_in_select_area: 0
+  mouse_over: 0
+  prev_mouseOver: 0
   moveposition: {x: 0, y: 0, z: 0}
   rotatespeed: 10
   rotate: {x: 0, y: 0, z: 0}
