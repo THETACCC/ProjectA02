@@ -109,7 +109,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 327231318011250578}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.03, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -466,6 +466,7 @@ Transform:
   - {fileID: 6968524679326240109}
   - {fileID: 8979736404236172290}
   - {fileID: 361184569109836125}
+  - {fileID: 2810279166226638803}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1654,6 +1655,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ice_BreakWall
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f44a2bf9173a146d9806230c51b7f69e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f44a2bf9173a146d9806230c51b7f69e, type: 3}
 --- !u!4 &3962469282458467702 stripped
@@ -1738,6 +1743,68 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a6ccfc663fe3146348fcfbc830c0ce4e, type: 3}
   m_PrefabInstance: {fileID: 5130092891789129554}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6219693862584123585
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1454035322212542744}
+    m_Modifications:
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_RootOrder
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8798630913537736104, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+      propertyPath: m_Name
+      value: Ice_BrokenWall_Mechanic
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+--- !u!4 &2810279166226638803 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8165259900660721426, guid: 9631e88f2a05d5841a92565989d9af93, type: 3}
+  m_PrefabInstance: {fileID: 6219693862584123585}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7439829190502115974
 PrefabInstance:
