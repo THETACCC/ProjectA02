@@ -49,6 +49,8 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private void Start()
     {
+
+
         //Controlls the indicator material
         //GameObject IndicatorMat = GameObject.FindGameObjectWithTag("IndicatorMaterial");
         //myRenderer = IndicatorMat.GetComponent<MeshRenderer>();
@@ -102,6 +104,14 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private void Update()
     {
+
+        if(playerLeft == null)
+        {
+            GameObject playerleft = GameObject.FindGameObjectWithTag("Player1");
+            playerLeft = playerleft.GetComponent<PlayerCharacter>();
+            GameObject playerright = GameObject.FindGameObjectWithTag("Player2");
+            playerRight = playerright.GetComponent<PlayerCharacter>();
+        }
         if(phase == LevelPhase.Running)
         {
             if (Input.GetKeyDown(KeyCode.G))

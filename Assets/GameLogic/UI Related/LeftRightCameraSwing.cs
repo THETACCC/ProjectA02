@@ -16,13 +16,20 @@ public class LeftRightCameraSwing : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
-        levelController = controllerOBJ.GetComponent<LevelController>();
+        //GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
+        //levelController = controllerOBJ.GetComponent<LevelController>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(levelController == null)
+        {
+            GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
+            levelController = controllerOBJ.GetComponent<LevelController>();
+        }
+
+
         if(levelController.isAnyBlockDragging)
         {
             Vector3 mousePosition = Input.mousePosition;
