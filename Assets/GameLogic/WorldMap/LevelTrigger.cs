@@ -1,15 +1,14 @@
 using SKCell;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelTrigger : MonoBehaviour
 {
     [SerializeField] private ImageMover imageMover; // Reference to the ImageMover script
-
     private bool allowInput = false;
     private FlowManager flowManager;
     public SceneTitle scenetitle;
-    public static int t_spawnPoint;
     private GameObject flowmanager;
     private bool startloading = false;
 
@@ -17,18 +16,6 @@ public class LevelTrigger : MonoBehaviour
     {
         flowmanager = GameObject.Find("FlowManager");
         flowManager = flowmanager.GetComponent<FlowManager>();
-
-
-
-
-
-        // Print the location of the GameObject with FlowManager script
-        if (flowmanager != null)
-        {
-            Debug.Log("FlowManager's location: " + flowmanager.transform.position);
-        }
-
-
 
         // Ensure the image is hidden at the start
         if (imageMover != null)
@@ -52,6 +39,14 @@ public class LevelTrigger : MonoBehaviour
         {
             allowInput = true;
 
+            // Save the current trigger's position when the player enters
+            PlayerPrefs.SetFloat("LastTriggerX", transform.position.x);
+            PlayerPrefs.SetFloat("LastTriggerY", transform.position.y);
+            PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
+            PlayerPrefs.SetString("LastTriggerScene", SceneManager.GetActiveScene().name);
+
+            Debug.Log("Saved Player Position: " + transform.position);
+
             // Start moving the image from start to end position
             if (imageMover != null)
             {
@@ -59,6 +54,7 @@ public class LevelTrigger : MonoBehaviour
             }
         }
     }
+
 
     public void OnTriggerExit(Collider other)
     {
