@@ -1,7 +1,7 @@
 using SKCell;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement;  // Add the necessary using directive for SceneManager
 
 public class LevelTrigger : MonoBehaviour
 {
@@ -16,12 +16,6 @@ public class LevelTrigger : MonoBehaviour
     {
         flowmanager = GameObject.Find("FlowManager");
         flowManager = flowmanager.GetComponent<FlowManager>();
-
-        // Ensure the image is hidden at the start
-        if (imageMover != null)
-        {
-            imageMover.ResetImage();
-        }
     }
 
     private void Update()
@@ -35,7 +29,7 @@ public class LevelTrigger : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
             allowInput = true;
 
@@ -45,27 +39,26 @@ public class LevelTrigger : MonoBehaviour
             PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
             PlayerPrefs.SetString("LastTriggerScene", SceneManager.GetActiveScene().name);
 
-            Debug.Log("Saved Player Position: " + transform.position);
-
-            // Start moving the image from start to end position
             if (imageMover != null)
             {
-                StartCoroutine(imageMover.MoveImageForward());
+                print("moving to end");
+                StopAllCoroutines();
+                StartCoroutine(imageMover.MoveImageToEnd()); 
             }
         }
     }
 
-
     public void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
             allowInput = false;
 
-            // Move the image from end back to the start position
             if (imageMover != null)
             {
-                StartCoroutine(imageMover.MoveImageBackward());
+                print("moving to start");
+                StopAllCoroutines();
+                StartCoroutine(imageMover.MoveImageToStart());  
             }
         }
     }
