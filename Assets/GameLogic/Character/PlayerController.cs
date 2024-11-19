@@ -1,12 +1,11 @@
+using SKCell;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SKCell;
-using UnityEngine.UIElements;
 
-
-public class CharacterMovement : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
+
     public int mapSide;
     Transform visualTF;
 
@@ -27,7 +26,7 @@ public class CharacterMovement : MonoBehaviour
     private float cur_spd_boost = 5f;
     private Vector3 prev_pos, delta_pos;
     private float axis_x, axis_z;
-
+    private float mainAxis;
     //Code when cannot move
     public bool canmove = true;
 
@@ -42,10 +41,14 @@ public class CharacterMovement : MonoBehaviour
     private bool counting = false;
 
 
-
+    private float targetYrotationW = 0f;
+    private float targetYrotationA = 270f;
+    private float targetYrotationS = 180f;
+    private float targetYrotationD = 90f;
 
     //Animator
     public Animator playerAnimator;
+    // Start is called before the first frame update
     void Start()
     {
         GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
@@ -59,33 +62,33 @@ public class CharacterMovement : MonoBehaviour
         mapSide = LevelLoader.PosToMapID(transform.position);
     }
 
-
     void Update()
     {
 
 
+
+
         if (canmove)
         {
-            if(Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.W))
             {
-                axis_x = 1;
+                mainAxis = 1;
             }
             else if (Input.GetKey(KeyCode.A))
             {
-                axis_x = -1;
+                mainAxis = 2;
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                mainAxis = 3;
+            }
+            else if (Input.GetKey(KeyCode.D))
+            {
+                mainAxis = 4;
             }
             else
             {
-                axis_x = 0;
-            }
-
-            if(Input.GetKey(KeyCode.W))
-            {
-                axis_z = 1;
-            }
-            else
-            {
-                axis_z = 0;
+                mainAxis = 0;
             }
             //axis_z = Input.GetAxisRaw("Vertical");
         }
@@ -94,7 +97,7 @@ public class CharacterMovement : MonoBehaviour
 
         // Log the magnitude of delta_pos for debugging
 
-        if(is_sliding)
+        if (is_sliding)
         {
             playerAnimator.SetBool("isRunning", true);
         }
@@ -118,11 +121,11 @@ public class CharacterMovement : MonoBehaviour
             {
                 rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
-                if (axis_x != 0 && !isRotating)
+                if (mainAxis != 0 && !isRotating)
                 {
                     StartCoroutine(RotateCharacter());
                 }
-
+                
                 if (axis_z != 0 && !isRotating)
                 {
                     // Calculate the forward movement direction based on the character's current rotation
@@ -131,14 +134,12 @@ public class CharacterMovement : MonoBehaviour
                     // Apply the movement speed and update the Rigidbody's velocity
                     //rb.velocity = moveDirection * moveSpeed;
 
-                    slide_dir = new Vector2(0, 1);
-                    is_sliding = true;
-                    cur_sliding_time = 0;
-                    cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
-                    upperCld.gameObject.SetActive(true);
 
                     //RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
                 }
+                
+
+
             }
             else
             {
@@ -200,7 +201,29 @@ public class CharacterMovement : MonoBehaviour
         isRotating = true;
 
         float rotationSpeed = 20f; //Determines how fast the player will turn
-        float targetYRotation = visualTF.eulerAngles.y + 90 * axis_x;
+        float targetYRotation = visualTF.eulerAngles.y;
+
+        // Set the target rotation based on the mainAxis value
+        switch (mainAxis)
+        {
+            case 1: // W key, no rotation needed
+                targetYRotation = 0f; 
+                break;
+
+            case 2: // A key, rotate 90 degrees to the left (270 degrees)
+                targetYRotation = 270f;
+                break;
+
+            case 3: // S key, rotate 180 degrees
+                targetYRotation = 180f;
+                break;
+
+            case 4: // D key, rotate 90 degrees to the right
+                targetYRotation = 90f;
+                break;
+        }
+
+        //float targetYRotation = visualTF.eulerAngles.y + 90 * axis_x;
 
         // Normalize the target rotation to be within 0 to 360 degrees
         targetYRotation = (targetYRotation + 360) % 360;
@@ -221,8 +244,11 @@ public class CharacterMovement : MonoBehaviour
         visualTF.eulerAngles = new Vector3(0, targetYRotation, 0);
 
         isRotating = false;
+
+        slide_dir = new Vector2(0, 1);
+        is_sliding = true;
+        cur_sliding_time = 0;
+        cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
+        upperCld.gameObject.SetActive(true);
     }
-
-
-
 }
