@@ -5,76 +5,115 @@ using UnityEngine.InputSystem;
 
 namespace StarterAssets
 {
-	public class StarterAssetsInputs : MonoBehaviour
-	{
-		[Header("Character Input Values")]
-		public Vector2 move;
-		public Vector2 look;
-		public bool jump;
-		public bool sprint;
+    public class StarterAssetsInputs : MonoBehaviour
+    {
+        [Header("Character Input Values")]
+        public Vector2 move;
+        public Vector2 look;
+        public bool jump;
+        public bool sprint;
 
-		[Header("Movement Settings")]
-		public bool analogMovement;
+        [Header("Movement Settings")]
+        public bool analogMovement;
 
-		[Header("Mouse Cursor Settings")]
-		public bool cursorLocked = true;
-		public bool cursorInputForLook = true;
+        [Header("Mouse Cursor Settings")]
+        public bool cursorLocked = true;
+        public bool cursorInputForLook = true;
+
+        // Add this for a default position (could be the origin or any other point)
+        public Vector3 defaultPosition = new Vector3(0, 0, 0);
+
+        private void Start()
+        {
+            TeleportToLastPosition();
+        }
+
 
 #if ENABLE_INPUT_SYSTEM
-		public void OnMove(InputValue value)
-		{
-			MoveInput(value.Get<Vector2>());
-		}
+        public void OnMove(InputValue value)
+        {
+            MoveInput(value.Get<Vector2>());
+        }
 
-		public void OnLook(InputValue value)
-		{
-			if(cursorInputForLook)
-			{
-				LookInput(value.Get<Vector2>());
-			}
-		}
+        public void OnLook(InputValue value)
+        {
+            if (cursorInputForLook)
+            {
+                LookInput(value.Get<Vector2>());
+            }
+        }
 
-		public void OnJump(InputValue value)
-		{
-			JumpInput(value.isPressed);
-		}
+        public void OnJump(InputValue value)
+        {
+            JumpInput(value.isPressed);
+        }
 
-		public void OnSprint(InputValue value)
-		{
-			SprintInput(value.isPressed);
-		}
+        public void OnSprint(InputValue value)
+        {
+            SprintInput(value.isPressed);
+        }
 #endif
 
+        public void MoveInput(Vector2 newMoveDirection)
+        {
+            move = newMoveDirection;
+        }
 
-		public void MoveInput(Vector2 newMoveDirection)
-		{
-			move = newMoveDirection;
-		} 
+        public void LookInput(Vector2 newLookDirection)
+        {
+            look = newLookDirection;
+        }
 
-		public void LookInput(Vector2 newLookDirection)
-		{
-			look = newLookDirection;
-		}
+        public void JumpInput(bool newJumpState)
+        {
+            jump = newJumpState;
+        }
 
-		public void JumpInput(bool newJumpState)
-		{
-			jump = newJumpState;
-		}
+        public void SprintInput(bool newSprintState)
+        {
+            sprint = newSprintState;
+        }
 
-		public void SprintInput(bool newSprintState)
-		{
-			sprint = newSprintState;
-		}
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            SetCursorState(cursorLocked);
+        }
 
-		private void OnApplicationFocus(bool hasFocus)
-		{
-			SetCursorState(cursorLocked);
-		}
+        private void SetCursorState(bool newState)
+        {
+            Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+        }
 
-		private void SetCursorState(bool newState)
-		{
-			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
-		}
-	}
-	
+        public void TeleportToLastPosition()
+        {
+            // If no saved position exists, start at the default position
+            if (PlayerPrefs.HasKey("LastTriggerX"))
+            {
+                float x = PlayerPrefs.GetFloat("LastTriggerX");
+                float y = PlayerPrefs.GetFloat("LastTriggerY");
+                float z = PlayerPrefs.GetFloat("LastTriggerZ");
+
+                // Teleport the player to the saved position
+                transform.position = new Vector3(x, y, z);
+                Debug.Log($"Player teleported to saved position: {x}, {y}, {z}");
+            }
+            else
+            {
+                // Default position if no saved position is found
+                transform.position = defaultPosition;
+                Debug.LogWarning("No saved position found. Player starts at default position.");
+            }
+        }
+
+        // Method to save position when needed
+        public void SavePlayerPosition()
+        {
+            // Save the player's current position
+            PlayerPrefs.SetFloat("LastTriggerX", transform.position.x);
+            PlayerPrefs.SetFloat("LastTriggerY", transform.position.y);
+            PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
+            PlayerPrefs.Save();
+            Debug.Log($"Player position saved: {transform.position}");
+        }
+    }
 }
