@@ -117,6 +117,24 @@ public class PlayerController : MonoBehaviour
 
         if (controller.phase == LevelPhase.Running)
         {
+
+            if (Input.GetKey(KeyCode.Space) && !isRotating && canmove)
+            {
+                slide_dir = new Vector2(0, 1);
+                is_sliding = true;
+                cur_sliding_time = 0;
+                cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
+                upperCld.gameObject.SetActive(true);
+                // Calculate the forward movement direction based on the character's current rotation
+                //Vector3 moveDirection = transform.forward * axis_z;
+
+                // Apply the movement speed and update the Rigidbody's velocity
+                //rb.velocity = moveDirection * moveSpeed;
+
+
+                //RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
+            }
+
             if (!is_sliding)
             {
                 rb.velocity = new Vector3(0, rb.velocity.y, 0);
@@ -126,17 +144,7 @@ public class PlayerController : MonoBehaviour
                     StartCoroutine(RotateCharacter());
                 }
                 
-                if (axis_z != 0 && !isRotating)
-                {
-                    // Calculate the forward movement direction based on the character's current rotation
-                    //Vector3 moveDirection = transform.forward * axis_z;
 
-                    // Apply the movement speed and update the Rigidbody's velocity
-                    //rb.velocity = moveDirection * moveSpeed;
-
-
-                    //RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
-                }
                 
 
 
@@ -245,10 +253,6 @@ public class PlayerController : MonoBehaviour
 
         isRotating = false;
 
-        slide_dir = new Vector2(0, 1);
-        is_sliding = true;
-        cur_sliding_time = 0;
-        cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
-        upperCld.gameObject.SetActive(true);
+
     }
 }
