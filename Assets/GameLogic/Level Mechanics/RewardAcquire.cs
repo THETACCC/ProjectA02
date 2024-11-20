@@ -10,12 +10,14 @@ public class RewardAcquire : MonoBehaviour
     public SKDialoguePlayer dialoguePlayer;
 
     private GameObject player1;
-    private CharacterMovement movement;
+    private PlayerController movement;
 
     private LevelController levelController;
+    private MeshRenderer myRenderer;
     // Start is called before the first frame update
     void Start()
     {
+        myRenderer = GetComponent<MeshRenderer>();
         GameObject LevelControll = GameObject.FindGameObjectWithTag("LevelPhaseControll");
         if(LevelControll != null)
         {
@@ -23,7 +25,7 @@ public class RewardAcquire : MonoBehaviour
         }
 
         player1 = GameObject.FindGameObjectWithTag("Player1");
-        movement = player1.GetComponent<CharacterMovement>();
+        movement = player1.GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -34,17 +36,20 @@ public class RewardAcquire : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Entered");
         if (other.gameObject.tag == "Player1" || other.gameObject.tag == "Player2")
         {
             if (!isReached)
             {
                 if (dialoguePlayer != null)
                 {
+
                     DisablePlayer();
                     levelController.phase = LevelPhase.Speaking;
                     Debug.Log(levelController.phase);
                     dialoguePlayer.Play();
-
+                    //This renderer makes the visual of the reward disappear
+                    myRenderer.enabled= false;
                     isReached = true;
                 }
             }
