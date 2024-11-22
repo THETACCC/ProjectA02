@@ -6,7 +6,7 @@ public class Enterfinishleft : MonoBehaviour
 {
     public bool leftreached = false;
     private GameObject player1;
-    private CharacterMovement movement;
+    private PlayerController movement;
 
     private PlayerWinVisual playerWinVisual;
     private GameObject PlayerWin;
@@ -19,7 +19,7 @@ public class Enterfinishleft : MonoBehaviour
     public void SerachPlayer()
     {
         player1 = GameObject.FindGameObjectWithTag("Player1");
-        movement = player1.GetComponent<CharacterMovement>();
+        movement = player1.GetComponent<PlayerController>();
         PlayerWin = GameObject.FindGameObjectWithTag("PlayerWinVisual");
         playerWinVisual = PlayerWin.GetComponent<PlayerWinVisual>();
     }
