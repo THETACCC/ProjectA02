@@ -65,8 +65,8 @@ Shader "Custom/WaterShpere"
 
                 float4 oPos = o.objPos = v.vertex;
                 oPos.y -=.5;
-                float dispAmount = pow((sin(oPos.y * 20+_Time.y * 4)+1), 3);
-                float3 disp = v.vertex.xyz + v.normal * dispAmount *.02;
+                float dispAmount = pow((sin(oPos.y * 20+_Time.y * 4)+1), 1);
+                float3 disp = v.vertex.xyz + v.normal * dispAmount *.001;
                 float lerpAmount = (0.5-abs(o.objPos.y)) * 2;
 
                 v.vertex.xyz = lerp(v.vertex.xyz, disp, lerpAmount);
