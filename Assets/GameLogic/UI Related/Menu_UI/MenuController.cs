@@ -240,4 +240,25 @@ public class MenuController : MonoBehaviour
         });
         startLoading = true;
     }
+
+    public void ResetCurrentScene()
+    {
+        // Get the current active scene's index
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        SceneManager.LoadScene(currentSceneIndex);  // Directly reload the scene
+        ResumeGame();
+
+        /*
+        // Add a delay before reloading the scene
+        SKUtils.InvokeAction(0.2f, () =>
+        {
+            SceneManager.LoadScene(currentSceneIndex);  // Directly reload the scene
+        });
+
+        startLoading = true;
+        */
+    }
+
+
 }
