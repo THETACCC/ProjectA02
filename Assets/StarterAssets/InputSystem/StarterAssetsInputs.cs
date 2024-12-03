@@ -21,7 +21,7 @@ namespace StarterAssets
         public bool cursorInputForLook = true;
 
         // Add this for a default position (could be the origin or any other point)
-        public Vector3 defaultPosition = new Vector3(0, 0, 0);
+        public Vector3 defaultPosition = new Vector3(4, -8, 101);
 
         private void Start()
         {
