@@ -105,6 +105,10 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SKCell;
+using static UnityEditor.VersionControl.Message;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
+using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 
 public class MenuController : MonoBehaviour
 {
@@ -137,6 +141,7 @@ public class MenuController : MonoBehaviour
     {
         LoadNextLevel(sceneToLoad_Chp1_World);
         print("LOADING LEVEL! " + sceneToLoad_Chp1_World);
+        ResumeGame();
     }
 
 
@@ -235,4 +240,25 @@ public class MenuController : MonoBehaviour
         });
         startLoading = true;
     }
+
+    public void ResetCurrentScene()
+    {
+        // Get the current active scene's index
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        SceneManager.LoadScene(currentSceneIndex);  // Directly reload the scene
+        ResumeGame();
+
+        /*
+        // Add a delay before reloading the scene
+        SKUtils.InvokeAction(0.2f, () =>
+        {
+            SceneManager.LoadScene(currentSceneIndex);  // Directly reload the scene
+        });
+
+        startLoading = true;
+        */
+    }
+
+
 }
