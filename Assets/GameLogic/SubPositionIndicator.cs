@@ -53,6 +53,7 @@ public class SubPositionIndicator : MonoBehaviour
                     if (Input.GetMouseButtonUp(0)) // Left mouse button
                     {
                         PlayerCharacter pc = CommonReference.playerCharacters[LevelLoader.PosToMapID(transform.position)];
+                        Debug.Log(pc.name);
                         pc.transform.position = new Vector3(transform.position.x, pc.transform.position.y, transform.position.z);
                     }
                 }
