@@ -50,7 +50,8 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
     {
         boundsLeft = mapLeft.GetComponent<BoxCollider>().bounds;
         boundsRight = mapRight.GetComponent<BoxCollider>().bounds;
-        center = (LeftSide.position + RightSide.position) / 2.0f;
+        center = new Vector3(0,0,0);
+        //center = (LeftSide.position + RightSide.position) / 2.0f;
         Debug.Log(center);
         //center.x = (mapLeft.position.x + mapRight.position.x) / 2.0f;
         LoadMap();

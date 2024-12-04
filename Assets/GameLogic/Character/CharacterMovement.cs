@@ -194,35 +194,7 @@ public class CharacterMovement : MonoBehaviour
 
     }
 
-    /*
-    IEnumerator RotateCharacter()
-    {
-        isRotating = true;
 
-        Vector3 currentRotation = visualTF.eulerAngles;
-        float rotationSpeed = 10f;
-
-
-        float targetYRotation = (visualTF.eulerAngles.y + 90 * axis_x);
-
-
-        Debug.Log(targetYRotation);
-        while (Mathf.Abs(Mathf.DeltaAngle(visualTF.eulerAngles.y, targetYRotation)) > 0.01f )
-        {
-            visualTF.eulerAngles = Vector3.Lerp(visualTF.eulerAngles, new Vector3(0, targetYRotation, 0), Time.deltaTime * rotationSpeed);
-            //RotateTo(new Vector3(0, targetYRotation, 0));
-            yield return null;
-        }
-
-        if (Mathf.Abs(Mathf.DeltaAngle(visualTF.eulerAngles.y, targetYRotation)) <= 0.01f )
-        {
-            visualTF.eulerAngles = new Vector3(0, targetYRotation,0);
-        }
-
-
-        isRotating = false;
-    }
-    */
     IEnumerator RotateCharacter()
     {
         isRotating = true;

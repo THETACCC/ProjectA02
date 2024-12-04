@@ -1,15 +1,15 @@
 using SKCell;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelTrigger : MonoBehaviour
 {
     [SerializeField] private ImageMover imageMover; // Reference to the ImageMover script
-
+    [SerializeField] private GameObject uiSelectLevel; // Reference to the UI_SelectLevel GameObject
     private bool allowInput = false;
     private FlowManager flowManager;
     public SceneTitle scenetitle;
-    public static int t_spawnPoint;
     private GameObject flowmanager;
     private bool startloading = false;
 
@@ -18,22 +18,10 @@ public class LevelTrigger : MonoBehaviour
         flowmanager = GameObject.Find("FlowManager");
         flowManager = flowmanager.GetComponent<FlowManager>();
 
-
-
-
-
-        // Print the location of the GameObject with FlowManager script
-        if (flowmanager != null)
+        // Ensure UI_SelectLevel starts as inactive
+        if (uiSelectLevel != null)
         {
-            Debug.Log("FlowManager's location: " + flowmanager.transform.position);
-        }
-
-
-
-        // Ensure the image is hidden at the start
-        if (imageMover != null)
-        {
-            imageMover.ResetImage();
+            uiSelectLevel.SetActive(false);
         }
     }
 
@@ -46,30 +34,50 @@ public class LevelTrigger : MonoBehaviour
         }
     }
 
-    public void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
             allowInput = true;
 
-            // Start moving the image from start to end position
+            // Activate the UI_SelectLevel
+            if (uiSelectLevel != null)
+            {
+                uiSelectLevel.SetActive(true);
+            }
+
+            // Save the current trigger's position when the player enters
+            PlayerPrefs.SetFloat("LastTriggerX", transform.position.x);
+            PlayerPrefs.SetFloat("LastTriggerY", transform.position.y);
+            PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
+            PlayerPrefs.SetString("LastTriggerScene", SceneManager.GetActiveScene().name);
+
             if (imageMover != null)
             {
-                StartCoroutine(imageMover.MoveImageForward());
+                print("moving to end");
+                StopAllCoroutines();
+                StartCoroutine(imageMover.MoveImageToEnd());
             }
         }
     }
 
-    public void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
             allowInput = false;
 
-            // Move the image from end back to the start position
+            // Deactivate the UI_SelectLevel
+            if (uiSelectLevel != null)
+            {
+                uiSelectLevel.SetActive(false);
+            }
+
             if (imageMover != null)
             {
-                StartCoroutine(imageMover.MoveImageBackward());
+                print("moving to start");
+                StopAllCoroutines();
+                StartCoroutine(imageMover.MoveImageToStart());
             }
         }
     }

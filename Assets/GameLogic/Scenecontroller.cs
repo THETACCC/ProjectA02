@@ -83,8 +83,19 @@ public enum SceneTitle
     Chapter1_Level1 = 17,
     Chapter1_Level2 = 18,
     Chapter1_Level3 = 19,
-    Chapter1_Level6_0 = 20,
-    Chapter1_Level8_0 = 21,
+    Chapter1_Level4 = 20,
+    Chapter1_Level5 = 21,
+    Chapter1_Level6_0 = 22,
+    Chapter1_Level6_1 = 23,
+    Chapter1_Level7_1 = 24,
+    Chapter1_Level7_2 = 25,
+    Chapter1_Level7_3 = 26,
+    Chapter1_Level8_0 = 27,
+    Chapter1_Level8_1 = 28,
+    Chapter1_Level8_2 = 29,
+    Chapter1_Level9 = 30,
+    Chapter1_Level10 = 31,
+    Chapter1_Level10_1 = 32,
 
 
     //Common Scenes

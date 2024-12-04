@@ -7,7 +7,7 @@ public class EnterFinishRight : MonoBehaviour
 {
     public bool rightreached = false;
     private GameObject player2;
-    private CharacterMovement movement;
+    private PlayerController movement;
 
     private PlayerWinVisual playerWinVisual;
     private GameObject PlayerWinVisual2;
@@ -18,7 +18,7 @@ public class EnterFinishRight : MonoBehaviour
     public void SerachPlayer()
     {
         player2 = GameObject.FindGameObjectWithTag("Player2");
-        movement = player2.GetComponent<CharacterMovement>();
+        movement = player2.GetComponent<PlayerController>();
         PlayerWinVisual2 = GameObject.FindGameObjectWithTag("PlayerWinVisual2");
         playerWinVisual = PlayerWinVisual2.GetComponent<PlayerWinVisual>();
     }

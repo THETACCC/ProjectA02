@@ -66,7 +66,7 @@ public class BlockIntro : MonoBehaviour
 
     IEnumerator EnablePlayer()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(3.5f);
         Player1.SetActive(true);
 
         Player2.SetActive(true);

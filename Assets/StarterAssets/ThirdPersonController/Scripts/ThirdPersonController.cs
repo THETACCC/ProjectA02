@@ -110,6 +110,11 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
+        private StarterAssetsInputs _starterAssetsInputs;
+
+        private bool isTeleported = false;
+
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -134,15 +139,27 @@ namespace StarterAssets
 
         private void Start()
         {
+            _starterAssetsInputs = GetComponent<StarterAssetsInputs>();
+
+            if (_starterAssetsInputs != null)
+            {
+                // Call the TeleportToLastPosition method
+                _starterAssetsInputs.TeleportToLastPosition();
+                isTeleported = true;
+            }
+            else
+            {
+                Debug.LogWarning("StarterAssetsInputs component not found!");
+            }
+
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
+    Debug.LogError("Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
 
             AssignAnimationIDs();
@@ -152,6 +169,7 @@ namespace StarterAssets
             _fallTimeoutDelta = FallTimeout;
         }
 
+
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
@@ -159,6 +177,11 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+
+            if (isTeleported && _input.move != Vector2.zero)
+            {
+                isTeleported = false; // Allow movement after input is detected
+            }
         }
 
         private void LateUpdate()
@@ -213,6 +236,13 @@ namespace StarterAssets
 
         private void Move()
         {
+            if (isTeleported)
+            {
+                // Skip movement logic if the player was just teleported
+                return;
+            }
+
+
             // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 

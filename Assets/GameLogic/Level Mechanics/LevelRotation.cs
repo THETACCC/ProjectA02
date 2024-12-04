@@ -11,22 +11,35 @@ public class LevelRotation : MonoBehaviour
     //The Bool for the block to know whether the map is rotating or not.
     public bool isRotating = false;
     public bool finishedRotation = false;
+
+    private LevelController levelController;
     private void Start()
     {
+        GameObject LevelControllOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
+        if (LevelControllOBJ != null)
+        {
+            levelController = LevelControllOBJ.GetComponent<LevelController>();
+        }
+
         self = gameObject.transform; 
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if(levelController.phase != LevelPhase.Speaking)
         {
-            if (!isRotating)
+            if (Input.GetKeyDown(KeyCode.H))
             {
+                if (!isRotating)
+                {
 
-                StartCoroutine(RotateLevel());
+                    StartCoroutine(RotateLevel());
+                }
+
             }
-
         }
+
+
     }
 
 

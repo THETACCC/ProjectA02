@@ -20,8 +20,8 @@ public class PlayerCharacter : MonoBehaviour
     public GameObject _player2;
 
     //Get the reference of player's character movement sciprt
-    private CharacterMovement _player1Movement;
-    private CharacterMovement _player2Movement;
+    private PlayerController _player1Movement;
+    private PlayerController _player2Movement;
 
     public LevelController controller;
     //Reference to Outline
@@ -44,9 +44,9 @@ public class PlayerCharacter : MonoBehaviour
         controller = controllerOBJ.GetComponent<LevelController>();
 
         _player1 = GameObject.FindGameObjectWithTag("Player1");
-        _player1Movement = _player1.GetComponent<CharacterMovement>();
+        _player1Movement = _player1.GetComponent<PlayerController>();
         _player2 = GameObject.FindGameObjectWithTag("Player2");
-        _player2Movement = _player2.GetComponent<CharacterMovement>();
+        _player2Movement = _player2.GetComponent<PlayerController>();
         SwitchPlayer();
     }
 

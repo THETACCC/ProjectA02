@@ -9,6 +9,7 @@ public class LightHouseControll : MonoBehaviour
     public LevelController controller;
     public float rotationSpeed = 2.0f;
     private Quaternion targetRotation;
+    private Quaternion targetRotationHouse;
     private bool isRight = true;
 
 
@@ -27,7 +28,7 @@ public class LightHouseControll : MonoBehaviour
     {
         if (controller.phase == LevelPhase.Placing)
         {
-            myLighthouse.transform.eulerAngles = new Vector3(myLighthouse.transform.eulerAngles.x, 225, myLighthouse.transform.eulerAngles.z);
+            myLighthouse.transform.eulerAngles = new Vector3(myLighthouse.transform.eulerAngles.x, 200, myLighthouse.transform.eulerAngles.z);
             myLight.transform.eulerAngles = new Vector3(myLight.transform.eulerAngles.x, 225, myLight.transform.eulerAngles.z);
         }
         if (controller.phase == LevelPhase.Running)
@@ -37,15 +38,17 @@ public class LightHouseControll : MonoBehaviour
             if (!controller.isPlayingRight)
             {
                 targetRotation = Quaternion.Euler(myLight.transform.eulerAngles.x, 180, myLight.transform.eulerAngles.z);
+                targetRotationHouse = Quaternion.Euler(myLighthouse.transform.eulerAngles.x, 150, myLighthouse.transform.eulerAngles.z);
             }
             else
             {
                 targetRotation = Quaternion.Euler(myLight.transform.eulerAngles.x, 270, myLight.transform.eulerAngles.z);
+                targetRotationHouse = Quaternion.Euler(myLighthouse.transform.eulerAngles.x, 250, myLighthouse.transform.eulerAngles.z);
             }
 
             // Smoothly lerp the current rotation to the target rotation over time
             myLight.transform.rotation = Quaternion.Lerp(myLight.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            myLighthouse.transform.rotation = Quaternion.Lerp(myLighthouse.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            myLighthouse.transform.rotation = Quaternion.Lerp(myLighthouse.transform.rotation, targetRotationHouse, rotationSpeed * Time.deltaTime);
 
         }
     }

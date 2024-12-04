@@ -3,63 +3,53 @@ using UnityEngine;
 
 public class ImageMover : MonoBehaviour
 {
-    [SerializeField] private Transform startPoint; // Starting position
-    [SerializeField] private Transform endPoint;   // Ending position
-    [SerializeField] private float moveDuration = 1f; // Duration of the movement
+    [SerializeField] private Transform startPoint;  // Starting position
+    [SerializeField] private Transform endPoint;    // Ending position
+    [SerializeField] private float moveDuration = 1f;  // Duration of the movement
 
-    private Vector3 startPos;
-    private Vector3 endPos;
     private bool isMoving = false;
 
     private void Start()
     {
-        // Set the initial positions from the assigned transforms
-        startPos = startPoint.position;
-        endPos = endPoint.position;
-
-        // Initially set the image to the starting position
-        transform.position = startPos;
+        transform.position = startPoint.position;
     }
 
-    // Coroutine to move the image from start to end position
-    public IEnumerator MoveImageForward()
+    public IEnumerator MoveImageToEnd()
     {
-        isMoving = true;
+        Vector3 moveStart = transform.position;  // Current position as the start point
+        Vector3 moveEnd = endPoint.position;
         float elapsedTime = 0f;
 
         while (elapsedTime < moveDuration)
         {
-            transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / moveDuration);
+            transform.position = Vector3.Lerp(moveStart, moveEnd, elapsedTime / moveDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         // Ensure it ends exactly at the end position
-        transform.position = endPos;
-        isMoving = false;
+        transform.position = moveEnd;
     }
 
-    // Coroutine to move the image from end to start position (reverse)
-    public IEnumerator MoveImageBackward()
+    public IEnumerator MoveImageToStart()
     {
-        isMoving = true;
+        Vector3 moveStart = transform.position;  // Current position as the start point
+        Vector3 moveEnd = startPoint.position;
         float elapsedTime = 0f;
 
         while (elapsedTime < moveDuration)
         {
-            transform.position = Vector3.Lerp(endPos, startPos, elapsedTime / moveDuration);
+            transform.position = Vector3.Lerp(moveStart, moveEnd, elapsedTime / moveDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         // Ensure it ends exactly at the start position
-        transform.position = startPos;
-        isMoving = false;
+        transform.position = moveEnd;
     }
 
-    // Reset the image to its starting position
     public void ResetImage()
     {
-        transform.position = startPos;
+        transform.position = startPoint.position; // Resets to the start point
     }
 }

@@ -21,6 +21,9 @@ public class LevelPass : MonoBehaviour
 
     private void Start()
     {
+        leftfinish = GameObject.FindGameObjectWithTag("FinishLeft");
+        rightfinish = GameObject.FindGameObjectWithTag("FinishRight");
+
         left = leftfinish.GetComponent<Enterfinishleft>();
         right = rightfinish.GetComponent<EnterFinishRight>();
         flowmanager = GameObject.Find("FlowManager");
