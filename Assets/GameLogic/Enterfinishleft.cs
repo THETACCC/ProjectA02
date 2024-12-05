@@ -37,8 +37,8 @@ public class Enterfinishleft : MonoBehaviour
             movement.is_sliding = false;
             leftreached = true;
             playerWinVisual.isPlayerWin = true;
-            PlayerCollider.enabled = false;
-            Rigidbody.useGravity = false;
+            //PlayerCollider.enabled = false;
+            //Rigidbody.useGravity = false;
         }
     }
 }
