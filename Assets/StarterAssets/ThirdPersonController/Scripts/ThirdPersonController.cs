@@ -14,6 +14,10 @@ namespace StarterAssets
 #endif
     public class ThirdPersonController : MonoBehaviour
     {
+        [Header("Default Position")]
+        [Tooltip("Default position for the player.")]
+        public Vector3 defaultPosition = new Vector3(4, -8, 101);
+
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
@@ -142,6 +146,7 @@ namespace StarterAssets
             _starterAssetsInputs = GetComponent<StarterAssetsInputs>();
 
             if (_starterAssetsInputs != null)
+
             {
                 // Call the TeleportToLastPosition method
                 _starterAssetsInputs.TeleportToLastPosition();
@@ -152,19 +157,34 @@ namespace StarterAssets
                 Debug.LogWarning("StarterAssetsInputs component not found!");
             }
 
+            // Check if the saved position exists
+            if (PlayerPrefs.HasKey("LastTriggerX") && PlayerPrefs.HasKey("LastTriggerY") && PlayerPrefs.HasKey("LastTriggerZ"))
+            {
+                float x = PlayerPrefs.GetFloat("LastTriggerX");
+                float y = PlayerPrefs.GetFloat("LastTriggerY");
+                float z = PlayerPrefs.GetFloat("LastTriggerZ");
+
+                transform.position = new Vector3(x, y, z);
+                Debug.Log($"Loaded saved position: {transform.position}");
+            }
+            else
+            {
+                // Only set the default position if no saved position is found
+                transform.position = defaultPosition;
+                Debug.Log($"No saved position found. Using default position: {defaultPosition}");
+            }
+
+            // Set the initial camera rotation
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+
+            // Initialize other components
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
-#if ENABLE_INPUT_SYSTEM
-            _playerInput = GetComponent<PlayerInput>();
-#else
-    Debug.LogError("Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
-#endif
 
             AssignAnimationIDs();
 
-            // reset our timeouts on start
+            // Reset timeouts
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
         }
@@ -172,6 +192,9 @@ namespace StarterAssets
 
         private void Update()
         {
+            print("Player's position:" + transform.position);
+
+
             _hasAnimator = TryGetComponent(out _animator);
 
             JumpAndGravity();
@@ -182,6 +205,8 @@ namespace StarterAssets
             {
                 isTeleported = false; // Allow movement after input is detected
             }
+
+
         }
 
         private void LateUpdate()
