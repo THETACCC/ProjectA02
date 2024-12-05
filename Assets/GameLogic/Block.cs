@@ -18,7 +18,7 @@ public class Block : MonoBehaviour
     public bool isInventory = false;
     public bool draggable = true;
 
-    public GameObject cld_0, cld_1;
+    public GameObject cld_0, cld_1,cld_2;
 
     private Vector3 oScale;
     private Coroutine CR_mouseOver;
@@ -100,6 +100,8 @@ public class Block : MonoBehaviour
     //player related
     public bool isDragging = false;
 
+    //method for checking if the player is on the block
+    [HideInInspector] public bool isPlayerOnBlock = false;
 
     //New Method for Block Alignment
     public BlockAlignment myAlignedBrick;
@@ -118,10 +120,10 @@ public class Block : MonoBehaviour
     {
         StartCoroutine(ExecuteAfterDelay(0.1f));
 
-        cld_0 = transform.Find("Lower")?.gameObject;
-        cld_1 = transform.Find("Upper")?.gameObject;
-
-        if(cld_0 != null)
+        cld_0 = transform.Find("Base")?.gameObject;
+        cld_1 = transform.Find("Lower")?.gameObject;
+        cld_2 = transform.Find("Upper")?.gameObject;
+        if (cld_0 != null)
         {
             cld_0.tag = "Wall";
         }
@@ -235,13 +237,38 @@ public class Block : MonoBehaviour
             //Controlls the Block Rotation When Right Clicked
             if (type != BlockType.Obstacle)
             {
-                UpdateMouseBehavior();
-                transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                if(!isPlayerOnBlock )
+                {
+                    UpdateMouseBehavior();
+                    transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                }
+                else if(isPlayerOnBlock && isDragging)
+                {
+                    UpdateMouseBehavior();
+                    transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                }
+
+
             }
         }
 
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+        if((other.gameObject.tag == "Player1") || (other.gameObject.tag == "Player2"))
+        {
+            isPlayerOnBlock= true;
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        if ((other.gameObject.tag == "Player1") || (other.gameObject.tag == "Player2"))
+        {
+            isPlayerOnBlock = false;
+        }
+    }
     public void OnCollisionEnter(Collision collision)
     {
         if ((collision.gameObject.tag == "Player1") && (type == BlockType.End))
@@ -417,8 +444,10 @@ public class Block : MonoBehaviour
                     //disable the collision box
                     B_blocka.cld_0.gameObject.SetActive(false);
                     B_blocka.cld_1.gameObject.SetActive(false);
+                    B_blocka.cld_2.gameObject.SetActive(false);
                     B_blockb.cld_0.gameObject.SetActive(false);
                     B_blockb.cld_1.gameObject.SetActive(false);
+                    B_blockb.cld_2.gameObject.SetActive(false);
                     if (myAlignedBrick != null)
                     {
                         B_blocka.myAlignedBrick.isBlocked = false;
@@ -500,6 +529,7 @@ public class Block : MonoBehaviour
                     //disable collision
                     cld_0.gameObject.SetActive(false);
                     cld_1.gameObject.SetActive(false);
+                    cld_2.gameObject.SetActive(false);
                 }
 
 
@@ -519,6 +549,7 @@ public class Block : MonoBehaviour
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
+                cld_2.gameObject.SetActive(false);
 
             }
 
@@ -542,6 +573,7 @@ public class Block : MonoBehaviour
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
+                cld_2.gameObject.SetActive(false);
             }
             else if (type == BlockType.Regular)
             {
@@ -562,6 +594,7 @@ public class Block : MonoBehaviour
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
+                cld_2.gameObject.SetActive(false);
             }
 
         }
@@ -603,8 +636,20 @@ public class Block : MonoBehaviour
                     //disable collision
                     cld_0.gameObject.SetActive(false);
                     cld_1.gameObject.SetActive(false);
+                    cld_2.gameObject.SetActive(false);
                     transform.position = mpos;
                 }
+                if(instantiated)
+                {
+                    //disable the collision box
+                    B_blocka.cld_0.gameObject.SetActive(false);
+                    B_blocka.cld_1.gameObject.SetActive(false);
+                    B_blocka.cld_2.gameObject.SetActive(false);
+                    B_blockb.cld_0.gameObject.SetActive(false);
+                    B_blockb.cld_1.gameObject.SetActive(false);
+                    B_blockb.cld_2.gameObject.SetActive(false);
+                }
+
                 if (linked)
                 {
                     if (this == B_blocka) // If this is the original block
@@ -654,6 +699,7 @@ public class Block : MonoBehaviour
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
+                cld_2.gameObject.SetActive(false);
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 //Makes the block a little bit higher compare to other blocks
@@ -677,6 +723,7 @@ public class Block : MonoBehaviour
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
+                cld_2.gameObject.SetActive(false);
                 //Dragging
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
@@ -693,6 +740,7 @@ public class Block : MonoBehaviour
                 //disable collision
                 cld_0.gameObject.SetActive(false);
                 cld_1.gameObject.SetActive(false);
+                cld_2.gameObject.SetActive(false);
                 //Dragging
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
@@ -740,6 +788,7 @@ public class Block : MonoBehaviour
                     Debug.Log("initial place");
                     cld_0.gameObject.SetActive(true);
                     cld_1.gameObject.SetActive(true);
+                    cld_2.gameObject.SetActive(true);
                     cpos = LevelLoader.WorldToCellPos(this.transform.position);
                     npos = this.transform.position;
 
@@ -750,8 +799,10 @@ public class Block : MonoBehaviour
                     //enable the collision box
                     B_blocka.cld_0.gameObject.SetActive(true);
                     B_blocka.cld_1.gameObject.SetActive(true);
+                    B_blocka.cld_2.gameObject.SetActive(true);
                     B_blockb.cld_0.gameObject.SetActive(true);
                     B_blockb.cld_1.gameObject.SetActive(true);
+                    B_blockb.cld_2.gameObject.SetActive(true);
 
                 }
 
@@ -859,6 +910,7 @@ public class Block : MonoBehaviour
                 //enable collision
                 cld_0.gameObject.SetActive(true);
                 cld_1.gameObject.SetActive(true);
+                cld_2.gameObject.SetActive(true);
                 Debug.Log("Dropped Free Block");
 
                 GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
@@ -986,6 +1038,7 @@ public class Block : MonoBehaviour
                 //enable collision
                 cld_0.gameObject.SetActive(true);
                 cld_1.gameObject.SetActive(true);
+                cld_2.gameObject.SetActive(true);
                 Debug.Log("Dropped Free Block");
 
                 GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
@@ -1108,6 +1161,7 @@ public class Block : MonoBehaviour
                 Debug.Log("dropped Regular Block");
                 cld_0.gameObject.SetActive(true);
                 cld_1.gameObject.SetActive(true);
+                cld_2.gameObject.SetActive(true);
 
                 if (canlink && !instantiated)
                 {
@@ -1258,8 +1312,12 @@ public void instantiateBlocks()
     B_blockb.offsetz = offsetz;
     B_blockb.instantiated = true;
     instantiated = true;
-    B_blocka.cld_0.SetActive(true);
-    B_blockb.cld_0.SetActive(true);
+    B_blockb.cld_0 = transform.Find("Base")?.gameObject;
+    B_blockb.cld_1 = transform.Find("Lower")?.gameObject;
+    B_blockb.cld_2 = transform.Find("Upper")?.gameObject;
+
+    //    B_blocka.cld_0.SetActive(true);
+    //B_blockb.cld_0.SetActive(true);
 
     //Get the outline stuff
     B_blockb.outlineEffect = blockb.GetComponentInChildren<Outline>();
