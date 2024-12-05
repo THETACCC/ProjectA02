@@ -259,6 +259,16 @@ public class Block : MonoBehaviour
         if((other.gameObject.tag == "Player1") || (other.gameObject.tag == "Player2"))
         {
             isPlayerOnBlock= true;
+            if(type == BlockType.Free)
+            {
+                outlineEffectOBJ.SetActive(false);
+            }
+            else if(type == BlockType.Regular)
+            {
+                B_blocka.outlineEffectOBJ.SetActive(false);
+                B_blockb.outlineEffectOBJ.SetActive(false);
+            }
+
         }
     }
 
