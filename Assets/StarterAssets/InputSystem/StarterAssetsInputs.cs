@@ -26,6 +26,7 @@ namespace StarterAssets
         private void Start()
         {
             TeleportToLastPosition();
+            print("Teleport To Last Position");
         }
 
 
@@ -83,7 +84,7 @@ namespace StarterAssets
         {
             Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
         }
-
+        
         public void TeleportToLastPosition()
         {
             // If no saved position exists, start at the default position
@@ -104,16 +105,6 @@ namespace StarterAssets
                 Debug.LogWarning("No saved position found. Player starts at default position.");
             }
         }
-
-        // Method to save position when needed
-        public void SavePlayerPosition()
-        {
-            // Save the player's current position
-            PlayerPrefs.SetFloat("LastTriggerX", transform.position.x);
-            PlayerPrefs.SetFloat("LastTriggerY", transform.position.y);
-            PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
-            PlayerPrefs.Save();
-            Debug.Log($"Player position saved: {transform.position}");
-        }
+        
     }
 }

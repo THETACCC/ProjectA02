@@ -28,7 +28,7 @@ public class LevelRotation : MonoBehaviour
     {
         if(levelController.phase != LevelPhase.Speaking)
         {
-            if (Input.GetKeyDown(KeyCode.H))
+            if (Input.GetKeyDown(KeyCode.R))
             {
                 if (!isRotating)
                 {

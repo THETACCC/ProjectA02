@@ -8,6 +8,8 @@ using UnityEngine.TextCore.Text;
 
 public class LevelLoader : SKMonoSingleton<LevelLoader>
 {
+
+
     public static MapData mapData;
     public static Vector3 BLOCK_SCALE_MAP, BLOCK_SCALE_SELECT_AREA;
     public LevelController levelController;
@@ -23,7 +25,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
 
     public Bounds boundsLeft, boundsRight;
     public Vector3[,] blockposLeft, blockposRight;
-    public static Vector3 center;
+    public static Vector3 center = new Vector3(0,0,0);
     private Dictionary<Vector3, Block> blockPos = new Dictionary<Vector3, Block>(); 
 
     private Block endLeft, endRight, startLeft, startRight;
@@ -48,13 +50,13 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
 
     public void Load()
     {
-        boundsLeft = mapLeft.GetComponent<BoxCollider>().bounds;
-        boundsRight = mapRight.GetComponent<BoxCollider>().bounds;
-        center = new Vector3(0,0,0);
+        //boundsLeft = mapLeft.GetComponent<BoxCollider>().bounds;
+        //boundsRight = mapRight.GetComponent<BoxCollider>().bounds;
         //center = (LeftSide.position + RightSide.position) / 2.0f;
+        center.z = 0;
         Debug.Log(center);
         //center.x = (mapLeft.position.x + mapRight.position.x) / 2.0f;
-        LoadMap();
+        //LoadMap();
         //LoadCharacter();
     }
     public void LoadMap()
@@ -184,6 +186,35 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
     }
     public void LoadCharacter()
     {
+        // Find players by their tags
+        GameObject player1Object = GameObject.FindWithTag("Player1");
+        GameObject player2Object = GameObject.FindWithTag("Player2");
+
+        // Ensure both players are found
+        if (player1Object == null || player2Object == null)
+        {
+            Debug.LogError("One or both player objects could not be found. Check the tags 'Player1' and 'Player2'.");
+            return;
+        }
+
+        // Assign player characters
+        PlayerCharacter player1 = player1Object.GetComponent<PlayerCharacter>();
+        PlayerCharacter player2 = player2Object.GetComponent<PlayerCharacter>();
+
+        if (player1 == null || player2 == null)
+        {
+            Debug.LogError("One or both player objects are missing the PlayerCharacter component.");
+            return;
+        }
+
+        // Assign to CommonReference
+        CommonReference.playerCharacters = new[] { player1, player2 };
+
+        // Log for debugging
+        Debug.Log($"Player1: {CommonReference.playerCharacters[0]}");
+        Debug.Log($"Player2: {CommonReference.playerCharacters[1]}");
+
+        /*
         PlayerCharacter[] chars = GameObject.FindObjectsOfType<PlayerCharacter>();
 
         CommonReference.playerCharacters = chars;
@@ -276,7 +307,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
     /// </summary>
     public static int PosToMapID(Vector3 pos)
     {
-        return pos.x > center.x ? 0 : 1;
+        return pos.z > center.z ? 0 : 1;
     }
     public static bool IsPosInSelectionArea(Vector3 pos)
     {

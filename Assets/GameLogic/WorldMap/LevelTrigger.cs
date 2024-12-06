@@ -46,12 +46,6 @@ public class LevelTrigger : MonoBehaviour
                 uiSelectLevel.SetActive(true);
             }
 
-            // Save the current trigger's position when the player enters
-            PlayerPrefs.SetFloat("LastTriggerX", transform.position.x);
-            PlayerPrefs.SetFloat("LastTriggerY", transform.position.y);
-            PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
-            PlayerPrefs.SetString("LastTriggerScene", SceneManager.GetActiveScene().name);
-
             if (imageMover != null)
             {
                 print("moving to end");
@@ -84,6 +78,14 @@ public class LevelTrigger : MonoBehaviour
 
     private void LoadNextLevel()
     {
+
+        // Save the current trigger's position when the player enters
+        PlayerPrefs.SetFloat("LastTriggerX", transform.position.x);
+        PlayerPrefs.SetFloat("LastTriggerY", transform.position.y);
+        PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
+        PlayerPrefs.SetString("LastTriggerScene", SceneManager.GetActiveScene().name);
+
+
         SKUtils.InvokeAction(0.2f, () =>
         {
             flowManager.LoadScene(new SceneInfo()

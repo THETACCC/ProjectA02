@@ -10,7 +10,9 @@ public class Enterfinishleft : MonoBehaviour
 
     private PlayerWinVisual playerWinVisual;
     private GameObject PlayerWin;
-
+    private Collider PlayerCollider;
+    private Collider PlayerColliderCLD;
+    private Rigidbody Rigidbody;
     private void Start()
     {
 
@@ -22,6 +24,9 @@ public class Enterfinishleft : MonoBehaviour
         movement = player1.GetComponent<PlayerController>();
         PlayerWin = GameObject.FindGameObjectWithTag("PlayerWinVisual");
         playerWinVisual = PlayerWin.GetComponent<PlayerWinVisual>();
+        PlayerCollider = player1.GetComponent<Collider>();
+        Rigidbody = player1.GetComponent<Rigidbody>();
+
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -32,6 +37,8 @@ public class Enterfinishleft : MonoBehaviour
             movement.is_sliding = false;
             leftreached = true;
             playerWinVisual.isPlayerWin = true;
+            //PlayerCollider.enabled = false;
+            //Rigidbody.useGravity = false;
         }
     }
 }

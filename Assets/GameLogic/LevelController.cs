@@ -114,7 +114,7 @@ public class LevelController : SKMonoSingleton<LevelController>
         }
         if(phase == LevelPhase.Running)
         {
-            if (Input.GetKeyDown(KeyCode.G))
+            if (Input.GetKeyDown(KeyCode.F))
             {
                 playerRight.SwitchPlayer();
 
