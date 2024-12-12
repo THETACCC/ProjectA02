@@ -248,7 +248,7 @@ public class LevelController : SKMonoSingleton<LevelController>
     }
     public void InitLevel()
     {
-        phase = LevelPhase.Placing;
+        phase = LevelPhase.Loading;
         LevelLoader.instance.Load();
         //there is a bug here where the phase will not change to place
     }

@@ -111,6 +111,9 @@ public class Block : MonoBehaviour
     private GameObject gameLevelLeft;
     private GameObject gameLevelRight;
 
+    //local scale
+    private Vector3 myLocalScale;
+
     private void Awake()
     {
 
@@ -119,7 +122,7 @@ public class Block : MonoBehaviour
     private void Start()
     {
         StartCoroutine(ExecuteAfterDelay(0.1f));
-
+        myLocalScale = this.gameObject.transform.localScale;
         cld_0 = transform.Find("Base")?.gameObject;
         cld_1 = transform.Find("Lower")?.gameObject;
         cld_2 = transform.Find("Upper")?.gameObject;
@@ -225,7 +228,7 @@ public class Block : MonoBehaviour
     private void Update()
     {
         //If speaking then the player cannot move the blocks
-        if(controller.phase != LevelPhase.Speaking)
+        if(controller.phase != LevelPhase.Speaking && controller.phase != LevelPhase.Loading)
         {
             if (!rotationFound)
             {
@@ -241,11 +244,15 @@ public class Block : MonoBehaviour
                 {
                     UpdateMouseBehavior();
                     transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+
+                    //Needs to be addressed in future updates as it is confliting with the intro
+                    transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
                 }
                 else if(isPlayerOnBlock && isDragging)
                 {
                     UpdateMouseBehavior();
                     transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                    transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
                 }
 
 
@@ -326,12 +333,15 @@ public class Block : MonoBehaviour
                 B_blocka.rotated = true;
                 B_blockb.rotate += new Vector3(0, 90, 0);
                 B_blockb.rotated = true;
+                B_blocka.transform.localScale = new Vector3(.5f, .5f, .5f);
+                B_blockb.transform.localScale = new Vector3(.5f, .5f, .5f);
             }
             else if (type == BlockType.Free)
             {
 
                 rotate += new Vector3(0, 90, 0);
                 rotated = true;
+                transform.localScale = new Vector3(.5f, .5f, .5f);
 
 
             }

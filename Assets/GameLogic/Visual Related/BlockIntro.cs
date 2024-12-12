@@ -19,9 +19,14 @@ public class BlockIntro : MonoBehaviour
 
     public LevelLoader LevelLoader;
 
+    public LevelController controller;
     // Start is called before the first frame update
     void Start()
     {
+        GameObject level_controller = GameObject.Find("LevelController");
+        controller = level_controller.GetComponent<LevelController>();
+
+        controller.phase = LevelPhase.Loading;
 
         mblocks = GameObject.FindGameObjectsWithTag("Block");
 
@@ -67,6 +72,7 @@ public class BlockIntro : MonoBehaviour
     IEnumerator EnablePlayer()
     {
         yield return new WaitForSeconds(4f);
+        controller.phase = LevelPhase.Placing;
         Player1.SetActive(true);
 
         Player2.SetActive(true);
