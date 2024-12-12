@@ -43,7 +43,7 @@ public class LightHouseControll : MonoBehaviour
             else
             {
                 targetRotation = Quaternion.Euler(myLight.transform.eulerAngles.x, 270, myLight.transform.eulerAngles.z);
-                targetRotationHouse = Quaternion.Euler(myLighthouse.transform.eulerAngles.x, 262, myLighthouse.transform.eulerAngles.z);
+                targetRotationHouse = Quaternion.Euler(myLighthouse.transform.eulerAngles.x, 270, myLighthouse.transform.eulerAngles.z);
             }
 
             // Smoothly lerp the current rotation to the target rotation over time
