@@ -96,7 +96,7 @@ public enum SceneTitle
     Chapter1_Level9 = 30,
     Chapter1_Level10 = 31,
     Chapter1_Level10_1 = 32,
-
+    Chapter1MoveTest = 33,
 
     //Common Scenes
     Main_Menu = 13,
