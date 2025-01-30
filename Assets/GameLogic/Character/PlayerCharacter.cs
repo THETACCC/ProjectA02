@@ -59,12 +59,12 @@ public class PlayerCharacter : MonoBehaviour
             case Player.Player1:
                 currentPlayer = Player.Player2;
                 _player1Movement.canmove = true;
-                _player2Movement.canmove = false;
+                _player2Movement.canmove = true;
                 // Add logic here for when Player 1 is active
                 break;
             case Player.Player2:
                 currentPlayer = Player.Player1;
-                _player1Movement.canmove = false;
+                _player1Movement.canmove = true;
                 _player2Movement.canmove = true;
                 // Add logic here for when Player 2 is active
                 break;
@@ -95,11 +95,13 @@ public class PlayerCharacter : MonoBehaviour
                 outlineRight.outlineWidth = Mathf.Lerp(outlineRight.outlineWidth, 10f, OutlineSpeed * Time.deltaTime);
 
                 // Lerp the left outline to 0
-                outlineLeft.outlineWidth = Mathf.Lerp(outlineLeft.outlineWidth, 0f, OutlineSpeed * Time.deltaTime);
+                outlineLeft.outlineWidth = Mathf.Lerp(outlineLeft.outlineWidth, 10f, OutlineSpeed * Time.deltaTime);
+                /*
                 if (Mathf.Abs(outlineLeft.outlineWidth - 0f) < minThreshold)
                 {
                     outlineLeft.outlineWidth = 0f; // Snap to exact 0 when close enough
                 }
+                */
             }
             else
             {
@@ -109,12 +111,13 @@ public class PlayerCharacter : MonoBehaviour
                 //outlineLeft.outlineWidth = 0f;
 
                 outlineLeft.outlineWidth = Mathf.Lerp(outlineLeft.outlineWidth, 10f, OutlineSpeed * Time.deltaTime);
-                outlineRight.outlineWidth = Mathf.Lerp(outlineRight.outlineWidth, 0f, OutlineSpeed * Time.deltaTime);
+                outlineRight.outlineWidth = Mathf.Lerp(outlineRight.outlineWidth, 10f, OutlineSpeed * Time.deltaTime);
+                /*
                 if (Mathf.Abs(outlineRight.outlineWidth - 0f) < minThreshold)
                 {
                     outlineRight.outlineWidth = 0f; // Snap to exact 0 when close enough
                 }
-
+                */
             }
 
         }

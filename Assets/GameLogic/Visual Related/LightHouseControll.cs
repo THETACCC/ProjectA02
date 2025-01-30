@@ -33,7 +33,8 @@ public class LightHouseControll : MonoBehaviour
         }
         if (controller.phase == LevelPhase.Running)
         {
-
+            //Modified for testing purposes
+            /*
 
             if (!controller.isPlayingRight)
             {
@@ -49,7 +50,7 @@ public class LightHouseControll : MonoBehaviour
             // Smoothly lerp the current rotation to the target rotation over time
             myLight.transform.rotation = Quaternion.Lerp(myLight.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             myLighthouse.transform.rotation = Quaternion.Lerp(myLighthouse.transform.rotation, targetRotationHouse, rotationSpeed * Time.deltaTime);
-
+            */
         }
     }
 }
