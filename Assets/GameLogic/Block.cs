@@ -114,6 +114,9 @@ public class Block : MonoBehaviour
     //local scale
     private Vector3 myLocalScale;
 
+    //BreakableGround Mechanic
+    public BreakableGround BreakableGroundScript;
+
     private void Awake()
     {
 
@@ -256,6 +259,21 @@ public class Block : MonoBehaviour
                 }
 
 
+            }
+
+
+
+        }
+
+        if (type == BlockType.Regular)
+        {
+            if (BreakableGroundScript != null)
+            {
+                if (BreakableGroundScript.isBreak == true)
+                {
+                    Destroy(B_blocka.BreakableGroundScript.gameObject);
+                    Destroy(B_blockb.BreakableGroundScript.gameObject);
+                }
             }
         }
 
@@ -1335,12 +1353,13 @@ public void instantiateBlocks()
     B_blockb.cld_0 = transform.Find("Base")?.gameObject;
     B_blockb.cld_1 = transform.Find("Lower")?.gameObject;
     B_blockb.cld_2 = transform.Find("Upper")?.gameObject;
+    B_blocka.BreakableGroundScript = B_blocka.GetComponentInChildren<BreakableGround>();
+    B_blockb.BreakableGroundScript = B_blockb.GetComponentInChildren<BreakableGround>();
+        //    B_blocka.cld_0.SetActive(true);
+        //B_blockb.cld_0.SetActive(true);
 
-    //    B_blocka.cld_0.SetActive(true);
-    //B_blockb.cld_0.SetActive(true);
-
-    //Get the outline stuff
-    B_blockb.outlineEffect = blockb.GetComponentInChildren<Outline>();
+        //Get the outline stuff
+        B_blockb.outlineEffect = blockb.GetComponentInChildren<Outline>();
     B_blocka.BlockAlignment();
     //B_blockb.BlockAlignment();
 }
