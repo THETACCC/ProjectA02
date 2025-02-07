@@ -116,6 +116,8 @@ public class Block : MonoBehaviour
 
     //BreakableGround Mechanic
     public BreakableGround BreakableGroundScript;
+    //SpawnGroundMechanic
+    public SpawnBlock SpawnBlockScript;
 
     private void Awake()
     {
@@ -275,6 +277,21 @@ public class Block : MonoBehaviour
                     Destroy(B_blockb.BreakableGroundScript.gameObject);
                 }
             }
+
+            if(SpawnBlockScript != null)
+            {
+                if(SpawnBlockScript.isSpawn == true) 
+                {
+
+                    B_blocka.SpawnBlockScript.StartSpawn();
+
+                    B_blockb.SpawnBlockScript.StartSpawn();
+
+
+                }
+            }
+
+
         }
 
     }
@@ -1353,8 +1370,12 @@ public void instantiateBlocks()
     B_blockb.cld_0 = transform.Find("Base")?.gameObject;
     B_blockb.cld_1 = transform.Find("Lower")?.gameObject;
     B_blockb.cld_2 = transform.Find("Upper")?.gameObject;
+
+        //Instatiation of the new mechanics
     B_blocka.BreakableGroundScript = B_blocka.GetComponentInChildren<BreakableGround>();
     B_blockb.BreakableGroundScript = B_blockb.GetComponentInChildren<BreakableGround>();
+    B_blocka.SpawnBlockScript = B_blocka.GetComponentInChildren<SpawnBlock>();
+    B_blockb.SpawnBlockScript = B_blockb.GetComponentInChildren<SpawnBlock>();
         //    B_blocka.cld_0.SetActive(true);
         //B_blockb.cld_0.SetActive(true);
 
