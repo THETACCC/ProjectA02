@@ -21846,6 +21846,8 @@ MonoBehaviour:
   isDragging: 0
   isPlayerOnBlock: 0
   myAlignedBrick: {fileID: 0}
+  BreakableGroundScript: {fileID: 0}
+  SpawnBlockScript: {fileID: 0}
 --- !u!95 &6407231181802996322
 Animator:
   serializedVersion: 4
@@ -22942,6 +22944,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8672312986916665951}
+  - component: {fileID: 2514890912281019551}
   - component: {fileID: 3488451976976637252}
   - component: {fileID: 1059956191730865473}
   - component: {fileID: 2760270776776823701}
@@ -22967,6 +22970,19 @@ Transform:
   m_Father: {fileID: 6092593133508061647}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2514890912281019551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6411937412242124528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a522daab6cab541ab892ba8ad5c56a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBreak: 0
 --- !u!33 &3488451976976637252
 MeshFilter:
   m_ObjectHideFlags: 0
