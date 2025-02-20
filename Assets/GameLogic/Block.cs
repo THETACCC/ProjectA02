@@ -245,20 +245,64 @@ public class Block : MonoBehaviour
             //Controlls the Block Rotation When Right Clicked
             if (type != BlockType.Obstacle)
             {
-                if(!isPlayerOnBlock )
-                {
-                    UpdateMouseBehavior();
-                    transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
 
-                    //Needs to be addressed in future updates as it is confliting with the intro
-                    transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
-                }
-                else if(isPlayerOnBlock && isDragging)
+                if (type == BlockType.Regular)
                 {
-                    UpdateMouseBehavior();
-                    transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
-                    transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
+                    if(instantiated)
+                    {
+                        if (B_blocka.isPlayerOnBlock == false && B_blockb.isPlayerOnBlock == false)
+                        {
+                            UpdateMouseBehavior();
+                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+
+                            //Needs to be addressed in future updates as it is confliting with the intro
+                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
+                        }
+                        else if ((B_blocka.isPlayerOnBlock == true && B_blockb.isPlayerOnBlock == true) && (B_blocka.isDragging == true && B_blockb.isPlayerOnBlock == isDragging))
+                        {
+                            UpdateMouseBehavior();
+                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
+                        }
+                    }
+                    else
+                    {
+                        if (!isPlayerOnBlock)
+                        {
+                            UpdateMouseBehavior();
+                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+
+                            //Needs to be addressed in future updates as it is confliting with the intro
+                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
+                        }
+                        else if (isPlayerOnBlock && isDragging)
+                        {
+                            UpdateMouseBehavior();
+                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
+                        }
+                    }
+
                 }
+                else if (type == BlockType.Free)
+                {
+                    if(!isPlayerOnBlock)
+                    {
+                        UpdateMouseBehavior();
+                        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+
+                        //Needs to be addressed in future updates as it is confliting with the intro
+                        transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
+                    }
+                    else if (isPlayerOnBlock && isDragging)
+                    {
+                        UpdateMouseBehavior();
+                        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                        transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
+                    }
+                }
+
+
 
 
             }
