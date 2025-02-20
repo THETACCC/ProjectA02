@@ -52,6 +52,12 @@ public class PlayerController : MonoBehaviour
     //Delay player Input
     public bool startMoving = false;
 
+
+    //Get the other player's situation
+    public PlayerController Player1Controll;
+    public PlayerController Player2Controll;
+
+
     // Start is called before the first frame update
     /*
     void Start()
@@ -263,6 +269,12 @@ public class PlayerController : MonoBehaviour
     */
     void Start()
     {
+        GameObject Player1 = GameObject.FindGameObjectWithTag("Player1");
+        GameObject Player2 = GameObject.FindGameObjectWithTag("Player2");
+        Player1Controll= Player1.GetComponent<PlayerController>();
+        Player2Controll= Player2.GetComponent<PlayerController>();
+
+
         GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
         controller = controllerOBJ.GetComponent<LevelController>();
         rb = GetComponent<Rigidbody>();
@@ -281,27 +293,36 @@ public class PlayerController : MonoBehaviour
 
         if (canmove)
         {
-            if (Input.GetKey(KeyCode.D))
+            if((Player1Controll.is_sliding == false) && (Player2Controll.is_sliding == false))
             {
-                axis_x = 1;
-            }
-            else if (Input.GetKey(KeyCode.A))
-            {
-                axis_x = -1;
+                if (Input.GetKey(KeyCode.D))
+                {
+                    axis_x = 1;
+                }
+                else if (Input.GetKey(KeyCode.A))
+                {
+                    axis_x = -1;
+                }
+                else
+                {
+                    axis_x = 0;
+                }
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    axis_z = 1;
+                }
+                else
+                {
+                    axis_z = 0;
+                }
             }
             else
             {
                 axis_x = 0;
-            }
-
-            if (Input.GetKey(KeyCode.Space))
-            {
-                axis_z = 1;
-            }
-            else
-            {
                 axis_z = 0;
             }
+
+ 
             //axis_z = Input.GetAxisRaw("Vertical");
         }
         //delta_pos = rb.position - prev_pos;
