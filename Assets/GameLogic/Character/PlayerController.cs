@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
     public Animator playerAnimator;
 
     //Delay player Input
-    private bool startMoving = false;
+    public bool startMoving = false;
 
     // Start is called before the first frame update
     /*
@@ -331,6 +331,7 @@ public class PlayerController : MonoBehaviour
         {
             if(!startMoving)
             {
+                rb.velocity = new Vector3(0, rb.velocity.y, 0);
                 Invoke("EnableMovement", .5f);
             }
 
@@ -409,6 +410,14 @@ public class PlayerController : MonoBehaviour
 
 
         prev_pos = rb.position;
+    }
+
+    public void PlayerSetBack()
+    {
+        Vector3 moveBackDirection = -visualTF.forward; // Move back along the player's current forward direction
+        float moveBackDistance = 0.25f; // Adjust this value based on how far back you want to move
+
+        rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
     }
 
     private void RotateTo(Vector3 rot)

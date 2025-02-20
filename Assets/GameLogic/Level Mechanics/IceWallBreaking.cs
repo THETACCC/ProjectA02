@@ -18,18 +18,28 @@ public class IceWallBreaking : MonoBehaviour
         {
             if (collision.gameObject.tag == "Player2")
             {
-                CharacterMovement movement = collision.gameObject.GetComponent<CharacterMovement>();
+                PlayerController movement = collision.gameObject.GetComponent<PlayerController>();
+                Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();  
                 if (movement != null)
                 {
+                    Debug.Log("STOP!");
                     movement.is_sliding = false;
+                    movement.startMoving = false;
+                    movement.PlayerSetBack();
+                    rb.velocity = new Vector3(0, rb.velocity.y, 0);
                 }
             }
             else if (collision.gameObject.tag == "Player1")
             {
-                CharacterMovement movement = collision.gameObject.GetComponent<CharacterMovement>();
+                PlayerController movement = collision.gameObject.GetComponent<PlayerController>();
+                Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
                 if (movement != null)
                 {
+                    Debug.Log("STOP!");
                     movement.is_sliding = false;
+                    movement.startMoving = false;
+                    movement.PlayerSetBack();
+                    rb.velocity = new Vector3(0, rb.velocity.y, 0);
                 }
             }
             _broken = true;
