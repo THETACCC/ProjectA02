@@ -118,6 +118,8 @@ public class Block : MonoBehaviour
     public BreakableGround BreakableGroundScript;
     //SpawnGroundMechanic
     public SpawnBlock SpawnBlockScript;
+    public SpawnBlock SpawnBlockScript2;
+    public SpawnBlock SpawnBlockScript3;
 
     private void Awake()
     {
@@ -335,6 +337,31 @@ public class Block : MonoBehaviour
                 }
             }
 
+            if (SpawnBlockScript2 != null)
+            {
+                if (SpawnBlockScript2.isSpawn == true)
+                {
+
+                    B_blocka.SpawnBlockScript2.StartSpawn();
+
+                    B_blockb.SpawnBlockScript2.StartSpawn();
+
+
+                }
+            }
+
+            if (SpawnBlockScript3 != null)
+            {
+                if (SpawnBlockScript3.isSpawn == true)
+                {
+
+                    B_blocka.SpawnBlockScript3.StartSpawn();
+
+                    B_blockb.SpawnBlockScript3.StartSpawn();
+
+
+                }
+            }
 
         }
 
