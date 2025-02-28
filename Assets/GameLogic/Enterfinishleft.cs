@@ -33,12 +33,17 @@ public class Enterfinishleft : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player1" || collision.gameObject.tag == "Player2")
         {
-            movement.canmove = false;
+            Rigidbody.useGravity = false;
+            Rigidbody.velocity = Vector3.zero;
+            PlayerCollider.enabled = false;
             movement.is_sliding = false;
+            movement.canmove = false;
+ 
+            movement.enabled = false;
             leftreached = true;
             playerWinVisual.isPlayerWin = true;
-            //PlayerCollider.enabled = false;
-            //Rigidbody.useGravity = false;
+
+
         }
     }
 }

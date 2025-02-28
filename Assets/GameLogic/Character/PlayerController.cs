@@ -89,10 +89,12 @@ public class PlayerController : MonoBehaviour
             {
                 if (Input.GetKey(KeyCode.D))
                 {
+
                     axis_x = 1;
                 }
                 else if (Input.GetKey(KeyCode.A))
                 {
+
                     axis_x = -1;
                 }
                 else
@@ -101,6 +103,7 @@ public class PlayerController : MonoBehaviour
                 }
                 if (Input.GetKey(KeyCode.Space))
                 {
+
                     axis_z = 1;
                 }
                 else
@@ -137,10 +140,23 @@ public class PlayerController : MonoBehaviour
         CharacterManager.instance.isSliding[mapSide] = is_sliding;
         delta_pos = rb.position - prev_pos;
 
+        if(startMoving)
+        {
+            if (rb.velocity.magnitude > 0.05f)
+            {
+                controller.phase = LevelPhase.Sprinting;
+            }
+            else
+            {
+                controller.phase = LevelPhase.Running;
+            }
+        }
 
 
 
-        if (controller.phase == LevelPhase.Running)
+
+
+        if (controller.phase == LevelPhase.Running || controller.phase == LevelPhase.Sprinting)
         {
             if(!startMoving)
             {
@@ -152,6 +168,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (!is_sliding)
                 {
+
                     rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
                     if (axis_x != 0 && !isRotating)

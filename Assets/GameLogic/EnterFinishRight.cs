@@ -1,3 +1,4 @@
+using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,12 +31,16 @@ public class EnterFinishRight : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player2" || collision.gameObject.tag == "Player1")
         {
-            movement.canmove = false;
+            Rigidbody.useGravity = false;
+            Rigidbody.velocity = Vector3.zero;
+            PlayerCollider.enabled = false;
             movement.is_sliding = false;
+            movement.canmove = false;
+
+            movement.enabled= false;
             rightreached = true;
             playerWinVisual.isPlayerWin = true;
-            //PlayerCollider.enabled = false;
-            //Rigidbody.useGravity = false;
+
         }
     }
 }

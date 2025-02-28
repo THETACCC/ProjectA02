@@ -26,7 +26,11 @@ public class LeftRightCameraSwing : MonoBehaviour
         if(levelController == null)
         {
             GameObject controllerOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
-            levelController = controllerOBJ.GetComponent<LevelController>();
+            if(controllerOBJ != null)
+            {
+                levelController = controllerOBJ.GetComponent<LevelController>();
+            }
+
         }
 
 

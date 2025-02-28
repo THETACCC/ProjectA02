@@ -5722,7 +5722,7 @@ GameObject:
   - component: {fileID: 7939616652145624385}
   - component: {fileID: 5480904705867198487}
   - component: {fileID: 8014574832028364147}
-  - component: {fileID: 911080514784214253}
+  - component: {fileID: 6529346385998552168}
   m_Layer: 0
   m_Name: Finish_Left
   m_TagString: FinishLeft
@@ -5808,8 +5808,8 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2917448520508753700}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &911080514784214253
-BoxCollider:
+--- !u!136 &6529346385998552168
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5818,8 +5818,9 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.7, y: 0.7, z: 0.7}
+  m_Radius: 0.31
+  m_Height: 1.283338
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2943926791927931452
 GameObject:
@@ -12640,6 +12641,8 @@ MonoBehaviour:
   isPlayerOnBlock: 0
   myAlignedBrick: {fileID: 0}
   BreakableGroundScript: {fileID: 0}
+  BreakableGroundScript2: {fileID: 0}
+  BreakableGroundScript3: {fileID: 0}
   SpawnBlockScript: {fileID: 0}
   SpawnBlockScript2: {fileID: 0}
   SpawnBlockScript3: {fileID: 0}

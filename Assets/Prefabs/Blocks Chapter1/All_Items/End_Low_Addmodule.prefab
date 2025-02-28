@@ -2313,8 +2313,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6698515739089642717}
-  - component: {fileID: 799148833146453175}
   - component: {fileID: 4692323237635441709}
+  - component: {fileID: 2592439315967934097}
   m_Layer: 0
   m_Name: Finish_Right
   m_TagString: FinishRight
@@ -2337,19 +2337,6 @@ Transform:
   m_Father: {fileID: 6074627141392584196}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &799148833146453175
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2712309892406188702}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.7, y: 0.7, z: 0.7}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4692323237635441709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2363,6 +2350,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rightreached: 0
+--- !u!136 &2592439315967934097
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2712309892406188702}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.31
+  m_Height: 1.283338
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2736188868694543650
 GameObject:
   m_ObjectHideFlags: 0
@@ -6911,6 +6912,8 @@ MonoBehaviour:
   isPlayerOnBlock: 0
   myAlignedBrick: {fileID: 0}
   BreakableGroundScript: {fileID: 0}
+  BreakableGroundScript2: {fileID: 0}
+  BreakableGroundScript3: {fileID: 0}
   SpawnBlockScript: {fileID: 0}
   SpawnBlockScript2: {fileID: 0}
   SpawnBlockScript3: {fileID: 0}

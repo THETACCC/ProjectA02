@@ -51,10 +51,10 @@ public class LevelController : SKMonoSingleton<LevelController>
     public Collider playerLeftCollider;
     public Collider playerRightCollider;
 
+    private bool isPlayerFound = false;
 
     private void Start()
     {
-
 
         //Controlls the indicator material
         //GameObject IndicatorMat = GameObject.FindGameObjectWithTag("IndicatorMaterial");
@@ -109,19 +109,14 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private void Update()
     {
-
-        if(playerLeft == null)
+        if(!isPlayerFound)
         {
-            GameObject playerleft = GameObject.FindGameObjectWithTag("Player1");
-            playerLeftCollider = playerleft.GetComponent<Collider>();
-            playerLeftRB = playerleft.GetComponent<Rigidbody>();
-            playerLeft = playerleft.GetComponent<PlayerController>();
-            GameObject playerright = GameObject.FindGameObjectWithTag("Player2");
-            playerRight = playerright.GetComponent<PlayerController>();
-            playerRightCollider = playerright.GetComponent<Collider>();
-            playerRightRB = playerright.GetComponent<Rigidbody>();
+            FindPlayers();
         }
-        if(phase == LevelPhase.Running)
+
+
+
+        if (phase == LevelPhase.Running)
         {
             /*
             if (Input.GetKeyDown(KeyCode.F))
@@ -140,9 +135,18 @@ public class LevelController : SKMonoSingleton<LevelController>
             */
         }
 
-
-        isAnyBlockBeingDragged = false;
-        isAnyBlockDragging = false;
+        //Commented out for debug
+        //New method
+        if (curDraggedblock != null)
+        {
+            isAnyBlockBeingDragged = true;
+            isAnyBlockDragging = true;
+        }
+        else
+        {
+            isAnyBlockBeingDragged = false;
+            isAnyBlockDragging = false;
+        }
         // Ensure the transition timer remains within [0, 1] bounds for Evaluate() usage
         transitionTimer = Mathf.Clamp01(transitionTimer);
         transitionTimerReverse = Mathf.Clamp01(transitionTimerReverse);
@@ -165,7 +169,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
                     if(block.isDragging)
                     {
-                        isAnyBlockDragging = true;
+                        //isAnyBlockDragging = true;
                     }
 
                     // Send a debug message when isDragging is true
@@ -186,7 +190,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
                     if (block.isDragging)
                     {
-                        isAnyBlockDragging = true;
+                        //isAnyBlockDragging = true;
                     }
                     // Send a debug message when isDragging is true
 
@@ -195,17 +199,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
 
             }
-            /*
-            else if (block != null && !block.isDragging)
-            {
-                foreach (BlockAlignment mAlign in malignment)
-                {
 
-                    mAlign.PlaceIndicator.SetActive(false);
-
-                }
-            }
-            */
         }
 
         if (isAnyBlockBeingDragged)
@@ -230,6 +224,9 @@ public class LevelController : SKMonoSingleton<LevelController>
             float effectTime = Mathf.Lerp(-1f, 1f, IndicatoreffectCurve.Evaluate(transitionTimerReverse));
             myMaterial.SetFloat("_Effect_Time", effectTime);
         }
+
+        
+
 
 
         // Update transition timer within the given duration
@@ -257,6 +254,23 @@ public class LevelController : SKMonoSingleton<LevelController>
         }
         
     }
+
+    public void FindPlayers()
+    {
+        if (playerLeft == null)
+        {
+            GameObject playerleft = GameObject.FindGameObjectWithTag("Player1");
+            playerLeftCollider = playerleft.GetComponent<Collider>();
+            playerLeftRB = playerleft.GetComponent<Rigidbody>();
+            playerLeft = playerleft.GetComponent<PlayerController>();
+            GameObject playerright = GameObject.FindGameObjectWithTag("Player2");
+            playerRight = playerright.GetComponent<PlayerController>();
+            playerRightCollider = playerright.GetComponent<Collider>();
+            playerRightRB = playerright.GetComponent<Rigidbody>();
+            isPlayerFound= true;
+        }
+    }
+
     public void InitLevel()
     {
         phase = LevelPhase.Loading;
@@ -308,5 +322,6 @@ public enum LevelPhase
     Placing,
     Draging,
     Speaking,
+    Sprinting,
     Running
 }

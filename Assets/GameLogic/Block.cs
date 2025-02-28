@@ -237,7 +237,7 @@ public class Block : MonoBehaviour
     private void Update()
     {
         //If speaking then the player cannot move the blocks
-        if(controller.phase != LevelPhase.Speaking && controller.phase != LevelPhase.Loading)
+        if(controller.phase != LevelPhase.Speaking && controller.phase != LevelPhase.Loading && controller.phase != LevelPhase.Sprinting)
         {
             if (!rotationFound)
             {
@@ -1272,7 +1272,7 @@ public class Block : MonoBehaviour
                         {
                             transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
                         }, null, gameObject.GetInstanceID() + "drag_success");
-
+                        Debug.Log("Hello2");
                         myAlignedBrick.isBlocked = true;
 
                     }
@@ -1285,7 +1285,7 @@ public class Block : MonoBehaviour
                     {
                         transform.position = Vector3.Lerp(transform.position, myAlignedBrick.transform.position, f);
                     }, null, gameObject.GetInstanceID() + "drag_success");
-
+                    Debug.Log("Hello1");
                     myAlignedBrick.isBlocked = true;
 
                 }
@@ -1742,6 +1742,7 @@ public void instantiateBlocks()
 
 
     }
+    /*
     public void BlockAlignmentMirrorInMap()
     {
         //Find all the inventory bricks and Level Bricks
@@ -1992,6 +1993,127 @@ public void instantiateBlocks()
             B_blocka.myAlignedBrick.isBlocked = false;
             B_blockb.myAlignedBrick.isBlocked = false;
         }
+    }
+    */
+
+    public void BlockAlignmentMirrorInMap()
+    {
+        // Find all the Level and Inventory Bricks
+        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+        GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
+
+        List<GameObject> allBricks = new List<GameObject>(levelBricks);
+        allBricks.AddRange(inventoryBricks);
+
+        GameObject nearestBlockA = FindNearestBlock(blocka.transform.position, allBricks);
+        GameObject nearestBlockB = FindNearestBlock(blockb.transform.position, allBricks);
+
+        BlockAlignment alignmentA = nearestBlockA != null ? nearestBlockA.GetComponent<BlockAlignment>() : null;
+        BlockAlignment alignmentB = nearestBlockB != null ? nearestBlockB.GetComponent<BlockAlignment>() : null;
+
+        // If both blocks are found and unblocked, align them
+        if (alignmentA != null && alignmentB != null && !alignmentA.isBlocked && !alignmentB.isBlocked)
+        {
+            // Unblock previously assigned bricks
+            UnblockPreviousAlignment();
+
+            // Assign new alignment
+            B_blocka.myAlignedBrick = alignmentA;
+            B_blockb.myAlignedBrick = alignmentB;
+            alignmentA.isBlocked = true;
+            alignmentB.isBlocked = true;
+
+            MoveBlockToAlignment(blocka, alignmentA.transform.position);
+            MoveBlockToAlignment(blockb, alignmentB.transform.position);
+
+            B_blocka.isInventory = false;
+            B_blockb.isInventory = false;
+            RegularBlockMapAlign();
+
+            Debug.Log("Blocks aligned to the map");
+        }
+        else
+        {
+            HandleSingleOrNoAlignment(alignmentA, alignmentB);
+        }
+    }
+
+    private GameObject FindNearestBlock(Vector3 position, List<GameObject> blocks)
+    {
+        GameObject nearestBlock = null;
+        float nearestDistance = Mathf.Infinity;
+
+        foreach (GameObject block in blocks)
+        {
+            BlockAlignment alignment = block.GetComponent<BlockAlignment>();
+            if (alignment == null || alignment.isBlocked) continue; // Skip blocked or invalid blocks
+
+            float distance = Vector3.Distance(position, block.transform.position);
+            if (distance < nearestDistance && distance <= 7.5f)
+            {
+                nearestDistance = distance;
+                nearestBlock = block;
+            }
+        }
+        return nearestBlock;
+    }
+    private void MoveBlockToAlignment(GameObject block, Vector3 targetPosition)
+    {
+        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+        {
+            block.transform.position = Vector3.Lerp(block.transform.position, targetPosition, f);
+        }, null, block.GetInstanceID() + "drag_success");
+    }
+
+    private void HandleSingleOrNoAlignment(BlockAlignment alignmentA, BlockAlignment alignmentB)
+    {
+        if (alignmentA != null && !alignmentA.isBlocked && alignmentA.gameObject.CompareTag("LevelBrickInventory"))
+        {
+            MoveBlockBackToInventory(blocka, alignmentA);
+            if (blockb != null) Destroy(blockb);
+        }
+        else if (alignmentB != null && !alignmentB.isBlocked && alignmentB.gameObject.CompareTag("LevelBrickInventory"))
+        {
+            MoveBlockBackToInventory(blockb, alignmentB);
+            if (blocka != null) Destroy(blocka);
+        }
+        else
+        {
+            Debug.Log("No valid alignment found, keeping blocks in map");
+            MoveBlockToAlignment(blocka, B_blocka.myAlignedBrick.transform.position);
+            MoveBlockToAlignment(blockb, B_blockb.myAlignedBrick.transform.position);
+        }
+    }
+    private void MoveBlockBackToInventory(GameObject block, BlockAlignment alignment)
+    {
+        UnblockPreviousAlignment();
+
+        if (block == blocka)
+        {
+            B_blocka.myAlignedBrick = alignment;
+            B_blocka.isInventory = true;
+            B_blocka.instantiated = false;
+        }
+        else if (block == blockb)
+        {
+            B_blockb.myAlignedBrick = alignment;
+            B_blockb.isInventory = true;
+            B_blockb.instantiated = false;
+        }
+
+        alignment.isBlocked = true;
+        MoveBlockToAlignment(block, alignment.transform.position);
+
+        GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+        if (levelInventory != null) block.transform.SetParent(levelInventory.transform);
+
+        Debug.Log(block.name + " moved back to inventory");
+    }
+
+    private void UnblockPreviousAlignment()
+    {
+        if (B_blocka.myAlignedBrick != null) B_blocka.myAlignedBrick.isBlocked = false;
+        if (B_blockb.myAlignedBrick != null) B_blockb.myAlignedBrick.isBlocked = false;
     }
 
     private void RegularBlockMapAlign()
