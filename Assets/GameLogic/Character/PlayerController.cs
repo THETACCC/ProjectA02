@@ -223,7 +223,7 @@ public class PlayerController : MonoBehaviour
                             Vector3 moveBackDirection = -visualTF.forward; // Move back along the player's current forward direction
                             float moveBackDistance = 0.25f; // Adjust this value based on how far back you want to move
 
-                            //rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
+                            rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
 
                             rb.velocity = new Vector3(0, rb.velocity.y, 0);
 

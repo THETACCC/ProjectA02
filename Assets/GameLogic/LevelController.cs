@@ -169,7 +169,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
                     if(block.isDragging)
                     {
-                        //isAnyBlockDragging = true;
+                        isAnyBlockDragging = true;
                     }
 
                     // Send a debug message when isDragging is true
@@ -190,7 +190,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
                     if (block.isDragging)
                     {
-                        //isAnyBlockDragging = true;
+                        isAnyBlockDragging = true;
                     }
                     // Send a debug message when isDragging is true
 
