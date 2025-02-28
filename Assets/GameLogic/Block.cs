@@ -116,6 +116,8 @@ public class Block : MonoBehaviour
 
     //BreakableGround Mechanic
     public BreakableGround BreakableGroundScript;
+    public BreakableGround BreakableGroundScript2;
+    public BreakableGround BreakableGroundScript3;
     //SpawnGroundMechanic
     public SpawnBlock SpawnBlockScript;
     public SpawnBlock SpawnBlockScript2;
@@ -250,7 +252,7 @@ public class Block : MonoBehaviour
 
                 if (type == BlockType.Regular)
                 {
-                    if(instantiated)
+                    if(instantiated && !isDragging)
                     {
                         if (B_blocka.isPlayerOnBlock == false && B_blockb.isPlayerOnBlock == false)
                         {
@@ -315,53 +317,75 @@ public class Block : MonoBehaviour
 
         if (type == BlockType.Regular)
         {
-            if (BreakableGroundScript != null)
+            if(!isDragging && instantiated)
             {
-                if (BreakableGroundScript.isBreak == true)
+                if (BreakableGroundScript != null)
                 {
-                    Destroy(B_blocka.BreakableGroundScript.gameObject);
-                    Destroy(B_blockb.BreakableGroundScript.gameObject);
+                    if (BreakableGroundScript.isBreak == true)
+                    {
+                        Destroy(B_blocka.BreakableGroundScript.gameObject);
+                        Destroy(B_blockb.BreakableGroundScript.gameObject);
+                    }
+                }
+
+                if (BreakableGroundScript2 != null)
+                {
+                    if (BreakableGroundScript2.isBreak == true)
+                    {
+                        Destroy(B_blocka.BreakableGroundScript2.gameObject);
+                        Destroy(B_blockb.BreakableGroundScript2.gameObject);
+                    }
+                }
+
+                if (BreakableGroundScript3 != null)
+                {
+                    if (BreakableGroundScript3.isBreak == true)
+                    {
+                        Destroy(B_blocka.BreakableGroundScript3.gameObject);
+                        Destroy(B_blockb.BreakableGroundScript3.gameObject);
+                    }
+                }
+
+                if (SpawnBlockScript != null)
+                {
+                    if (SpawnBlockScript.isSpawn == true)
+                    {
+
+                        B_blocka.SpawnBlockScript.StartSpawn();
+
+                        B_blockb.SpawnBlockScript.StartSpawn();
+
+
+                    }
+                }
+
+                if (SpawnBlockScript2 != null)
+                {
+                    if (SpawnBlockScript2.isSpawn == true)
+                    {
+
+                        B_blocka.SpawnBlockScript2.StartSpawn();
+
+                        B_blockb.SpawnBlockScript2.StartSpawn();
+
+
+                    }
+                }
+
+                if (SpawnBlockScript3 != null)
+                {
+                    if (SpawnBlockScript3.isSpawn == true)
+                    {
+
+                        B_blocka.SpawnBlockScript3.StartSpawn();
+
+                        B_blockb.SpawnBlockScript3.StartSpawn();
+
+
+                    }
                 }
             }
 
-            if(SpawnBlockScript != null)
-            {
-                if(SpawnBlockScript.isSpawn == true) 
-                {
-
-                    B_blocka.SpawnBlockScript.StartSpawn();
-
-                    B_blockb.SpawnBlockScript.StartSpawn();
-
-
-                }
-            }
-
-            if (SpawnBlockScript2 != null)
-            {
-                if (SpawnBlockScript2.isSpawn == true)
-                {
-
-                    B_blocka.SpawnBlockScript2.StartSpawn();
-
-                    B_blockb.SpawnBlockScript2.StartSpawn();
-
-
-                }
-            }
-
-            if (SpawnBlockScript3 != null)
-            {
-                if (SpawnBlockScript3.isSpawn == true)
-                {
-
-                    B_blocka.SpawnBlockScript3.StartSpawn();
-
-                    B_blockb.SpawnBlockScript3.StartSpawn();
-
-
-                }
-            }
 
         }
 
@@ -426,6 +450,7 @@ public class Block : MonoBehaviour
         if (!mouse_drag && LevelController.instance.curDraggedblock == null && mouse_over && Input.GetMouseButtonDown(0))
         {
             mouse_drag = true;
+            controller.DisablePlayerColliders();
             _OnStartDrag();
             LevelController.instance.curDraggedblock = this;
         }
@@ -467,6 +492,7 @@ public class Block : MonoBehaviour
             {
                 mouse_drag = false;
                 Debug.Log("On  End Draingg");
+                controller.EnablePlayerColliders();
                 _OnEndDrag();
                 LevelController.instance.curDraggedblock = null;
             }
@@ -574,6 +600,12 @@ public class Block : MonoBehaviour
                     B_blockb.cld_0.gameObject.SetActive(false);
                     B_blockb.cld_1.gameObject.SetActive(false);
                     B_blockb.cld_2.gameObject.SetActive(false);
+                    //disable Collision box for the mechanics
+
+
+
+
+
                     if (myAlignedBrick != null)
                     {
                         B_blocka.myAlignedBrick.isBlocked = false;
@@ -1443,10 +1475,12 @@ public void instantiateBlocks()
     B_blockb.cld_2 = transform.Find("Upper")?.gameObject;
 
         //Instatiation of the new mechanics
-    B_blocka.BreakableGroundScript = B_blocka.GetComponentInChildren<BreakableGround>();
-    B_blockb.BreakableGroundScript = B_blockb.GetComponentInChildren<BreakableGround>();
-    B_blocka.SpawnBlockScript = B_blocka.GetComponentInChildren<SpawnBlock>();
-    B_blockb.SpawnBlockScript = B_blockb.GetComponentInChildren<SpawnBlock>();
+
+        // Assign BreakableGround scripts to B_blocka and B_blockb
+        AssignBreakableGroundScripts(B_blocka, B_blockb);
+
+        // Assign SpawnBlock scripts to B_blocka and B_blockb
+        AssignSpawnBlockScripts(B_blocka, B_blockb);
         //    B_blocka.cld_0.SetActive(true);
         //B_blockb.cld_0.SetActive(true);
 
@@ -1455,6 +1489,61 @@ public void instantiateBlocks()
     B_blocka.BlockAlignment();
     //B_blockb.BlockAlignment();
 }
+
+    // Function to assign multiple BreakableGround scripts
+    private void AssignBreakableGroundScripts(Block blockA, Block blockB)
+    {
+        BreakableGround[] breakableGroundScriptsA = blockA.GetComponentsInChildren<BreakableGround>();
+        BreakableGround[] breakableGroundScriptsB = blockB.GetComponentsInChildren<BreakableGround>();
+
+        if (breakableGroundScriptsA.Length > 0)
+            blockA.BreakableGroundScript = breakableGroundScriptsA[0];
+
+        if (breakableGroundScriptsA.Length > 1)
+            blockA.BreakableGroundScript2 = breakableGroundScriptsA[1];
+
+        if (breakableGroundScriptsA.Length > 2)
+            blockA.BreakableGroundScript3 = breakableGroundScriptsA[2];
+
+        if (breakableGroundScriptsB.Length > 0)
+            blockB.BreakableGroundScript = breakableGroundScriptsB[0];
+
+        if (breakableGroundScriptsB.Length > 1)
+            blockB.BreakableGroundScript2 = breakableGroundScriptsB[1];
+
+        if (breakableGroundScriptsB.Length > 2)
+            blockB.BreakableGroundScript3 = breakableGroundScriptsB[2];
+    }
+
+    // Function to assign multiple SpawnBlock scripts
+    private void AssignSpawnBlockScripts(Block blockA, Block blockB)
+    {
+        SpawnBlock[] spawnBlockScriptsA = blockA.GetComponentsInChildren<SpawnBlock>();
+        SpawnBlock[] spawnBlockScriptsB = blockB.GetComponentsInChildren<SpawnBlock>();
+
+        if (spawnBlockScriptsA.Length > 0)
+            blockA.SpawnBlockScript = spawnBlockScriptsA[0];
+
+        if (spawnBlockScriptsA.Length > 1)
+            blockA.SpawnBlockScript2 = spawnBlockScriptsA[1];
+
+        if (spawnBlockScriptsA.Length > 2)
+            blockA.SpawnBlockScript3 = spawnBlockScriptsA[2];
+
+        if (spawnBlockScriptsB.Length > 0)
+            blockB.SpawnBlockScript = spawnBlockScriptsB[0];
+
+        if (spawnBlockScriptsB.Length > 1)
+            blockB.SpawnBlockScript2 = spawnBlockScriptsB[1];
+
+        if (spawnBlockScriptsB.Length > 2)
+            blockB.SpawnBlockScript3 = spawnBlockScriptsB[2];
+    }
+
+
+
+
+
 
 
     bool IsBlockOnLeftSideOfScreen()

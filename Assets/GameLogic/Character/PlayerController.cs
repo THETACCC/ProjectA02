@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     private float mainAxis;
     //Code when cannot move
     public bool canmove = true;
-
+    public bool isLevelDragging = false;
 
 
     private bool isRotating = false;
@@ -291,7 +291,7 @@ public class PlayerController : MonoBehaviour
     {
 
 
-        if (canmove)
+        if (canmove && !isLevelDragging)
         {
             if((Player1Controll.is_sliding == false) && (Player2Controll.is_sliding == false))
             {

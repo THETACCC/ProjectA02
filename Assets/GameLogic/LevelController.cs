@@ -44,8 +44,13 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     //Left Right Player Controll Related
     public bool isPlayingRight = true;
-    public PlayerCharacter playerLeft;
-    public PlayerCharacter playerRight;
+    public PlayerController playerLeft;
+    public PlayerController playerRight;
+    public Rigidbody playerLeftRB;
+    public Rigidbody playerRightRB;
+    public Collider playerLeftCollider;
+    public Collider playerRightCollider;
+
 
     private void Start()
     {
@@ -108,12 +113,17 @@ public class LevelController : SKMonoSingleton<LevelController>
         if(playerLeft == null)
         {
             GameObject playerleft = GameObject.FindGameObjectWithTag("Player1");
-            playerLeft = playerleft.GetComponent<PlayerCharacter>();
+            playerLeftCollider = playerleft.GetComponent<Collider>();
+            playerLeftRB = playerleft.GetComponent<Rigidbody>();
+            playerLeft = playerleft.GetComponent<PlayerController>();
             GameObject playerright = GameObject.FindGameObjectWithTag("Player2");
-            playerRight = playerright.GetComponent<PlayerCharacter>();
+            playerRight = playerright.GetComponent<PlayerController>();
+            playerRightCollider = playerright.GetComponent<Collider>();
+            playerRightRB = playerright.GetComponent<Rigidbody>();
         }
         if(phase == LevelPhase.Running)
         {
+            /*
             if (Input.GetKeyDown(KeyCode.F))
             {
                 playerRight.SwitchPlayer();
@@ -127,6 +137,7 @@ public class LevelController : SKMonoSingleton<LevelController>
                     isPlayingRight = true;
                 }
             }
+            */
         }
 
 
@@ -253,6 +264,26 @@ public class LevelController : SKMonoSingleton<LevelController>
         //there is a bug here where the phase will not change to place
     }
 
+    public void DisablePlayerColliders()
+    {
+        playerLeftRB.useGravity= false;
+        playerRightRB.useGravity= false;
+        playerLeftCollider.enabled= false;
+        playerRightCollider.enabled= false;
+        playerLeft.isLevelDragging = true;
+        playerRight.isLevelDragging = true;
+    }
+    public void EnablePlayerColliders()
+    {
+        playerLeftCollider.enabled = true;
+        playerRightCollider.enabled = true;
+        playerLeftRB.useGravity = true;
+        playerRightRB.useGravity = true;
+        playerLeft.isLevelDragging = false;
+        playerRight.isLevelDragging = false;
+
+    }
+
     private IEnumerator HidePlaceIndicatorsWithDelay(float delay)
     {
         // Wait for the specified delay
@@ -275,6 +306,7 @@ public enum LevelPhase
 {
     Loading,
     Placing,
+    Draging,
     Speaking,
     Running
 }

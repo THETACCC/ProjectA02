@@ -72,13 +72,15 @@ public class BlockIntro : MonoBehaviour
     IEnumerator EnablePlayer()
     {
         yield return new WaitForSeconds(4f);
-        controller.phase = LevelPhase.Placing;
+
         Player1.SetActive(true);
 
         Player2.SetActive(true);
         LevelSuccessLeft.SerachPlayer();    
         LevelSuccessRight.SerachPlayer();
         LevelLoader.LoadCharacter();
+        yield return new WaitForSeconds(1f);
+        controller.phase = LevelPhase.Placing;
     }
 
     void PlayVisualEffect(GameObject block)
