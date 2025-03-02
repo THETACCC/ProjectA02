@@ -1,52 +1,9 @@
-/*using System.Collections;
-using UnityEngine;
-
-public class EndBallUpDown : MonoBehaviour
-{
-    public float duration = 3.0f;      // Time (in seconds)
-    public float heightOffset = 1.0f;  // How high the object moves
-
-    private Vector3 startPosition;
-    private Vector3 targetPosition;
-
-    void Start()
-    {
-        startPosition = transform.position;
-        targetPosition = startPosition + new Vector3(0, heightOffset, 0);
-
-        StartCoroutine(MoveUpDown());
-    }
-
-    IEnumerator MoveUpDown()
-    {
-        while (true)
-        {
-            // Move up
-            yield return StartCoroutine(MoveObject(startPosition, targetPosition, duration));
-            // Move down
-            yield return StartCoroutine(MoveObject(targetPosition, startPosition, duration));
-        }
-    }
-
-    IEnumerator MoveObject(Vector3 start, Vector3 end, float duration)
-    {
-        float time = 0f;
-        while (time < duration)
-        {
-            transform.position = Vector3.Lerp(start, end, time / duration);
-            time += Time.deltaTime;
-            yield return null;
-        }
-        transform.position = end;
-    }
-}
-*/
 using System.Collections;
 using UnityEngine;
 
 public class EndBallUpDown : MonoBehaviour
 {
-    public float duration = 3.0f;     // Time (in seconds) 
+    public float duration = 3.0f;     // Time (in seconds) for one-way movement
     public float heightOffset = 1.0f; // Vertical distance to move
 
     private Vector3 startPosition;
@@ -54,10 +11,11 @@ public class EndBallUpDown : MonoBehaviour
 
     void Start()
     {
-        startPosition = transform.position;
+        // Use localPosition so the parent's movement (e.g., along X) is preserved.
+        startPosition = transform.localPosition;
         targetPosition = startPosition + new Vector3(0, heightOffset, 0);
 
-        // Start the continuous up-down movement coroutine
+        // Start the continuous up-and-down movement coroutine
         StartCoroutine(MoveUpDown());
     }
 
@@ -65,9 +23,9 @@ public class EndBallUpDown : MonoBehaviour
     {
         while (true)
         {
-            // Move up
+            // Move upward with easing
             yield return StartCoroutine(MoveObject(startPosition, targetPosition, duration));
-            // Move down
+            // Move downward with easing
             yield return StartCoroutine(MoveObject(targetPosition, startPosition, duration));
         }
     }
@@ -77,13 +35,19 @@ public class EndBallUpDown : MonoBehaviour
         float time = 0f;
         while (time < duration)
         {
-            // Smooth interpolation
+            // Smooth interpolation with easing
             float t = Mathf.SmoothStep(0f, 1f, time / duration);
-            transform.position = Vector3.Lerp(start, end, t);
+            // Only update the Y component of the localPosition
+            Vector3 newLocalPos = transform.localPosition;
+            newLocalPos.y = Mathf.Lerp(start.y, end.y, t);
+            transform.localPosition = newLocalPos;
+
             time += Time.deltaTime;
             yield return null;
         }
-        // Set final position precisely
-        transform.position = end;
+        // Ensure the final Y position is set precisely
+        Vector3 finalLocalPos = transform.localPosition;
+        finalLocalPos.y = end.y;
+        transform.localPosition = finalLocalPos;
     }
 }
