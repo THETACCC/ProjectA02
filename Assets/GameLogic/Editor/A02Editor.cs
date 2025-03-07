@@ -165,9 +165,10 @@ public sealed class A02Editor : EditorWindow
         EditorSceneManager.OpenScene("Assets/Scenes/" + GlobalLibrary.G_SCENE_ASSET_NAME[sceneTitle] + ".unity");
         if (SceneView.lastActiveSceneView != null)
         {
-            Transform spawnPointCT = GameObject.FindGameObjectWithTag(GlobalLibrary.G_SCENE_TAG_SPAWNPOINT).transform;
-            int s = spawnPoint >= spawnPointCT.childCount ? 0 : spawnPoint;
-            SceneView.lastActiveSceneView.pivot = spawnPointCT.GetChild(s).position;
+            //doesn't need anymore
+            //Transform spawnPointCT = GameObject.FindGameObjectWithTag(GlobalLibrary.G_SCENE_TAG_SPAWNPOINT).transform;
+            //int s = spawnPoint >= spawnPointCT.childCount ? 0 : spawnPoint;
+            //SceneView.lastActiveSceneView.pivot = spawnPointCT.GetChild(s).position;
             SceneView.lastActiveSceneView.Repaint();
         }
     }
