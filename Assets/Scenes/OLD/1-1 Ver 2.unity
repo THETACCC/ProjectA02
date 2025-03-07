@@ -2943,6 +2943,12 @@ MonoBehaviour:
   currentPlayer: 0
   _player1: {fileID: 0}
   _player2: {fileID: 0}
+  controller: {fileID: 0}
+  outlineLeft: {fileID: 0}
+  outlineRight: {fileID: 0}
+  outlineOBJLeft: {fileID: 0}
+  outlineOBJRight: {fileID: 0}
+  OutlineSpeed: 10
 --- !u!54 &413153144
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8014,6 +8020,12 @@ MonoBehaviour:
   currentPlayer: 0
   _player1: {fileID: 0}
   _player2: {fileID: 0}
+  controller: {fileID: 0}
+  outlineLeft: {fileID: 0}
+  outlineRight: {fileID: 0}
+  outlineOBJLeft: {fileID: 0}
+  outlineOBJRight: {fileID: 0}
+  OutlineSpeed: 10
 --- !u!1 &856081540
 GameObject:
   m_ObjectHideFlags: 0
@@ -9559,9 +9571,12 @@ MonoBehaviour:
   - {fileID: 2069853594094646730}
   Player1: {fileID: 413153139}
   Player2: {fileID: 1279518766}
+  LevelSuccessOBJ_Left: {fileID: 0}
+  LevelSuccessOBJ_Right: {fileID: 0}
   LevelSuccessLeft: {fileID: 1136502668}
   LevelSuccessRight: {fileID: 1821394253}
   LevelLoader: {fileID: 1377626446}
+  controller: {fileID: 0}
 --- !u!1 &1161373127
 GameObject:
   m_ObjectHideFlags: 0
@@ -10310,6 +10325,12 @@ MonoBehaviour:
   currentPlayer: 1
   _player1: {fileID: 0}
   _player2: {fileID: 0}
+  controller: {fileID: 0}
+  outlineLeft: {fileID: 0}
+  outlineRight: {fileID: 0}
+  outlineOBJLeft: {fileID: 0}
+  outlineOBJRight: {fileID: 0}
+  OutlineSpeed: 10
 --- !u!1001 &1290368136
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15912,6 +15933,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   phase: 1
   curDraggedblock: {fileID: 0}
+  mblocks: []
+  mblockCode: []
+  mLevelbrick: []
+  malignment: []
+  mRegularPlacement: []
+  isAnyBlockBeingDragged: 0
+  isAnyBlockDragging: 0
+  IndicatoreffectCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  transitionDuration: 1
+  myRenderer: {fileID: 0}
+  myMaterial: {fileID: 0}
+  isPlayingRight: 1
+  playerLeft: {fileID: 0}
+  playerRight: {fileID: 0}
+  playerLeftRB: {fileID: 0}
+  playerRightRB: {fileID: 0}
+  playerLeftCollider: {fileID: 0}
+  playerRightCollider: {fileID: 0}
 --- !u!1001 &651735420519374813
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16660,11 +16704,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  isInventory: 0
   draggable: 1
   cld_0: {fileID: 0}
   cld_1: {fileID: 0}
+  cld_2: {fileID: 0}
   mouse_drag: 0
   is_drag_start_in_select_area: 0
+  mouse_over: 0
+  prev_mouseOver: 0
   moveposition: {x: 0, y: 0, z: 0}
   rotatespeed: 10
   rotate: {x: 0, y: 0, z: 0}
@@ -16675,8 +16723,6 @@ MonoBehaviour:
   blockb: {fileID: 0}
   B_blocka: {fileID: 0}
   B_blockb: {fileID: 0}
-  offset: 0
-  offsetz: 0
   linked: 0
   DragsuccessA: 0
   DragsuccessB: 0
@@ -16693,6 +16739,14 @@ MonoBehaviour:
   init: {fileID: 0}
   init4x4: {fileID: 0}
   isDragging: 0
+  isPlayerOnBlock: 0
+  myAlignedBrick: {fileID: 0}
+  BreakableGroundScript: {fileID: 0}
+  BreakableGroundScript2: {fileID: 0}
+  BreakableGroundScript3: {fileID: 0}
+  SpawnBlockScript: {fileID: 0}
+  SpawnBlockScript2: {fileID: 0}
+  SpawnBlockScript3: {fileID: 0}
 --- !u!4 &8384818704697859448
 Transform:
   m_ObjectHideFlags: 0
