@@ -435,14 +435,25 @@ public class Block : MonoBehaviour
         {
             if(draggable)
             {
+                LevelController.instance.curOverBlock = this;
                 _OnMouseEnter();
             }
 
         }
+        if(mouse_over)
+        {
+            if (draggable)
+            {
+                LevelController.instance.curOverBlock = this;
+            }
+        }
+
+
         if (prev_mouseOver && !mouse_over)
         {
             if(draggable)
             {
+                LevelController.instance.curOverBlock = null;
                 _OnMouseExit();
             }
             isDragging = false;
@@ -525,7 +536,7 @@ public class Block : MonoBehaviour
 
     private void _OnMouseEnter()
     {
-        Debug.Log(myAlignedBrick);
+
         if (!isInventory)
         {
             if ((type == BlockType.Regular))
@@ -743,7 +754,7 @@ public class Block : MonoBehaviour
 
                 //Dragging Operations
                 drag_start_pos = transform.position;
-                is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
+                //is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 drag_offset = transform.position - moveposition;
@@ -2090,17 +2101,75 @@ public void instantiateBlocks()
 
         if (block == blocka)
         {
+
+
+            //B_blocka.myAlignedBrick = alignment;
+            //B_blocka.isInventory = true;
+            //B_blocka.instantiated = false;
+            //B_blockb.outlineEffect.RemakeMaterial();
+
+
+            //Make the inventory clear
+            B_blocka.myAlignedBrick.isBlocked = false;
+            B_blockb.myAlignedBrick.isBlocked = false;
             B_blocka.myAlignedBrick = alignment;
+            Debug.Log("Block A Back to Inventory");
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            {
+                blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
+
+            B_blocka.myAlignedBrick.isBlocked = true;
             B_blocka.isInventory = true;
             B_blocka.instantiated = false;
+            //Make the inventory the parent again
+            GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+            if (levelInventory != null)
+            {
+                B_blocka.transform.SetParent(levelInventory.transform);
+            }
+            if (blockb != null)
+            {
+                Destroy(blockb);
+            }
+
         }
         else if (block == blockb)
         {
+            //B_blockb.myAlignedBrick = alignment;
+            //B_blockb.isInventory = true;
+            //B_blockb.instantiated = false;
+            //B_blockb.outlineEffect.RemakeMaterial();
+
+
+            //Make the inventory clear
+            B_blocka.myAlignedBrick.isBlocked = false;
+            B_blockb.myAlignedBrick.isBlocked = false;
             B_blockb.myAlignedBrick = alignment;
+            Debug.Log("Block B Back to Inventory");
+            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+            {
+                blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
+            }, null, gameObject.GetInstanceID() + "drag_success");
+
+            B_blockb.myAlignedBrick.isBlocked = true;
             B_blockb.isInventory = true;
             B_blockb.instantiated = false;
-        }
+            //Make the inventory the parent again
+            GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
+            if (levelInventory != null)
+            {
+                B_blockb.transform.SetParent(levelInventory.transform);
+            }
 
+            if (blocka != null)
+            {
+                Destroy(blocka);
+            }
+            Outline blockB_Outline = B_blockb.outlineEffect;
+            blockB_Outline.RemakeMaterial();
+        }
+        /*
         alignment.isBlocked = true;
         MoveBlockToAlignment(block, alignment.transform.position);
 
@@ -2108,6 +2177,12 @@ public void instantiateBlocks()
         if (levelInventory != null) block.transform.SetParent(levelInventory.transform);
 
         Debug.Log(block.name + " moved back to inventory");
+        */
+        //B_blocka = null;
+       // B_blockb = null;
+        //blocka = null;
+        //blockb= null;
+        //linked = false;
     }
 
     private void UnblockPreviousAlignment()

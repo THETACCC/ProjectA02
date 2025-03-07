@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using SKCell;
 using UnityEditor.SearchService;
 using static System.TimeZoneInfo;
+using static Unity.Collections.AllocatorManager;
 
 public class LevelController : SKMonoSingleton<LevelController>
 {
@@ -14,6 +15,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
 
     public Block curDraggedblock = null;
+    public Block curOverBlock = null;
     //private void Start()
     //{
     //   InitLevel();
@@ -137,10 +139,37 @@ public class LevelController : SKMonoSingleton<LevelController>
 
         //Commented out for debug
         //New method
+        if(curOverBlock!= null)
+        {
+            if (curOverBlock.type == BlockType.Regular)
+            {
+                foreach (RegularBlockPlacement mRegularBlockPlace in mRegularPlacement)
+                {
+                    if (mRegularBlockPlace != null && mRegularBlockPlace.isRegularCanPlace == true)
+                    {
+                        mRegularBlockPlace.PlaceIndicator.SetActive(true);
+                    }
+                }
+            }
+            else if (curOverBlock.type == BlockType.Free)
+            {
+                foreach (BlockAlignment mAlign in malignment)
+                {
+                    if (mAlign != null && mAlign.isBlocked == false)
+                    {
+                        mAlign.PlaceIndicator.SetActive(true);
+                    }
+                }
+            }
+        }
+
+
+
         if (curDraggedblock != null)
         {
             isAnyBlockBeingDragged = true;
             isAnyBlockDragging = true;
+
         }
         else
         {
@@ -150,6 +179,7 @@ public class LevelController : SKMonoSingleton<LevelController>
         // Ensure the transition timer remains within [0, 1] bounds for Evaluate() usage
         transitionTimer = Mathf.Clamp01(transitionTimer);
         transitionTimerReverse = Mathf.Clamp01(transitionTimerReverse);
+        /*
         foreach (Block block in mblockCode)
         {
             // Check if the block is dragging
@@ -158,6 +188,9 @@ public class LevelController : SKMonoSingleton<LevelController>
 
                 if (block.type == BlockType.Regular)
                 {
+                    // Send a debug message when isDragging is true
+                    Debug.Log("Open indicator");
+
                     isAnyBlockBeingDragged = true;
                     foreach (RegularBlockPlacement mRegularBlockPlace in mRegularPlacement)
                     {
@@ -172,8 +205,7 @@ public class LevelController : SKMonoSingleton<LevelController>
                         isAnyBlockDragging = true;
                     }
 
-                    // Send a debug message when isDragging is true
-                    Debug.Log("Block is being dragged: " + block.gameObject.name);
+
                 }
                 else if(block.type == BlockType.Free)
                 {
@@ -201,8 +233,9 @@ public class LevelController : SKMonoSingleton<LevelController>
             }
 
         }
+        */
 
-        if (isAnyBlockBeingDragged)
+        if (curOverBlock != null)
         {
             transitionTimerReverse = 0;
             Debug.Log("At least one block is being dragged.");
