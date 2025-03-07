@@ -87,22 +87,17 @@ public class RewardAcquire : MonoBehaviour
     {
         movement.canmove = false;
         movement.is_sliding = false;
+        movement_player2.canmove = false;
+        movement_player2.is_sliding = false;
     }
 
     public void EnablePlayer()
     {
-        if(isPlayer1)
-        {
-            levelController.phase = LevelPhase.Running;
-            movement.canmove = true;
-            movement.is_sliding = false;
-        }
-        else if(!isPlayer1)
-        {
-            levelController.phase = LevelPhase.Running;
-            movement_player2.canmove = true;
-            movement_player2.is_sliding = false;
-        }
+        levelController.phase = LevelPhase.Running;
+        movement.canmove = true;
+        movement.is_sliding = false;
+        movement_player2.canmove = true;
+        movement_player2.is_sliding = false;
 
 
     }
@@ -110,6 +105,8 @@ public class RewardAcquire : MonoBehaviour
 
     public void DisablePlayer2()
     {
+        movement.canmove = false;
+        movement.is_sliding = false;
         movement_player2.canmove = false;
         movement_player2.is_sliding = false;
     }
@@ -117,6 +114,8 @@ public class RewardAcquire : MonoBehaviour
     public void EnablePlayer2()
     {
         levelController.phase = LevelPhase.Running;
+        movement.canmove = true;
+        movement.is_sliding = false;
         movement_player2.canmove = true;
         movement_player2.is_sliding = false;
     }

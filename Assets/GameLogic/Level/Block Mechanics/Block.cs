@@ -690,7 +690,7 @@ public class Block : MonoBehaviour
 
 
                     drag_start_pos = transform.position;
-                    is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
+                    //is_drag_start_in_select_area = LevelLoader.IsPosInSelectionArea(drag_start_pos);
                     float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                     moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                     drag_offset = transform.position - moveposition;
@@ -709,7 +709,7 @@ public class Block : MonoBehaviour
                 {
                     myAlignedBrick.isBlocked = false;
                 }
-                drag_start_pos = LevelLoader.WorldToCellPos(this.transform.position);
+                //drag_start_pos = LevelLoader.WorldToCellPos(this.transform.position);
                 is_drag_start_in_select_area = false;
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
@@ -734,7 +734,7 @@ public class Block : MonoBehaviour
                 }
 
                 //Dragging Operations
-                drag_start_pos = LevelLoader.WorldToCellPos(this.transform.position);
+                //drag_start_pos = LevelLoader.WorldToCellPos(this.transform.position);
                 float distance_to_screen = CommonReference.mainCam.WorldToScreenPoint(gameObject.transform.position).z;
                 moveposition = CommonReference.mainCam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, distance_to_screen));
                 drag_offset = transform.position - moveposition;
