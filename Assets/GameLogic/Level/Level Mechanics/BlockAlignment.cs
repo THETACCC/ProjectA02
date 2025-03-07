@@ -84,10 +84,12 @@ public class BlockAlignment : MonoBehaviour
     }
     private void AlignWithNearestBlockInRangeDuringGame()
     {
+        /*
         if(isBlocked)
         {
             return;
         }
+        */
         // Find all objects with the "Block" tag
         GameObject[] blocks = GameObject.FindGameObjectsWithTag(targetTag);
 
@@ -119,6 +121,11 @@ public class BlockAlignment : MonoBehaviour
             }
 
             isBlocked = true;
+        }
+        else
+        {
+
+            isBlocked = false;
         }
     }
 

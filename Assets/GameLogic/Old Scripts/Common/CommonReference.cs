@@ -7,7 +7,7 @@ using SKCell;
 public class CommonReference : SKMonoSingleton<CommonReference>
 {
 
-    public static PlayerCharacter[] playerCharacters;
+    public static PlayerController[] playerCharacters;
 
     public static string TAG_BLOCK = "Block";
     public static string TAG_CHARACTER = "Character";

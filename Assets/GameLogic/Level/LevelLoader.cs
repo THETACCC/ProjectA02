@@ -29,7 +29,7 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
     private Dictionary<Vector3, Block> blockPos = new Dictionary<Vector3, Block>(); 
 
     private Block endLeft, endRight, startLeft, startRight;
-    private PlayerCharacter characterLeft, characterRight;
+    private PlayerController characterLeft, characterRight;
 
     const float BLOCK_SCALE_RATIO = 3.36f;
     const float DRAGGABLE_BLOCK_SCALE = 0.7f;
@@ -198,8 +198,8 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         }
 
         // Assign player characters
-        PlayerCharacter player1 = player1Object.GetComponent<PlayerCharacter>();
-        PlayerCharacter player2 = player2Object.GetComponent<PlayerCharacter>();
+        PlayerController player1 = player1Object.GetComponent<PlayerController>();
+        PlayerController player2 = player2Object.GetComponent<PlayerController>();
 
         if (player1 == null || player2 == null)
         {

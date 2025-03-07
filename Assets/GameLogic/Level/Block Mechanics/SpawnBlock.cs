@@ -17,7 +17,7 @@ public class SpawnBlock : MonoBehaviour
     {
         
     }
-
+    
     private void OnTriggerExit(Collider other)
     {
         if(other.tag == "Player2")
@@ -25,7 +25,7 @@ public class SpawnBlock : MonoBehaviour
             StartSpawnBool();
         }
     }
-
+    
     private void StartSpawnBool()
     {
         isSpawn= true;
