@@ -65,6 +65,7 @@ public enum SceneTitle
 {
     
     MainMenu = 0,
+    /*
     Level1_1 = 1,
     Level1_2 = 2,
     Level1_3 = 3, 
@@ -74,7 +75,8 @@ public enum SceneTitle
     Level1_7 = 7,
     Level1_8 = 8,
     Level1_9 = 9,
-    Level1_10 = 10,
+    */
+    Chapter0World = 10,
     Chapter1World = 11,
     Level1_1_MapTest = 12,
     Chapter1Base3x3 = 14,
