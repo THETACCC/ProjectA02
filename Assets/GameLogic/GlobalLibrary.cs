@@ -193,7 +193,7 @@ public static class GlobalLibrary
 
     public static readonly Dictionary<SceneCategory, SceneTitle[]> G_SCENE_CATEGORY_DICT = new Dictionary<SceneCategory, SceneTitle[]>
     {
-        {SceneCategory.Common, new SceneTitle[]{SceneTitle.MainMenu,SceneTitle.Level1_1, SceneTitle.Main_Menu } },
+        {SceneCategory.Common, new SceneTitle[]{SceneTitle.MainMenu, SceneTitle.Main_Menu } },
         {SceneCategory.Chapter1, new SceneTitle[]{ SceneTitle.Chapter1Base3x3, SceneTitle.Chapter1BaseVisualGym, SceneTitle.Chapter1_Level1, SceneTitle.Chapter1_Level2, SceneTitle.Chapter1_Level3, SceneTitle.Chapter1_Level4, SceneTitle.Chapter1_Level5, SceneTitle.Chapter1_Level6, SceneTitle.Chapter1_Level7, SceneTitle.Chapter1_Level8, SceneTitle.Chapter1_Level9, SceneTitle.Chapter1_Level10, SceneTitle.Chapter1_Level11, SceneTitle.Chapter1_Level12, SceneTitle.Chapter1_Level13, SceneTitle.Chapter1_Level14, SceneTitle.Chapter1_Level15, 
             SceneTitle.Chapter1Base4x4, SceneTitle.Level1_1_MapTest, SceneTitle.Chapter0World , SceneTitle.Chapter1World , SceneTitle.Chapter1MoveTest } },
 
@@ -238,6 +238,7 @@ public static class GlobalLibrary
         {SceneTitle.Level1_10, "1-10" },
         */
         {SceneTitle.Level1_1_MapTest, "1_1_MapTest" },
+        {SceneTitle.Chapter0World, "Chapter0World" },
         {SceneTitle.Chapter1World, "Chapter1World" }
     };
 

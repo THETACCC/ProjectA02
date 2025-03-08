@@ -1,6 +1,7 @@
 ﻿ using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -143,6 +144,11 @@ namespace StarterAssets
 
         private void Start()
         {
+            string sceneName = SceneManager.GetActiveScene().name;
+            string keyX = sceneName + "_LastTriggerX";
+            string keyY = sceneName + "_LastTriggerY";
+            string keyZ = sceneName + "_LastTriggerZ";
+
             _starterAssetsInputs = GetComponent<StarterAssetsInputs>();
 
             if (_starterAssetsInputs != null)
@@ -157,21 +163,20 @@ namespace StarterAssets
                 Debug.LogWarning("StarterAssetsInputs component not found!");
             }
 
-            // Check if the saved position exists
-            if (PlayerPrefs.HasKey("LastTriggerX") && PlayerPrefs.HasKey("LastTriggerY") && PlayerPrefs.HasKey("LastTriggerZ"))
+            // Check if the saved position exists for this scene
+            if (PlayerPrefs.HasKey(keyX) && PlayerPrefs.HasKey(keyY) && PlayerPrefs.HasKey(keyZ))
             {
-                float x = PlayerPrefs.GetFloat("LastTriggerX");
-                float y = PlayerPrefs.GetFloat("LastTriggerY");
-                float z = PlayerPrefs.GetFloat("LastTriggerZ");
-
+                float x = PlayerPrefs.GetFloat(keyX);
+                float y = PlayerPrefs.GetFloat(keyY);
+                float z = PlayerPrefs.GetFloat(keyZ);
                 transform.position = new Vector3(x, y, z);
-                Debug.Log($"Loaded saved position: {transform.position}");
+                Debug.Log($"Loaded saved position for scene {sceneName}: {transform.position}");
             }
             else
             {
-                // Only set the default position if no saved position is found
+                // Only set the default position if no saved position is found for this scene
                 transform.position = defaultPosition;
-                Debug.Log($"No saved position found. Using default position: {defaultPosition}");
+                Debug.Log($"No saved position found for scene {sceneName}. Using default position: {defaultPosition}");
             }
 
             // Set the initial camera rotation

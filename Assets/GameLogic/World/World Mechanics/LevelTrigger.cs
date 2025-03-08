@@ -78,13 +78,12 @@ public class LevelTrigger : MonoBehaviour
 
     private void LoadNextLevel()
     {
-
-        // Save the current trigger's position when the player enters
-        PlayerPrefs.SetFloat("LastTriggerX", transform.position.x);
-        PlayerPrefs.SetFloat("LastTriggerY", transform.position.y);
-        PlayerPrefs.SetFloat("LastTriggerZ", transform.position.z);
-        PlayerPrefs.SetString("LastTriggerScene", SceneManager.GetActiveScene().name);
-
+        string sceneName = SceneManager.GetActiveScene().name;
+        // Save the current trigger's position when the player enters, using scene-specific keys
+        PlayerPrefs.SetFloat(sceneName + "_LastTriggerX", transform.position.x);
+        PlayerPrefs.SetFloat(sceneName + "_LastTriggerY", transform.position.y);
+        PlayerPrefs.SetFloat(sceneName + "_LastTriggerZ", transform.position.z);
+        PlayerPrefs.SetString("LastTriggerScene", sceneName);
 
         SKUtils.InvokeAction(0.2f, () =>
         {
@@ -95,4 +94,5 @@ public class LevelTrigger : MonoBehaviour
         });
         startloading = true;
     }
+
 }
