@@ -76,7 +76,7 @@ public enum SceneTitle
     Level1_8 = 8,
     Level1_9 = 9,
     */
-    Chapter0World = 10,
+
     Chapter1World = 11,
     Level1_1_MapTest = 12,
     Chapter1Base3x3 = 14,
@@ -103,11 +103,17 @@ public enum SceneTitle
     Main_Menu = 13,
 
 
+
+    //Chapter0
+    Chapter0World = 10,
+    Chapter0_GYM = 101
+
 }
 
 public enum SceneCategory
 {
     Common = 0,
+    Chapter0 = 1,
     Chapter1 = 100
 
 }

@@ -59,6 +59,13 @@ public class PlayerController : MonoBehaviour
 
     public GroundAlignment Alignement;
 
+
+    //Reference Player's Chapter
+    public int whichChapter = 1;
+
+    // Flag to prevent overlapping discrete moves
+    private bool isMovingDiscrete = false;
+
     void Start()
     {
         GameObject Player1 = GameObject.FindGameObjectWithTag("Player1");
@@ -81,49 +88,84 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-
-
-        if (canmove && !isLevelDragging)
+        //Chapter1 Movement
+        if (whichChapter== 1)
         {
-            if((Player1Controll.is_sliding == false) && (Player2Controll.is_sliding == false))
+            if (canmove && !isLevelDragging)
             {
-                if (Input.GetKey(KeyCode.D))
+                if ((Player1Controll.is_sliding == false) && (Player2Controll.is_sliding == false))
                 {
+                    if (Input.GetKey(KeyCode.D))
+                    {
 
-                    axis_x = 1;
-                }
-                else if (Input.GetKey(KeyCode.A))
-                {
+                        axis_x = 1;
+                    }
+                    else if (Input.GetKey(KeyCode.A))
+                    {
 
-                    axis_x = -1;
+                        axis_x = -1;
+                    }
+                    else
+                    {
+                        axis_x = 0;
+                    }
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+
+                        axis_z = 1;
+                    }
+                    else
+                    {
+                        axis_z = 0;
+                    }
                 }
                 else
                 {
                     axis_x = 0;
+                    axis_z = 0;
                 }
-                if (Input.GetKey(KeyCode.Space))
-                {
 
-                    axis_z = 1;
+            }
+        }
+        else if (whichChapter == 0)
+        {
+            if (canmove && !isLevelDragging)
+            {
+                if ((Player1Controll.is_sliding == false) && (Player2Controll.is_sliding == false))
+                {
+                    if (Input.GetKey(KeyCode.D))
+                    {
+
+                        axis_x = 1;
+                    }
+                    else if (Input.GetKey(KeyCode.A))
+                    {
+
+                        axis_x = -1;
+                    }
+                    else
+                    {
+                        axis_x = 0;
+                    }
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+
+                        axis_z = 1;
+                    }
+                    else
+                    {
+                        axis_z = 0;
+                    }
                 }
                 else
                 {
+                    axis_x = 0;
                     axis_z = 0;
                 }
+
             }
-            else
-            {
-                axis_x = 0;
-                axis_z = 0;
-            }
+        } 
 
- 
-            //axis_z = Input.GetAxisRaw("Vertical");
-        }
-        //delta_pos = rb.position - prev_pos;
-
-
-        // Log the magnitude of delta_pos for debugging
 
         if (is_sliding)
         {
@@ -137,101 +179,24 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        CharacterManager.instance.isSliding[mapSide] = is_sliding;
-        delta_pos = rb.position - prev_pos;
 
-        if(startMoving)
+        //Chapter1 Movement
+        if(whichChapter == 1)
         {
-            if (rb.velocity.magnitude > 0.05f)
+
+
+            CharacterManager.instance.isSliding[mapSide] = is_sliding;
+            delta_pos = rb.position - prev_pos;
+
+            if (startMoving)
             {
-                controller.phase = LevelPhase.Sprinting;
-            }
-            else
-            {
-                controller.phase = LevelPhase.Running;
-            }
-        }
-
-
-
-
-
-        if (controller.phase == LevelPhase.Running || controller.phase == LevelPhase.Sprinting)
-        {
-            if(!startMoving)
-            {
-                rb.velocity = new Vector3(0, rb.velocity.y, 0);
-                Invoke("EnableMovement", .5f);
-            }
-
-            if(startMoving)
-            {
-                if (!is_sliding)
+                if (rb.velocity.magnitude > 0.05f)
                 {
-
-                    rb.velocity = new Vector3(0, rb.velocity.y, 0);
-
-                    if (axis_x != 0 && !isRotating)
-                    {
-                        StartCoroutine(RotateCharacter());
-                    }
-
-                    if (axis_z != 0 && !isRotating)
-                    {
-                        // Calculate the forward movement direction based on the character's current rotation
-                        //Vector3 moveDirection = transform.forward * axis_z;
-
-                        // Apply the movement speed and update the Rigidbody's velocity
-                        //rb.velocity = moveDirection * moveSpeed;
-
-                        slide_dir = new Vector2(0, 1);
-                        is_sliding = true;
-                        cur_sliding_time = 0;
-                        cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
-                        //upperCld.gameObject.SetActive(true);
-
-                        //RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
-                    }
+                    controller.phase = LevelPhase.Sprinting;
                 }
                 else
                 {
-                    cur_sliding_time += Time.deltaTime;
-                    if (cur_spd_boost > 1)
-                    {
-                        cur_spd_boost -= spdBoostDamping;
-                    }
-                    counting = true;
-                    // Calculate the forward movement direction based on the character's current rotation
-                    //Vector3 moveDirection = visualTF.forward * slide_dir.y;
-
-                    // Apply the movement speed and update the Rigidbody's velocity
-                    //rb.velocity = moveDirection * moveSpeed * cur_spd_boost;
-
-                    rb.velocity = new Vector3(visualTF.forward.x * moveSpeed * cur_spd_boost, rb.velocity.y, visualTF.forward.z * moveSpeed * cur_spd_boost);
-
-                    if (cur_sliding_time > .25f)
-                    {
-
-                        if (delta_pos.magnitude < .1f) //This determines how fast the player will consider itself stopped moving
-                        {
-                            Debug.Log("stop");
-                            counting = false;
-                            collided = false;
-                            is_sliding = false;
-
-                            // Move player slightly backward upon stopping
-                            Vector3 moveBackDirection = -visualTF.forward; // Move back along the player's current forward direction
-                            float moveBackDistance = 0.25f; // Adjust this value based on how far back you want to move
-
-                            rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
-
-                            rb.velocity = new Vector3(0, rb.velocity.y, 0);
-
-                            // Align player to the center of the colliding object
-                            Alignement.AlignPlayerToCollidingObject();
-                        }
-
-                    }
+                    controller.phase = LevelPhase.Running;
                 }
             }
 
@@ -239,10 +204,187 @@ public class PlayerController : MonoBehaviour
 
 
 
+            if (controller.phase == LevelPhase.Running || controller.phase == LevelPhase.Sprinting)
+            {
+                if (!startMoving)
+                {
+                    rb.velocity = new Vector3(0, rb.velocity.y, 0);
+                    Invoke("EnableMovement", .5f);
+                }
+
+                if (startMoving)
+                {
+                    if (!is_sliding)
+                    {
+
+                        rb.velocity = new Vector3(0, rb.velocity.y, 0);
+
+                        if (axis_x != 0 && !isRotating)
+                        {
+                            StartCoroutine(RotateCharacter());
+                        }
+
+                        if (axis_z != 0 && !isRotating)
+                        {
+                            // Calculate the forward movement direction based on the character's current rotation
+                            //Vector3 moveDirection = transform.forward * axis_z;
+
+                            // Apply the movement speed and update the Rigidbody's velocity
+                            //rb.velocity = moveDirection * moveSpeed;
+
+                            slide_dir = new Vector2(0, 1);
+                            is_sliding = true;
+                            cur_sliding_time = 0;
+                            cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
+                            //upperCld.gameObject.SetActive(true);
+
+                            //RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
+                        }
+                    }
+                    else
+                    {
+                        cur_sliding_time += Time.deltaTime;
+                        if (cur_spd_boost > 1)
+                        {
+                            cur_spd_boost -= spdBoostDamping;
+                        }
+                        counting = true;
+                        // Calculate the forward movement direction based on the character's current rotation
+                        //Vector3 moveDirection = visualTF.forward * slide_dir.y;
+
+                        // Apply the movement speed and update the Rigidbody's velocity
+                        //rb.velocity = moveDirection * moveSpeed * cur_spd_boost;
+
+                        rb.velocity = new Vector3(visualTF.forward.x * moveSpeed * cur_spd_boost, rb.velocity.y, visualTF.forward.z * moveSpeed * cur_spd_boost);
+
+                        if (cur_sliding_time > .25f)
+                        {
+
+                            if (delta_pos.magnitude < .1f) //This determines how fast the player will consider itself stopped moving
+                            {
+                                Debug.Log("stop");
+                                counting = false;
+                                collided = false;
+                                is_sliding = false;
+
+                                // Move player slightly backward upon stopping
+                                Vector3 moveBackDirection = -visualTF.forward; // Move back along the player's current forward direction
+                                float moveBackDistance = 0.25f; // Adjust this value based on how far back you want to move
+
+                                rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
+
+                                rb.velocity = new Vector3(0, rb.velocity.y, 0);
+
+                                // Align player to the center of the colliding object
+                                Alignement.AlignPlayerToCollidingObject();
+                            }
+
+                        }
+                    }
+                }
+
+
+
+
+
+            }
+
+
+            prev_pos = rb.position;
         }
+        else if (whichChapter == 0)
+        {
+            //This is used to see whether the player is moving
+            CharacterManager.instance.isSliding[mapSide] = is_sliding;
+            delta_pos = rb.position - prev_pos;
+
+            if (startMoving)
+            {
+                if (rb.velocity.magnitude > 0.05f)
+                {
+                    controller.phase = LevelPhase.Sprinting;
+                }
+                else
+                {
+                    controller.phase = LevelPhase.Running;
+                }
+            }
 
 
-        prev_pos = rb.position;
+            if (controller.phase == LevelPhase.Running || controller.phase == LevelPhase.Sprinting)
+            {
+                if (!startMoving)
+                {
+                    rb.velocity = new Vector3(0, rb.velocity.y, 0);
+                    Invoke("EnableMovement", .5f);
+                }
+
+                if (startMoving)
+                {
+                    if (!is_sliding)
+                    {
+
+                        rb.velocity = new Vector3(0, rb.velocity.y, 0);
+
+                        if (axis_x != 0 && !isRotating)
+                        {
+                            StartCoroutine(RotateCharacter());
+                        }
+
+                        if (axis_z != 0 && !isRotating)
+                        {
+                            slide_dir = new Vector2(0, 1);
+                            is_sliding = true;
+                            cur_sliding_time = 0;
+                            cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        cur_sliding_time += Time.deltaTime;
+                        if (cur_spd_boost > 1)
+                        {
+                            cur_spd_boost -= spdBoostDamping;
+                        }
+                        counting = true;
+
+
+                        rb.velocity = new Vector3(visualTF.forward.x * moveSpeed * cur_spd_boost, rb.velocity.y, visualTF.forward.z * moveSpeed * cur_spd_boost);
+
+                        if (cur_sliding_time > .125f)
+                        {
+
+
+                                Debug.Log("stop");
+                                counting = false;
+                                collided = false;
+                                is_sliding = false;
+
+                                // Move player slightly backward upon stopping
+                                Vector3 moveBackDirection = -visualTF.forward; // Move back along the player's current forward direction
+                                float moveBackDistance = 0.25f; // Adjust this value based on how far back you want to move
+
+                                rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
+
+                                rb.velocity = new Vector3(0, rb.velocity.y, 0);
+
+                                // Align player to the center of the colliding object
+                                Alignement.AlignPlayerToCollidingObject();
+
+                        }
+                    }
+                }
+
+
+
+
+
+            }
+
+
+            prev_pos = rb.position;
+
+        }
     }
 
     public void PlayerSetBack()
@@ -301,5 +443,24 @@ public class PlayerController : MonoBehaviour
         isRotating = false;
     }
 
+    IEnumerator MoveDiscrete(Vector3 direction)
+    {
+        isMovingDiscrete = true;
+        float distance = 1.0f;       // Move exactly 1 meter
+        float moveDuration = 0.2f;     // Duration of the move (adjustable)
+        float elapsedTime = 0f;
+        Vector3 startPos = rb.position;
+        Vector3 endPos = startPos + direction.normalized * distance;
+
+        while (elapsedTime < moveDuration)
+        {
+            Vector3 newPos = Vector3.Lerp(startPos, endPos, elapsedTime / moveDuration);
+            rb.MovePosition(newPos);
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        rb.MovePosition(endPos);
+        isMovingDiscrete = false;
+    }
 
 }
