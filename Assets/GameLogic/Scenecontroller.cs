@@ -106,8 +106,9 @@ public enum SceneTitle
 
     //Chapter0
     Chapter0World = 10,
-    Chapter0_GYM = 101
-
+    Chapter0_GYM = 101,
+    Chapter0_Level1 = 102,
+    Chapter0_Level2 = 103
 }
 
 public enum SceneCategory
