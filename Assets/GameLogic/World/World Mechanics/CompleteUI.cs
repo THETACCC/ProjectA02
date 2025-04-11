@@ -1,13 +1,13 @@
 using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
+using System.Collections;
 
 public class CompleteUI : MonoBehaviour
 {
     private RectTransform rectTransform;
     private Vector3 startingScale;
     private Image image;
-    private Color startingColor;
+    private Coroutine animationCoroutine;
 
     [Header("Scale Animation Settings")]
     [SerializeField] private float initialScaleMultiplier = 1.5f;
@@ -19,128 +19,95 @@ public class CompleteUI : MonoBehaviour
     [Header("Fade Settings")]
     [SerializeField] private float fadeDuration = 0.5f;
 
-    private bool isAnimating = false;
-    private bool isVisible = false;
-
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
         startingScale = rectTransform.localScale;
-
         image = GetComponent<Image>();
-        if (image == null)
-        {
-            Debug.Log("No Image component attached!");
-        }
-        else
-        {
-            startingColor = image.color;
-            // Start hidden.
-            startingColor.a = 0f;
-            image.color = startingColor;
-        }
+        SetAlpha(0f);
     }
 
-    // Public trigger methods to be called from LevelTrigger.
-    public void TriggerShow()
+    public void InstantShow()
     {
-        if (!isAnimating && !isVisible)
-        {
-            StartCoroutine(ShowAndBounce());
-        }
-    }
-
-    public void TriggerHide()
-    {
-        if (!isAnimating && isVisible)
-        {
-            StartCoroutine(Hide());
-        }
-    }
-
-    // Removed Update() input check since LevelTrigger now triggers the animations.
-
-    IEnumerator ShowAndBounce()
-    {
-        isAnimating = true;
-        // Fade in the UI element.
-        yield return StartCoroutine(FadeIn());
-        yield return StartCoroutine(AnimateScaleBounce());
-        isVisible = true;
-        isAnimating = false;
-    }
-
-    IEnumerator Hide()
-    {
-        isAnimating = true;
-        // Fade out the UI element.
-        yield return StartCoroutine(FadeOut());
-        // Reset the scale to its starting value.
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        SetAlpha(1f);
         rectTransform.localScale = startingScale;
-        isVisible = false;
-        isAnimating = false;
     }
 
-    IEnumerator FadeIn()
+    public void InstantHide()
     {
-        float elapsed = 0f;
-        while (elapsed < fadeDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / fadeDuration);
-            Color col = image.color;
-            col.a = t;
-            image.color = col;
-            yield return null;
-        }
-        Color finalColor = image.color;
-        finalColor.a = 1f;
-        image.color = finalColor;
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        SetAlpha(0f);
+        rectTransform.localScale = startingScale;
     }
 
-    IEnumerator FadeOut()
+    public IEnumerator AnimateShow()
+    {
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        animationCoroutine = StartCoroutine(ShowSequence());
+        yield return animationCoroutine;
+    }
+
+    public IEnumerator AnimateHide()
+    {
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        animationCoroutine = StartCoroutine(HideSequence());
+        yield return animationCoroutine;
+    }
+
+    IEnumerator ShowSequence()
+    {
+        yield return Fade(0f, 1f, fadeDuration);
+        yield return AnimateScaleBounce();
+    }
+
+    IEnumerator HideSequence()
+    {
+        yield return Fade(1f, 0f, fadeDuration * 0.6f);
+        rectTransform.localScale = startingScale;
+    }
+
+    IEnumerator Fade(float from, float to, float duration)
     {
         float elapsed = 0f;
-        while (elapsed < fadeDuration)
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / fadeDuration);
-            Color col = image.color;
-            col.a = 1 - t;
-            image.color = col;
+            SetAlpha(Mathf.Lerp(from, to, elapsed / duration));
             yield return null;
         }
-        Color finalColor = image.color;
-        finalColor.a = 0f;
-        image.color = finalColor;
+        SetAlpha(to);
     }
 
     IEnumerator AnimateScaleBounce()
     {
         float elapsed = 0f;
-        // Phase 1: Quick scale up to the overshot value.
         while (elapsed < dropDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / dropDuration);
-            float tFast = Mathf.Sqrt(t);
-            rectTransform.localScale = Vector3.Lerp(startingScale, startingScale * initialScaleMultiplier, tFast);
+            float t = Mathf.Sqrt(elapsed / dropDuration);
+            rectTransform.localScale = Vector3.Lerp(startingScale, startingScale * initialScaleMultiplier, t);
             yield return null;
         }
         rectTransform.localScale = startingScale * initialScaleMultiplier;
 
-        // Phase 2: Scale bounce oscillations.
         elapsed = 0f;
         while (elapsed < bounceDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / bounceDuration);
+            float t = elapsed / bounceDuration;
             float amplitude = (initialScaleMultiplier - 1) * Mathf.Pow(geometricDecayFactor, t * bounceFrequency);
-            float phase = 2 * Mathf.PI * bounceFrequency * t;
-            float scaleFactor = 1 + amplitude * Mathf.Cos(phase);
+            float scaleFactor = 1 + amplitude * Mathf.Cos(2 * Mathf.PI * bounceFrequency * t);
             rectTransform.localScale = startingScale * scaleFactor;
             yield return null;
         }
         rectTransform.localScale = startingScale;
+    }
+
+    void SetAlpha(float alpha)
+    {
+        Color c = image.color;
+        c.a = alpha;
+        image.color = c;
     }
 }
