@@ -1,36 +1,37 @@
-using SKCell;
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
+using SKCell;
 
 public class LevelTrigger : MonoBehaviour
 {
-    [SerializeField] private ImageMover imageMover; // Reference to the ImageMover script
-    [SerializeField] private GameObject uiSelectLevel; // Reference to the UI_SelectLevel GameObject
-    private bool allowInput = false;
+    private CompleteUI[] completeUIs;
+    private BouncyUI[] bouncyUIs;
+
+    // Existing level-loading and UI fields
+    [SerializeField] private ImageMover imageMover; // Reference to the ImageMover script.
+    [SerializeField] private GameObject uiSelectLevel; // Reference to the UI_SelectLevel GameObject.
     private FlowManager flowManager;
     public SceneTitle scenetitle;
     private GameObject flowmanager;
     private bool startloading = false;
 
-    private void Start()
+    void Start()
     {
-        flowmanager = GameObject.Find("FlowManager");
-        flowManager = flowmanager.GetComponent<FlowManager>();
+        // Find all instances of CompleteUI and BouncyUI in children,
+        // including disabled GameObjects (if any).
+        completeUIs = GetComponentsInChildren<CompleteUI>(true);
+        bouncyUIs = GetComponentsInChildren<BouncyUI>(true);
 
-        // Ensure UI_SelectLevel starts as inactive
+        // Existing FlowManager / UI_SelectLevel setup.
+        flowmanager = GameObject.Find("FlowManager");
+        if (flowmanager != null)
+        {
+            flowManager = flowmanager.GetComponent<FlowManager>();
+        }
         if (uiSelectLevel != null)
         {
             uiSelectLevel.SetActive(false);
-        }
-    }
-
-    private void Update()
-    {
-        if (allowInput && Input.GetKeyDown(KeyCode.F))
-        {
-            Debug.Log("INPUT");
-            LoadNextLevel();
         }
     }
 
@@ -38,19 +39,27 @@ public class LevelTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            allowInput = true;
-
-            // Activate the UI_SelectLevel
+            // Allow input if needed.
+            // Activate any additional UI elements, such as UI_SelectLevel.
             if (uiSelectLevel != null)
             {
                 uiSelectLevel.SetActive(true);
             }
-
+            // Trigger ImageMover movement if assigned.
             if (imageMover != null)
             {
-                print("moving to end");
                 StopAllCoroutines();
                 StartCoroutine(imageMover.MoveImageToEnd());
+            }
+            // Trigger all CompleteUI animations.
+            foreach (CompleteUI ui in completeUIs)
+            {
+                ui.TriggerShow();
+            }
+            // Trigger all BouncyUI animations.
+            foreach (BouncyUI ui in bouncyUIs)
+            {
+                ui.TriggerToTarget();
             }
         }
     }
@@ -59,27 +68,33 @@ public class LevelTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            allowInput = false;
-
-            // Deactivate the UI_SelectLevel
+            // Deactivate any additional UI elements.
             if (uiSelectLevel != null)
             {
                 uiSelectLevel.SetActive(false);
             }
-
             if (imageMover != null)
             {
-                print("moving to start");
                 StopAllCoroutines();
                 StartCoroutine(imageMover.MoveImageToStart());
+            }
+            // Trigger the hide/reset animations on all CompleteUI.
+            foreach (CompleteUI ui in completeUIs)
+            {
+                ui.TriggerHide();
+            }
+            // Trigger the reset animations on all BouncyUI.
+            foreach (BouncyUI ui in bouncyUIs)
+            {
+                ui.TriggerToStart();
             }
         }
     }
 
-    private void LoadNextLevel()
+    // Optional level-loading functionality remains unchanged.
+    public void LoadNextLevel()
     {
         string sceneName = SceneManager.GetActiveScene().name;
-        // Save the current trigger's position when the player enters, using scene-specific keys
         PlayerPrefs.SetFloat(sceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(sceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(sceneName + "_LastTriggerZ", transform.position.z);
@@ -94,5 +109,4 @@ public class LevelTrigger : MonoBehaviour
         });
         startloading = true;
     }
-
 }
