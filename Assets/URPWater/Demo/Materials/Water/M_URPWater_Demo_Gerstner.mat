@@ -2,16 +2,28 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_URPWater_Demo_Gerstner
   m_Shader: {fileID: 4800000, guid: 206e4b0fd7976c742b851eef70622872, type: 3}
-  m_ShaderKeywords: _CAPS_SCATTERING_ON _CAUSTICSMODE_2D _COLORMODE_COLORS _DISPLACEMENTMODE_GERSTNER
-    _DISPLACEMENT_MASK_ON _EDGEFADE_ON _FOAM_ON _FOAM_RIPPLE_ON _FOAM_WHITECAPS_ON
-    _NORMALSMODE_SINGLE _REFLECTIONMODE_PROBES
+  m_ValidKeywords:
+  - _CAPS_SCATTERING_ON
+  - _CAUSTICSMODE_2D
+  - _COLORMODE_COLORS
+  - _DISPLACEMENTMODE_GERSTNER
+  - _DISPLACEMENT_MASK_ON
+  - _DOUBLE_SIDED_ON
+  - _EDGEFADE_ON
+  - _FOAM_ON
+  - _FOAM_RIPPLE_ON
+  - _FOAM_WHITECAPS_ON
+  - _NORMALSMODE_SINGLE
+  - _ORTHO_ON
+  - _REFLECTIONMODE_PROBES
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -113,6 +125,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - BOOLEAN_FB194AC780E943B8B8264B11BC92FB70: 0
     - _AddFoam: 0
@@ -138,7 +151,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _ColorMode: 0
     - _Cull: 2
-    - _CullMode: 2
+    - _CullMode: 0
     - _CutOff: 0.5
     - _Cutoff: 0.5
     - _DepthEnd: 6
@@ -150,7 +163,7 @@ Material:
     - _Distortion: 32
     - _DistortionFar: 32
     - _DistortionNear: 64
-    - _DoubleSided: 0
+    - _DoubleSided: 1
     - _DstBlend: 0
     - _DynamicDisplacement: 1
     - _DynamicEffects: 0
@@ -187,7 +200,7 @@ Material:
     - _NormalMapFarIntensity: 1
     - _NormalsMode: 0
     - _OcclusionStrength: 1
-    - _Orthographic: 0
+    - _Orthographic: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -222,7 +235,7 @@ Material:
     - _CausticsSpeed: {r: 1, g: 1, b: -0.2, a: -0.33}
     - _CausticsSpeed3D: {r: 1, g: 1, b: 1, a: 1}
     - _CausticsTiling: {r: 0.2, g: 0.2, b: 0.3, a: 0.3}
-    - _Color: {r: 0.25490195, g: 0.98039216, b: 0.6740629, a: 1}
+    - _Color: {r: 0.04690281, g: 0.3207547, b: 0.20529284, a: 1}
     - _DepthColor: {r: 0, g: 0.25999996, b: 0.39999998, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlowTiling: {r: 1, g: 1, b: 0, a: 0}
