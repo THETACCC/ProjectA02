@@ -6,21 +6,19 @@ public class BouncyUI : MonoBehaviour
     private RectTransform rectTransform;
     private Vector2 startingPosition;
     private float startingRotationZ;
+    private Coroutine animationCoroutine;
 
     [Header("Position Animation")]
-    [SerializeField] private Vector2 targetPosition = Vector2.zero; 
-    [SerializeField] private float dropDuration = 0.3f;             
-    [SerializeField] private float returnDuration = 1f;   
-    
-    [Header("Rotation Animation (Forward Only)")]
-    [SerializeField] private float targetRotationZ = 0f;           
-    [SerializeField] private float initialOvershoot = 30f;         
-    [SerializeField] private float rotationBounceDuration = 1.5f;    
-    [SerializeField] private float bounceFrequency = 2f;            
-    [SerializeField] private float geometricDecayFactor = 0.5f;     // Decay factor (0 < factor < 1) applied each cycle.
+    [SerializeField] private Vector2 targetPosition = Vector2.zero;
+    [SerializeField] private float dropDuration = 0.3f;
+    [SerializeField] private float returnDuration = 0.3f;
 
-    private bool isAnimating = false;
-    private bool isAtTarget = false;
+    [Header("Rotation Animation")]
+    [SerializeField] private float targetRotationZ = 0f;
+    [SerializeField] private float initialOvershoot = 30f;
+    [SerializeField] private float rotationBounceDuration = 1.0f;
+    [SerializeField] private float bounceFrequency = 2f;
+    [SerializeField] private float geometricDecayFactor = 0.5f;
 
     void Start()
     {
@@ -29,80 +27,79 @@ public class BouncyUI : MonoBehaviour
         startingRotationZ = rectTransform.rotation.eulerAngles.z;
     }
 
-    void Update()
+    public void InstantShow()
     {
-        // For testing!!!!!!!!!!
-        if (Input.GetKeyDown(KeyCode.Space) && !isAnimating)
-        {
-            if (!isAtTarget)
-                StartCoroutine(AnimateToTarget());
-            else
-                StartCoroutine(AnimateToStart());
-        }
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        rectTransform.anchoredPosition = targetPosition;
+        rectTransform.rotation = Quaternion.Euler(0, 0, targetRotationZ);
+    }
+
+    public void InstantHide()
+    {
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        rectTransform.anchoredPosition = startingPosition;
+        rectTransform.rotation = Quaternion.Euler(0, 0, startingRotationZ);
+    }
+
+    public IEnumerator AnimateShow()
+    {
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        animationCoroutine = StartCoroutine(AnimateToTarget());
+        yield return animationCoroutine;
+    }
+
+    public IEnumerator AnimateHide()
+    {
+        if (animationCoroutine != null) StopCoroutine(animationCoroutine);
+        animationCoroutine = StartCoroutine(AnimateToStart());
+        yield return animationCoroutine;
     }
 
     IEnumerator AnimateToTarget()
     {
-        isAnimating = true;
         float elapsed = 0f;
-
-        // Phase 1: Fast drop.
-        // Move quickly to the target position while rotating to (targetRotationZ - initialOvershoot),
-        // so that the rotation starts below the desired target.
         while (elapsed < dropDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / dropDuration);
-            // Using square-root interpolation for a rapid drop effect.
-            float tFast = Mathf.Sqrt(t);
+            float tFast = Mathf.Sqrt(elapsed / dropDuration);
             rectTransform.anchoredPosition = Vector2.Lerp(startingPosition, targetPosition, tFast);
-            float currentRotation = Mathf.Lerp(startingRotationZ, targetRotationZ - initialOvershoot, tFast);
-            rectTransform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
+            rectTransform.rotation = Quaternion.Euler(0, 0, Mathf.Lerp(startingRotationZ, targetRotationZ - initialOvershoot, tFast));
             yield return null;
         }
-        // Ensure the drop phase ends exactly at the target position and with rotation at targetRotationZ - initialOvershoot.
-        rectTransform.anchoredPosition = targetPosition;
-        rectTransform.rotation = Quaternion.Euler(0f, 0f, targetRotationZ - initialOvershoot);
 
-        // Phase 2: Bounce phase.
-        // Oscillate the rotation around the target value.
+        rectTransform.anchoredPosition = targetPosition;
+        rectTransform.rotation = Quaternion.Euler(0, 0, targetRotationZ - initialOvershoot);
+
         elapsed = 0f;
         while (elapsed < rotationBounceDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / rotationBounceDuration);
-            // The amplitude decays geometrically.
+            float t = elapsed / rotationBounceDuration;
             float amplitude = initialOvershoot * Mathf.Pow(geometricDecayFactor, t * bounceFrequency);
-            // Phase starts at -π/2 (matching the drop phase, where sin(-π/2) = -1) and completes several oscillations.
-            float phase = -Mathf.PI / 2 + 2 * Mathf.PI * bounceFrequency * t;
-            float offset = amplitude * Mathf.Sin(phase);
-            float currentRotation = targetRotationZ + offset;
-            rectTransform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
+            float offset = amplitude * Mathf.Sin(-Mathf.PI / 2 + 2 * Mathf.PI * bounceFrequency * t);
+            rectTransform.rotation = Quaternion.Euler(0, 0, targetRotationZ + offset);
             yield return null;
         }
-        // Finalize rotation exactly at the target.
-        rectTransform.rotation = Quaternion.Euler(0f, 0f, targetRotationZ);
-        isAtTarget = true;
-        isAnimating = false;
+
+        rectTransform.rotation = Quaternion.Euler(0, 0, targetRotationZ);
     }
 
-    // Animate back to the starting state with a smoothly.
     IEnumerator AnimateToStart()
     {
-        isAnimating = true;
         float elapsed = 0f;
+        Vector2 currentPosition = rectTransform.anchoredPosition;
+        float currentRotationZ = rectTransform.rotation.eulerAngles.z;
+
         while (elapsed < returnDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / returnDuration);
-            rectTransform.anchoredPosition = Vector2.Lerp(targetPosition, startingPosition, t);
-            float currentRotation = Mathf.Lerp(targetRotationZ, startingRotationZ, t);
-            rectTransform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
+            float t = elapsed / returnDuration;
+            rectTransform.anchoredPosition = Vector2.Lerp(currentPosition, startingPosition, t);
+            rectTransform.rotation = Quaternion.Euler(0, 0, Mathf.LerpAngle(currentRotationZ, startingRotationZ, t));
             yield return null;
         }
+
         rectTransform.anchoredPosition = startingPosition;
-        rectTransform.rotation = Quaternion.Euler(0f, 0f, startingRotationZ);
-        isAtTarget = false;
-        isAnimating = false;
+        rectTransform.rotation = Quaternion.Euler(0, 0, startingRotationZ);
     }
 }

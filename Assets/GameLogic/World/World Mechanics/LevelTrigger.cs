@@ -1,85 +1,117 @@
-using SKCell;
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
+using SKCell;
 
 public class LevelTrigger : MonoBehaviour
 {
-    [SerializeField] private ImageMover imageMover; // Reference to the ImageMover script
-    [SerializeField] private GameObject uiSelectLevel; // Reference to the UI_SelectLevel GameObject
-    private bool allowInput = false;
+    private CompleteUI[] completeUIs;
+    private BouncyUI[] bouncyUIs;
+
+    [SerializeField] private ImageMover imageMover;
+    [SerializeField] private GameObject uiSelectLevel;
+
     private FlowManager flowManager;
     public SceneTitle scenetitle;
-    private GameObject flowmanager;
     private bool startloading = false;
 
-    private void Start()
-    {
-        flowmanager = GameObject.Find("FlowManager");
-        flowManager = flowmanager.GetComponent<FlowManager>();
+    private Coroutine uiCoroutine = null;
 
-        // Ensure UI_SelectLevel starts as inactive
+    void Start()
+    {
+        completeUIs = GetComponentsInChildren<CompleteUI>(true);
+        bouncyUIs = GetComponentsInChildren<BouncyUI>(true);
+
+        GameObject flowmanagerObj = GameObject.Find("FlowManager");
+        if (flowmanagerObj != null)
+            flowManager = flowmanagerObj.GetComponent<FlowManager>();
+
         if (uiSelectLevel != null)
-        {
             uiSelectLevel.SetActive(false);
-        }
+
+        CheckInitialPlayerOverlap();
     }
 
-    private void Update()
+    void CheckInitialPlayerOverlap()
     {
-        if (allowInput && Input.GetKeyDown(KeyCode.F))
+        Collider triggerCollider = GetComponent<Collider>();
+        Collider[] hits = Physics.OverlapBox(triggerCollider.bounds.center, triggerCollider.bounds.extents, triggerCollider.transform.rotation);
+        foreach (Collider hit in hits)
         {
-            Debug.Log("INPUT");
-            LoadNextLevel();
+            if (hit.CompareTag("Player"))
+            {
+                if (uiCoroutine != null) StopCoroutine(uiCoroutine);
+                uiCoroutine = StartCoroutine(AnimateUIShow());
+                break;
+            }
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            allowInput = true;
+        if (!other.CompareTag("Player"))
+            return;
 
-            // Activate the UI_SelectLevel
-            if (uiSelectLevel != null)
-            {
-                uiSelectLevel.SetActive(true);
-            }
-
-            if (imageMover != null)
-            {
-                print("moving to end");
-                StopAllCoroutines();
-                StartCoroutine(imageMover.MoveImageToEnd());
-            }
-        }
+        if (uiCoroutine != null) StopCoroutine(uiCoroutine);
+        uiCoroutine = StartCoroutine(AnimateUIShow());
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (!other.CompareTag("Player"))
+            return;
+
+        if (uiCoroutine != null) StopCoroutine(uiCoroutine);
+        uiCoroutine = StartCoroutine(AnimateUIHide());
+    }
+
+    IEnumerator AnimateUIShow()
+    {
+        if (uiSelectLevel != null)
+            uiSelectLevel.SetActive(true);
+
+        if (imageMover != null)
         {
-            allowInput = false;
+            StopAllCoroutines();
+            StartCoroutine(imageMover.MoveImageToEnd());
+        }
 
-            // Deactivate the UI_SelectLevel
-            if (uiSelectLevel != null)
-            {
-                uiSelectLevel.SetActive(false);
-            }
+        foreach (CompleteUI ui in completeUIs)
+            ui.InstantHide();  // Ensure starts hidden
+        foreach (BouncyUI ui in bouncyUIs)
+            ui.InstantHide();
 
-            if (imageMover != null)
-            {
-                print("moving to start");
-                StopAllCoroutines();
-                StartCoroutine(imageMover.MoveImageToStart());
-            }
+        // Now animate them simultaneously:
+        foreach (CompleteUI ui in completeUIs)
+            StartCoroutine(ui.AnimateShow());
+        foreach (BouncyUI ui in bouncyUIs)
+            StartCoroutine(ui.AnimateShow());
+
+        yield return new WaitForSeconds(0.35f); // Wait slightly longer than your animations
+    }
+
+    IEnumerator AnimateUIHide()
+    {
+        foreach (CompleteUI ui in completeUIs)
+            StartCoroutine(ui.AnimateHide());
+        foreach (BouncyUI ui in bouncyUIs)
+            StartCoroutine(ui.AnimateHide());
+
+        yield return new WaitForSeconds(0.25f); // Wait slightly longer than your animations
+
+        if (uiSelectLevel != null)
+            uiSelectLevel.SetActive(false);
+
+        if (imageMover != null)
+        {
+            StopAllCoroutines();
+            StartCoroutine(imageMover.MoveImageToStart());
         }
     }
 
-    private void LoadNextLevel()
+    public void LoadNextLevel()
     {
         string sceneName = SceneManager.GetActiveScene().name;
-        // Save the current trigger's position when the player enters, using scene-specific keys
         PlayerPrefs.SetFloat(sceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(sceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(sceneName + "_LastTriggerZ", transform.position.z);
@@ -94,5 +126,4 @@ public class LevelTrigger : MonoBehaviour
         });
         startloading = true;
     }
-
 }
