@@ -197,7 +197,7 @@ namespace StarterAssets
 
         private void Update()
         {
-            print("Player's position:" + transform.position);
+            //print("Player's position:" + transform.position);
 
 
             _hasAnimator = TryGetComponent(out _animator);
