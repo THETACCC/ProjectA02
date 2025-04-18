@@ -2,41 +2,33 @@ using UnityEngine;
 
 public class StartLevelButton : MonoBehaviour
 {
+    private LevelTrigger levelTrigger;
+
+
+    /// <summary>
+    /// Call this (for example via a UI Button OnClick) to load the next level.
+    /// </summary>
     public void StartTheLevel()
     {
-        // Look for all LevelTrigger components in the parent's children,
-        // then choose the one that is closest (by position) to this button.
-        LevelTrigger[] triggers = transform.parent.GetComponentsInChildren<LevelTrigger>();
-
-        if (triggers == null || triggers.Length == 0)
+        // Look for a LevelTrigger component up the parent chain
+        Transform currentParent = transform.parent;
+        while (currentParent != null)
         {
-            Debug.LogError("No LevelTrigger found among parent's children!");
-            return;
+            levelTrigger = currentParent.GetComponent<LevelTrigger>();
+            if (levelTrigger != null)
+                break;
+
+            currentParent = currentParent.parent;
         }
 
-        LevelTrigger bestTrigger = null;
-        float bestDistance = float.MaxValue;
 
-        foreach (LevelTrigger lt in triggers)
+        if (levelTrigger != null)
         {
-            // Calculate the distance between this button and the LevelTrigger's position.
-            float distance = Vector3.Distance(transform.position, lt.transform.position);
-            if (distance < bestDistance)
-            {
-                bestDistance = distance;
-                bestTrigger = lt;
-            }
-        }
-
-        if (bestTrigger != null)
-        {
-            Debug.Log("StartLevelButton found LevelTrigger: " + bestTrigger.gameObject.name
-                      + " (distance: " + bestDistance + ")");
-            bestTrigger.LoadNextLevel();
+            levelTrigger.LoadNextLevel();
         }
         else
         {
-            Debug.LogError("No suitable LevelTrigger found!");
+            Debug.LogError($"[{name}] LevelTrigger reference is missing!", this);
         }
     }
 }
