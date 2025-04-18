@@ -28,7 +28,7 @@ namespace MoreMountains.Tools
 			}
 			else
 			{
-				Cursor.visible = false;
+				Cursor.visible = true;
 			}
 		}
 	}

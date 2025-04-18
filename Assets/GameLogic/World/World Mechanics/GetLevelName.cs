@@ -10,7 +10,7 @@ public class GetLevelName : MonoBehaviour
         tmpText = GetComponent<TMP_Text>();
         if (tmpText == null)
         {
-            Debug.LogError("No TMP_Text component found on this GameObject!");
+            //Debug.LogError("No TMP_Text component found on this GameObject!");
             return;
         }
 
@@ -21,7 +21,7 @@ public class GetLevelName : MonoBehaviour
         {
             if (parentTransform != null)
             {
-                Debug.Log($"Level {i} parent name: {parentTransform.gameObject.name}");
+                //Debug.Log($"Level {i} parent name: {parentTransform.gameObject.name}");
                 parentTransform = parentTransform.parent;
             }
             else
@@ -34,7 +34,7 @@ public class GetLevelName : MonoBehaviour
         if (parentTransform != null)
         {
             tmpText.text = parentTransform.gameObject.name;
-            print(parentTransform.gameObject.name);
+            //print(parentTransform.gameObject.name);
         }
         else
         {
