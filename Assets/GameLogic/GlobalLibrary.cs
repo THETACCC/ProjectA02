@@ -213,6 +213,16 @@ public static class GlobalLibrary
         {
 
 
+        }},
+        {SceneTitle.Chapter0_Level6, new SceneSpecifics()
+        {
+
+
+        }},
+        {SceneTitle.Chapter0_Level7, new SceneSpecifics()
+        {
+
+
         }}
 
     };
@@ -225,7 +235,7 @@ public static class GlobalLibrary
     public static readonly Dictionary<SceneCategory, SceneTitle[]> G_SCENE_CATEGORY_DICT = new Dictionary<SceneCategory, SceneTitle[]>
     {
         {SceneCategory.Common, new SceneTitle[]{SceneTitle.MainMenu, SceneTitle.Main_Menu } },
-        {SceneCategory.Chapter0, new SceneTitle[]{ SceneTitle.Chapter0World, SceneTitle.Chapter0_GYM, SceneTitle.Chapter0_Level1, SceneTitle.Chapter0_Level2, SceneTitle.Chapter0_Level3, SceneTitle.Chapter0_Level4, SceneTitle.Chapter0_Level5 } },
+        {SceneCategory.Chapter0, new SceneTitle[]{ SceneTitle.Chapter0World, SceneTitle.Chapter0_GYM, SceneTitle.Chapter0_Level1, SceneTitle.Chapter0_Level2, SceneTitle.Chapter0_Level3, SceneTitle.Chapter0_Level4, SceneTitle.Chapter0_Level5 , SceneTitle.Chapter0_Level6 , SceneTitle.Chapter0_Level7 } },
         {SceneCategory.Chapter1, new SceneTitle[]{ SceneTitle.Chapter1Base3x3, SceneTitle.Chapter1BaseVisualGym, SceneTitle.Chapter1_Level1, SceneTitle.Chapter1_Level2, SceneTitle.Chapter1_Level3, SceneTitle.Chapter1_Level4, SceneTitle.Chapter1_Level5, SceneTitle.Chapter1_Level6, SceneTitle.Chapter1_Level7, SceneTitle.Chapter1_Level8, SceneTitle.Chapter1_Level9, SceneTitle.Chapter1_Level10, SceneTitle.Chapter1_Level11, SceneTitle.Chapter1_Level12, SceneTitle.Chapter1_Level13, SceneTitle.Chapter1_Level14, SceneTitle.Chapter1_Level15, 
             SceneTitle.Chapter1Base4x4, SceneTitle.Level1_1_MapTest,  SceneTitle.Chapter1World , SceneTitle.Chapter1MoveTest } },
 
@@ -245,6 +255,8 @@ public static class GlobalLibrary
        {SceneTitle.Chapter0_Level3, "Chapter0_Level3" },
        {SceneTitle.Chapter0_Level4, "Chapter0_Level4" },
        {SceneTitle.Chapter0_Level5, "Chapter0_Level5" },
+       {SceneTitle.Chapter0_Level6, "Chapter0_Level6" },
+       {SceneTitle.Chapter0_Level7, "Chapter0_Level7" },
         //chapter1
         {SceneTitle.Chapter1MoveTest, "Chapter1MoveTest" },
         {SceneTitle.Chapter1Base3x3, "Chapter1Base3x3" },

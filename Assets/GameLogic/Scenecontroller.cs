@@ -111,9 +111,9 @@ public enum SceneTitle
     Chapter0_Level2 = 103,
     Chapter0_Level3 = 104,
     Chapter0_Level4 = 105,
-    Chapter0_Level5 = 106
-
-
+    Chapter0_Level5 = 106,
+    Chapter0_Level6 = 107,
+    Chapter0_Level7 = 108
 
 }
 
