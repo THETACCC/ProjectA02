@@ -1,106 +1,3 @@
-/*using System.Collections;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using SKCell;
-
-public class MenuController : MonoBehaviour
-{
-    [Header("Levels To Load - Chapter 1 World")]
-    [SerializeField] private SceneTitle sceneToLoad_Chp1_World;  // Pick from available SceneTitles
-    private bool startLoading = false;
-    private FlowManager flowManager;
-    private GameObject flowmanager;
-
-    [SerializeField] private GameObject noSavedGameDialog = null;
-
-    private int uiLayerMask;
-
-    private void Start()
-    {
-        flowmanager = GameObject.Find("FlowManager");
-        flowManager = flowmanager.GetComponent<FlowManager>();
-
-        // Set the layer mask to include only the UI layer
-        uiLayerMask = LayerMask.GetMask("UI");
-    }
-
-    public void newGameDialogYes()
-    {
-        // Load the scene with a delay using the SceneTitle
-        LoadNextLevel(sceneToLoad_Chp1_World);
-    }
-
-    public void ExitButton()
-    {
-        Application.Quit();
-    }
-
-    public void PauseGame()
-    {
-        // Disable raycasts on everything except the UI
-        EnableOnlyUILayerRaycasts(true);
-
-        // Optionally, stop the time in-game
-        Time.timeScale = 0;  // Freezes the game
-    }
-
-    public void ResumeGame()
-    {
-        // Re-enable raycasts for all layers
-        EnableOnlyUILayerRaycasts(false);
-
-        // Resume time in the game
-        Time.timeScale = 1;  // Unfreeze the game
-    }
-
-    private void EnableOnlyUILayerRaycasts(bool uiOnly)
-    {
-        // Set the event system's raycast blocking based on uiOnly
-        var eventSystem = UnityEngine.EventSystems.EventSystem.current;
-
-        if (eventSystem != null)
-        {
-            // Enable or disable raycast target on all non-UI objects
-            foreach (var obj in FindObjectsOfType<Collider2D>())
-            {
-                if (uiOnly)
-                {
-                    // Disable raycast target for non-UI objects
-                    if (obj.gameObject.layer != LayerMask.NameToLayer("UI"))
-                    {
-                        obj.GetComponent<Collider2D>().enabled = false;  // Disable collider
-                    }
-                }
-                else
-                {
-                    // Re-enable all colliders
-                    obj.GetComponent<Collider2D>().enabled = true;  // Enable collider
-                }
-            }
-        }
-    }
-
-
-
-
-
-
-
-    private void LoadNextLevel(SceneTitle sceneTitle)
-    {
-        // Use SKUtils.InvokeAction to add a delay before loading the scene
-        SKUtils.InvokeAction(0.2f, () =>
-        {
-            flowManager.LoadScene(new SceneInfo()
-            {
-                index = sceneTitle,  // Load the scene by SceneTitle
-            });
-        });
-        startLoading = true;
-    }
-}
-*/
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -112,7 +9,7 @@ using UnityEditor.PackageManager;
 
 public class MenuController : MonoBehaviour
 {
-    [Header("Levels To Load - Chapter 1 World")]
+    [Header("Levels To Load - Chapter 0 World")]
     [SerializeField] private SceneTitle sceneToLoad_Chp1_World;  // Pick from available SceneTitles
     private bool startLoading = false;
     private FlowManager flowManager;
