@@ -98,11 +98,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 2
+  isInventory: 0
   draggable: 0
   cld_0: {fileID: 0}
   cld_1: {fileID: 0}
+  cld_2: {fileID: 0}
   mouse_drag: 0
   is_drag_start_in_select_area: 0
+  mouse_over: 0
+  prev_mouseOver: 0
   moveposition: {x: 0, y: 0, z: 0}
   rotatespeed: 10
   rotate: {x: 0, y: 0, z: 0}
@@ -113,8 +117,6 @@ MonoBehaviour:
   blockb: {fileID: 0}
   B_blocka: {fileID: 0}
   B_blockb: {fileID: 0}
-  offset: 0
-  offsetz: 0
   linked: 0
   DragsuccessA: 0
   DragsuccessB: 0
@@ -131,6 +133,14 @@ MonoBehaviour:
   init: {fileID: 4019472803510485095}
   init4x4: {fileID: 88085156804151607}
   isDragging: 0
+  isPlayerOnBlock: 0
+  myAlignedBrick: {fileID: 0}
+  BreakableGroundScript: {fileID: 0}
+  BreakableGroundScript2: {fileID: 0}
+  BreakableGroundScript3: {fileID: 0}
+  SpawnBlockScript: {fileID: 0}
+  SpawnBlockScript2: {fileID: 0}
+  SpawnBlockScript3: {fileID: 0}
 --- !u!95 &1759949098
 Animator:
   serializedVersion: 4
@@ -314,6 +324,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Start_Selector
       objectReference: {fileID: 0}
+    - target: {fileID: 3965161521363525890, guid: 4713f4df42144db4e9ceda715571ab69, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3965161521363525891, guid: 4713f4df42144db4e9ceda715571ab69, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -391,6 +405,10 @@ PrefabInstance:
     - target: {fileID: 6730615862789391030, guid: 87ca1e25b2519a24fbecb5f0d16b3ce6, type: 3}
       propertyPath: m_Name
       value: SubBlock
+      objectReference: {fileID: 0}
+    - target: {fileID: 6730615862789391030, guid: 87ca1e25b2519a24fbecb5f0d16b3ce6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7727997834905216703, guid: 87ca1e25b2519a24fbecb5f0d16b3ce6, type: 3}
       propertyPath: m_RootOrder
