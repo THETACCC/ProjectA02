@@ -127,7 +127,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
                 return _playerInput.currentControlScheme == "KeyboardMouse";
 #else
-				return false;
+                return false;
 #endif
             }
         }
@@ -445,6 +445,27 @@ namespace StarterAssets
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            // if we hit the death plane, reset position
+            if (other.CompareTag("DeathPlane"))
+            {
+                // temporarily disable the CharacterController so
+                // moving the transform doesn't conflict with internal state
+                _controller.enabled = false;
+
+                // teleport
+                transform.position = defaultPosition;
+
+                // zero out any vertical velocity so you don't immediately fall again
+                _verticalVelocity = 0f;
+
+                // re‐enable the controller
+                _controller.enabled = true;
+            }
+
         }
     }
 }
