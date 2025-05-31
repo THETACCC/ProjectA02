@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using SKCell;
@@ -9,11 +9,10 @@ public class LevelTrigger : MonoBehaviour
     private CompleteUI[] completeUIs;
     private BouncyUI[] bouncyUIs;
 
-    [SerializeField] private ImageMover imageMover;         // Reference to the ImageMover script.
-    [SerializeField] private GameObject uiSelectLevel;        // Reference to the UI_SelectLevel GameObject.
-
+    [SerializeField] private ImageMover imageMover;
+    private GameObject worldChapterCanvas;   // Will be found at runtime
     private FlowManager flowManager;
-    public SceneTitle scenetitle;                            // Set this per LevelTrigger instance in the Inspector.
+    public SceneTitle scenetitle;
     private bool startloading = false;
     private Coroutine uiCoroutine = null;
 
@@ -22,27 +21,42 @@ public class LevelTrigger : MonoBehaviour
 
     void Start()
     {
-        // Get all UI animation components (even if disabled) among children.
+        // 1) Get all UI animation components among children (even if disabled).
         completeUIs = GetComponentsInChildren<CompleteUI>(true);
         bouncyUIs = GetComponentsInChildren<BouncyUI>(true);
 
-        // Set up FlowManager (assumes there is one in your scene named "FlowManager").
+        // 2) Find FlowManager in scene.
         GameObject flowmanagerObj = GameObject.Find("FlowManager");
         if (flowmanagerObj != null)
             flowManager = flowmanagerObj.GetComponent<FlowManager>();
 
-        // Ensure the select-level UI is initially inactive.
-        if (uiSelectLevel != null)
-            uiSelectLevel.SetActive(false);
+        // 3) Dynamically locate the WorldChapter_Canvas by finding the StartLevelButton in children.
+        //    Then assume its direct parent is the canvas container that we should toggle.
+        StartLevelButton btnScript = GetComponentInChildren<StartLevelButton>(true);
+        if (btnScript != null)
+        {
+            worldChapterCanvas = btnScript.transform.parent.gameObject;
+            // Ensure it starts inactive.
+            worldChapterCanvas.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning($"[LevelTrigger:{name}] Could not find a StartLevelButton child, so no canvas will be shown.");
+        }
 
-        // Check if the player is already overlapping the trigger at start (for example, if they just landed).
+        // 4) Check if player overlaps this trigger at start.
         CheckInitialPlayerOverlap();
     }
 
     void CheckInitialPlayerOverlap()
     {
         Collider triggerCollider = GetComponent<Collider>();
-        Collider[] hits = Physics.OverlapBox(triggerCollider.bounds.center, triggerCollider.bounds.extents, triggerCollider.transform.rotation);
+        Collider[] hits = Physics.OverlapBox(
+            triggerCollider.bounds.center,
+            triggerCollider.bounds.extents,
+            triggerCollider.transform.rotation
+        );
+
         foreach (Collider hit in hits)
         {
             if (hit.CompareTag("Player"))
@@ -70,9 +84,7 @@ public class LevelTrigger : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        // When the player enters, allow input and play the show animation.
         allowInput = true;
-
         if (uiCoroutine != null)
             StopCoroutine(uiCoroutine);
         uiCoroutine = StartCoroutine(AnimateUIShow());
@@ -83,7 +95,6 @@ public class LevelTrigger : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        // When the player leaves, disallow input and play the hide animation.
         allowInput = false;
         if (uiCoroutine != null)
             StopCoroutine(uiCoroutine);
@@ -92,30 +103,45 @@ public class LevelTrigger : MonoBehaviour
 
     IEnumerator AnimateUIShow()
     {
-        // Activate the select-level UI.
-        if (uiSelectLevel != null)
-            uiSelectLevel.SetActive(true);
+        // 1) Activate the worldChapterCanvas (where Btn_Start lives), if found.
+        if (worldChapterCanvas != null)
+            worldChapterCanvas.SetActive(true);
 
-        // Animate the image mover if assigned.
+        // 2) Wait one frame so Unity finishes enabling all children under worldChapterCanvas.
+        yield return null;
+
+        // 3) (Optional) Log that we found the button under this canvas.
+        if (worldChapterCanvas != null)
+        {
+            StartLevelButton btnScript = worldChapterCanvas.GetComponentInChildren<StartLevelButton>(true);
+            if (btnScript != null)
+            {
+                Debug.Log($"[LevelTrigger:{name}] Found StartLevelButton under '{worldChapterCanvas.name}'.");
+            }
+            else
+            {
+                Debug.LogWarning($"[LevelTrigger:{name}] Could not find ANY StartLevelButton under '{worldChapterCanvas.name}'.");
+            }
+        }
+
+        // 4) Animate any UI elements (CompleteUI, BouncyUI, imageMover).
         if (imageMover != null)
         {
             StopAllCoroutines();
             StartCoroutine(imageMover.MoveImageToEnd());
         }
 
-        // Immediately set UI elements to their hidden state.
         foreach (CompleteUI ui in completeUIs)
             ui.InstantHide();
         foreach (BouncyUI ui in bouncyUIs)
             ui.InstantHide();
 
-        // Now animate them to show simultaneously.
         foreach (CompleteUI ui in completeUIs)
             StartCoroutine(ui.AnimateShow());
         foreach (BouncyUI ui in bouncyUIs)
             StartCoroutine(ui.AnimateShow());
 
-        yield return new WaitForSeconds(0.35f); // Wait for animations to complete.
+        yield return new WaitForSeconds(0.35f);
     }
 
     IEnumerator AnimateUIHide()
@@ -126,10 +152,10 @@ public class LevelTrigger : MonoBehaviour
         foreach (BouncyUI ui in bouncyUIs)
             StartCoroutine(ui.AnimateHide());
 
-        yield return new WaitForSeconds(0.25f); // Wait for animations to finish.
+        yield return new WaitForSeconds(0.25f);
 
-        if (uiSelectLevel != null)
-            uiSelectLevel.SetActive(false);
+        if (worldChapterCanvas != null)
+            worldChapterCanvas.SetActive(false);
 
         if (imageMover != null)
         {
@@ -140,12 +166,16 @@ public class LevelTrigger : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        string sceneName = SceneManager.GetActiveScene().name;
-        // Save the trigger's position so that the player's last trigger can be restored later, scene-specifically.
-        PlayerPrefs.SetFloat(sceneName + "_LastTriggerX", transform.position.x);
-        PlayerPrefs.SetFloat(sceneName + "_LastTriggerY", transform.position.y);
-        PlayerPrefs.SetFloat(sceneName + "_LastTriggerZ", transform.position.z);
-        PlayerPrefs.SetString("LastTriggerScene", sceneName);
+        // Prevent double‐calls by exiting early if already started.
+        if (startloading) return;
+        startloading = true;
+
+        // Save the trigger’s position under the target scene name.
+        string targetSceneName = scenetitle.ToString();
+        PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerX", transform.position.x);
+        PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerY", transform.position.y);
+        PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerZ", transform.position.z);
+        PlayerPrefs.SetString("LastTriggerScene", targetSceneName);
 
         // Wait a short moment before loading the next level.
         SKUtils.InvokeAction(0.2f, () =>
@@ -155,6 +185,5 @@ public class LevelTrigger : MonoBehaviour
                 index = scenetitle,
             });
         });
-        startloading = true;
     }
 }
