@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -14,8 +14,8 @@ public class MainMenuButton : MonoBehaviour,
     [Header("References")]
     public MenuButtonType buttonType;
     public MainMenuPlayerMovement playerMovement;
-    public TextMeshProUGUI label;       // assign your TextMeshProUGUI child
-    public Image highlightImage;        // assign your overlay Image child
+    public TextMeshProUGUI label;
+    public Image[] highlightImages;     // now an array!
 
     [Header("Animation Settings")]
     public float hoverScale = 1.1f;
@@ -27,24 +27,25 @@ public class MainMenuButton : MonoBehaviour,
 
     Vector3 originalScale;
     Color originalTextColor;
-    float originalImgAlpha;
+    float[] originalImgAlphas;
 
     void Awake()
     {
-        // cache originals
         originalScale = transform.localScale;
         originalTextColor = label.color;
-        if (highlightImage != null)
-            originalImgAlpha = highlightImage.color.a;
 
-        // initialize to default
-        label.color = defaultColor;
-        if (highlightImage != null)
+        // cache and zero-out all highlight images
+        originalImgAlphas = new float[highlightImages.Length];
+        for (int i = 0; i < highlightImages.Length; i++)
         {
-            var c = highlightImage.color;
+            originalImgAlphas[i] = highlightImages[i].color.a;
+            var c = highlightImages[i].color;
             c.a = 0f;
-            highlightImage.color = c;
+            highlightImages[i].color = c;
         }
+
+        // initialize label
+        label.color = defaultColor;
     }
 
     public void OnPointerEnter(PointerEventData e)
@@ -61,8 +62,7 @@ public class MainMenuButton : MonoBehaviour,
         StopAllCoroutines();
         StartCoroutine(ScaleTo(originalScale * hoverScale, hoverSpeed));
         StartCoroutine(ColorTo(label, defaultColor, hoverColor, hoverSpeed));
-        if (highlightImage != null)
-            StartCoroutine(FadeImage(0f, 1f, hoverSpeed));
+        StartCoroutine(FadeImages(0f, 1f, hoverSpeed));
     }
 
     public void OnPointerExit(PointerEventData e)
@@ -70,16 +70,14 @@ public class MainMenuButton : MonoBehaviour,
         StopAllCoroutines();
         StartCoroutine(ScaleTo(originalScale, hoverSpeed));
         StartCoroutine(ColorTo(label, hoverColor, defaultColor, hoverSpeed));
-        if (highlightImage != null)
-            StartCoroutine(FadeImage(1f, 0f, hoverSpeed));
+        StartCoroutine(FadeImages(1f, 0f, hoverSpeed));
     }
 
     public void OnPointerClick(PointerEventData e)
     {
         StopAllCoroutines();
         StartCoroutine(ClickEffect());
-        // ? hook up your actual “StartGame/Settings…” actions via
-        //   UI-Button OnClick events or here.
+        // add your click logic here or via the Button OnClick in the Inspector
     }
 
     IEnumerator ScaleTo(Vector3 target, float duration)
@@ -107,26 +105,40 @@ public class MainMenuButton : MonoBehaviour,
         txt.color = to;
     }
 
-    IEnumerator FadeImage(float from, float to, float duration)
+    IEnumerator FadeImages(float from, float to, float duration)
     {
         float t = 0f;
-        Color c = highlightImage.color;
+        // capture starting alphas in case you need non-zero originals
+        float[] starts = new float[highlightImages.Length];
+        for (int i = 0; i < highlightImages.Length; i++)
+            starts[i] = from;
+
         while (t < duration)
         {
             t += Time.unscaledDeltaTime;
-            c.a = Mathf.Lerp(from, to, t / duration);
-            highlightImage.color = c;
+            float alpha = Mathf.Lerp(from, to, t / duration);
+            for (int i = 0; i < highlightImages.Length; i++)
+            {
+                var c = highlightImages[i].color;
+                c.a = alpha;
+                highlightImages[i].color = c;
+            }
             yield return null;
         }
-        c.a = to;
-        highlightImage.color = c;
+        // ensure final
+        for (int i = 0; i < highlightImages.Length; i++)
+        {
+            var c = highlightImages[i].color;
+            c.a = to;
+            highlightImages[i].color = c;
+        }
     }
 
     IEnumerator ClickEffect()
     {
         // shrink
         yield return ScaleTo(originalScale * clickScale, clickSpeed);
-        // bounce back to hover-scale if still hovered, else to normal
+        // bounce back to hoverâ€scale if still hovered, else to normal
         bool stillHovered = EventSystem.current.IsPointerOverGameObject();
         Vector3 target = stillHovered ? originalScale * hoverScale : originalScale;
         yield return ScaleTo(target, clickSpeed);
