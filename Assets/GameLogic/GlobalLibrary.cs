@@ -12,6 +12,11 @@ public static class GlobalLibrary
 
     public static readonly Dictionary<SceneTitle, SceneSpecifics> G_SCENE_SPECIFICS = new Dictionary<SceneTitle, SceneSpecifics>()
     {
+        {SceneTitle.MainMenu, new SceneSpecifics()
+        {
+
+
+        }},
         {SceneTitle.Main_Menu, new SceneSpecifics()
         {
 
@@ -244,6 +249,7 @@ public static class GlobalLibrary
     public static readonly Dictionary<SceneTitle, string> G_SCENE_ASSET_NAME = new Dictionary<SceneTitle, string>()
     {
         //Common
+        {SceneTitle.MainMenu, "MainMenu" },
         {SceneTitle.Main_Menu, "Main_Menu" },
 
 
