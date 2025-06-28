@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class RewardUIManager : MonoBehaviour
     [Header("List of UI image GameObjects to toggle on as rewards are collected")]
     [Tooltip("Order these in the Inspector from first reward ¡ú last reward.")]
     public GameObject[] rewardImageObjects;
+    public MMFeedbacks[] RewardFeedbacks;
 
     // Cache the last known count so we only update the UI when it changes
     private int lastKnownCount = -1;
@@ -70,6 +72,7 @@ public class RewardUIManager : MonoBehaviour
             if (rewardImageObjects[i].activeSelf != shouldBeActive)
             {
                 rewardImageObjects[i].SetActive(shouldBeActive);
+                RewardFeedbacks[i]?.PlayFeedbacks();
             }
         }
     }
