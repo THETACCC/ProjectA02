@@ -28,7 +28,7 @@ public class StartLevelButton : MonoBehaviour
         }
 
         // 2) Log exactly which LevelTrigger we found and what SceneTitle it uses.
-        Debug.Log($"[StartLevelButton:{name}] ✅ Found parent LevelTrigger: '{levelTrigger.name}' (scenetitle = {levelTrigger.scenetitle})", levelTrigger);
+        //Debug.Log($"[StartLevelButton:{name}] ✅ Found parent LevelTrigger: '{levelTrigger.name}' (scenetitle = {levelTrigger.scenetitle})", levelTrigger);
 
         // 3) Now hook up our own StartTheLevel() to the Button’s onClick.
         Button btn = GetComponent<Button>();

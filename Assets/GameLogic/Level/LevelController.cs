@@ -10,9 +10,11 @@ using static Unity.Collections.AllocatorManager;
 
 public class LevelController : SKMonoSingleton<LevelController>
 {
+    [Header("Chapter Settings")]
+    public int chapterIndex = 0;
+
     public int Level { get; private set; }
     public LevelPhase phase;
-
 
     public Block curDraggedblock = null;
     public Block curOverBlock = null;
@@ -238,7 +240,7 @@ public class LevelController : SKMonoSingleton<LevelController>
         if (curOverBlock != null)
         {
             transitionTimerReverse = 0;
-            Debug.Log("At least one block is being dragged.");
+            //Debug.Log("At least one block is being dragged.");
             transitionTimer += Time.deltaTime / transitionDuration;
             float effectTime = Mathf.Lerp(1f, -1f, IndicatoreffectCurve.Evaluate(transitionTimer));
             myMaterial.SetFloat("_Effect_Time", effectTime);
@@ -253,7 +255,7 @@ public class LevelController : SKMonoSingleton<LevelController>
             }
 
             transitionTimerReverse += Time.deltaTime / transitionDuration;
-            Debug.Log("No blocks are being dragged.");
+            //Debug.Log("No blocks are being dragged.");
             float effectTime = Mathf.Lerp(-1f, 1f, IndicatoreffectCurve.Evaluate(transitionTimerReverse));
             myMaterial.SetFloat("_Effect_Time", effectTime);
         }

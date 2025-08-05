@@ -33,7 +33,7 @@ public class cameramove : MonoBehaviour
          if (controller.phase == LevelPhase.Running)
             {
 
-            Debug.Log("MOVINg");
+            //Debug.Log("MOVINg");
             // Lerp the x position from startX to targetX
                 targettransform.SetPositionZ(Mathf.Lerp(targettransform.position.z, targetZ, lerpSpeed));
             }  
