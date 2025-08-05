@@ -7,6 +7,7 @@ public class LevelPass : MonoBehaviour
 {
     // Auto-derived indices from scene name
     private int chapterIndex;
+    private int levelIndex;
 
     // Preserve from original
     public static int t_spawnPoint;
