@@ -403,6 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c9a25ff1883b2044a61aa00f2220b4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chapterIndex: 0
   phase: 0
   curDraggedblock: {fileID: 0}
   curOverBlock: {fileID: 0}
@@ -429,6 +430,51 @@ MonoBehaviour:
   playerRightRB: {fileID: 0}
   playerLeftCollider: {fileID: 0}
   playerRightCollider: {fileID: 0}
+--- !u!1 &912324231
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 912324232}
+  - component: {fileID: 912324233}
+  m_Layer: 0
+  m_Name: SaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &912324232
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912324231}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 5.0106783, y: -17.264149, z: 23.937706}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1661561398}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &912324233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912324231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be8efa21d7deb164b9e2cfda56349546, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelsPerChapter: 070000000f000000
 --- !u!1 &1295622514
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,7 +556,7 @@ RectTransform:
   m_Children:
   - {fileID: 51968154}
   m_Father: {fileID: 1661561398}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -730,6 +776,7 @@ Transform:
   - {fileID: 459675291}
   - {fileID: 1887656287}
   - {fileID: 1295622515}
+  - {fileID: 912324232}
   - {fileID: 1913255058}
   - {fileID: 1476291093}
   - {fileID: 97587205424409187}
@@ -771,7 +818,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1661561398}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1913255059
 MonoBehaviour:
@@ -1504,7 +1551,7 @@ Transform:
   m_Children:
   - {fileID: 97587204840543815}
   m_Father: {fileID: 1661561398}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &97587205424409196
 MonoBehaviour:

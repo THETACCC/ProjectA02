@@ -20,6 +20,7 @@ public class RewardManager : MonoBehaviour
     // The total number of rewards that have become "isReached == true" so far
     public int rewardsReachedCount = 0;
     //public GameObject[] RewardObjects;
+    private LevelController levelController;
 
     // Start is called before the first frame update
     void Start()
@@ -113,6 +114,15 @@ public class RewardManager : MonoBehaviour
                     + rewardsReachedCount);
             }
         }
+    }
+
+    void OnLevelComplete()
+    {
+        int chapter = levelController.chapterIndex;    // Chapter #: 0 or 1
+        int thisLevelRewardCount = rewardsReachedCount; // your running total for this level
+
+        Debug.Log($"Saved {thisLevelRewardCount} rewards to Chapter {chapter}. Total now: " +
+                  $"{SaveManager.Instance.GetChapterTotal(chapter)}");
     }
 
 }
