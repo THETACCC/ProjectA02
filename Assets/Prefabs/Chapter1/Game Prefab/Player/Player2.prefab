@@ -776,17 +776,17 @@ MonoBehaviour:
     selectionData:
       positions:
       - x: 0.47402573
-        y: 2.2167988
-        z: 0.0034370422
+        y: 2.2167978
+        z: 0.0034332275
       - x: 0.4445095
-        y: 3.8693743
+        y: 3.8693752
         z: -0.009963989
       - x: -0.4337864
         y: 3.4431734
-        z: -0.0083293915
+        z: -0.008323669
       - x: -0.0000705719
         y: 4.097514
-        z: -0.022405624
+        z: -0.022399902
       attributes:
       - Value: 1
       - Value: 1
@@ -5567,9 +5567,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 762767bd996166646a42bb78343c085a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentCollidingObject: {fileID: 0}
   parentObject: {fileID: 2257545507642584591}
-  allowedLayer: Collision
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 2048
+  ignoreTriggerGround: 0
+  useClosestPoint: 0
+  snapSpeed: 20
+  stopThreshold: 0.01
+  showDebugLines: 1
 --- !u!33 &1005822406101518956
 MeshFilter:
   m_ObjectHideFlags: 0
