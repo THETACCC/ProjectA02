@@ -48,19 +48,19 @@ public class RewardAcquire : MonoBehaviour
         {
             if (!isReached)
             {
+ 
                 if (dialoguePlayer != null)
                 {
-                    movement.AlignPlayerFunction();
-                    movement_player2.AlignPlayerFunction();
-                    DisablePlayer();
-                    DisablePlayer2();
-                    levelController.phase = LevelPhase.Speaking;
-
                     dialoguePlayer.Play();
                     //This renderer makes the visual of the reward disappear
-                    myRenderer.enabled= false;
+                    levelController.phase = LevelPhase.Speaking;
+                    myRenderer.enabled = false;
                     isReached = true;
                     isPlayer1 = true;
+                    StartCoroutine(WaitAndAlignPlayers());
+
+
+
                 }
             }
         }
@@ -68,18 +68,20 @@ public class RewardAcquire : MonoBehaviour
         {
             if (!isReached)
             {
+
                 if (dialoguePlayer != null)
                 {
-                    movement.AlignPlayerFunction();
-                    movement_player2.AlignPlayerFunction();
-                    DisablePlayer();
-                    DisablePlayer2();
-                    levelController.phase = LevelPhase.Speaking;
+
+
+
+
                     dialoguePlayer.Play();
                     //This renderer makes the visual of the reward disappear
+                    levelController.phase = LevelPhase.Speaking;
                     myRenderer.enabled = false;
                     isReached = true;
                     isPlayer1 = false;
+                    StartCoroutine(WaitAndAlignPlayers());
                 }
             }
         }
@@ -88,14 +90,26 @@ public class RewardAcquire : MonoBehaviour
 
     public void DisablePlayer()
     {
-        movement.AlignPlayerFunction();
-        movement_player2.AlignPlayerFunction();
         movement.canmove = false;
         movement.is_sliding = false;
         movement_player2.canmove = false;
         movement_player2.is_sliding = false;
+    }
+
+
+    private IEnumerator WaitAndAlignPlayers()
+    {
+        yield return new WaitForSeconds(0.1f);
+        Debug.Log("REWARD STOPPPPP");
+        // after 1s align players
+        DisablePlayer();
+        DisablePlayer2();
+        movement.AlignPlayerFunction();
+        movement_player2.AlignPlayerFunction();
+
 
     }
+
 
     public void EnablePlayer()
     {
@@ -111,13 +125,10 @@ public class RewardAcquire : MonoBehaviour
 
     public void DisablePlayer2()
     {
-        movement.AlignPlayerFunction();
-        movement_player2.AlignPlayerFunction();
         movement.canmove = false;
         movement.is_sliding = false;
         movement_player2.canmove = false;
         movement_player2.is_sliding = false;
-
     }
 
     public void EnablePlayer2()
