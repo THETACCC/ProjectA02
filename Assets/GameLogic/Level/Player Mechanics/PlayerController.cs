@@ -237,7 +237,7 @@ public class PlayerController : MonoBehaviour
                             cur_sliding_time = 0;
                             cur_spd_boost = spdBoost; upperCld.gameObject.SetActive(false);
                             //upperCld.gameObject.SetActive(true);
-
+                            Alignement.AlignPlayerToCollidingObject();
                             //RotateTo(new Vector3(0, (1 - (axis_z + 1) / 2) * 180, 0));
                         }
                     }
