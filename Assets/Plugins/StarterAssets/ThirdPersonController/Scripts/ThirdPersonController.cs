@@ -1,4 +1,4 @@
-﻿ using UnityEngine;
+﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -127,7 +127,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
                 return _playerInput.currentControlScheme == "KeyboardMouse";
 #else
-                return false;
+				return false;
 #endif
             }
         }
@@ -267,19 +267,37 @@ namespace StarterAssets
         private void Move()
         {
             if (isTeleported)
+            {
+                // Skip movement logic if the player was just teleported
                 return;
+            }
 
-            // --- Speed calculation (unchanged) ---
+
+            // set target speed based on move speed, sprint speed and if sprint is pressed
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-            if (_input.move == Vector2.zero) targetSpeed = 0f;
 
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z).magnitude;
+            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+
+            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+            // if there is no input, set the target speed to 0
+            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+
+            // a reference to the players current horizontal velocity
+            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
+            // accelerate or decelerate to target speed
+            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+                currentHorizontalSpeed > targetSpeed + speedOffset)
             {
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
+                // creates curved result rather than a linear one giving a more organic speed change
+                // note T in Lerp is clamped, so we don't need to clamp our speed
+                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                    Time.deltaTime * SpeedChangeRate);
+
+                // round speed to 3 decimal places
                 _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
             else
@@ -290,56 +308,30 @@ namespace StarterAssets
             _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-            // --- Rotation from input (unchanged) ---
-            Vector3 inputDirection = new Vector3(_input.move.x, 0f, _input.move.y).normalized;
+            // normalise input direction
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+            // if there is a move input rotate player when the player is moving
             if (_input.move != Vector2.zero)
             {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
-                transform.rotation = Quaternion.Euler(0f, rotation, 0f);
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                  _mainCamera.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                    RotationSmoothTime);
+
+                // rotate to face input direction relative to camera position
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
 
-            // --- Desired horizontal delta in camera-facing forward ---
-            Vector3 desiredForwardDelta = Quaternion.Euler(0f, _targetRotation, 0f) * Vector3.forward * (_speed * Time.deltaTime);
 
-            // --- "Air-wall" edge clamp logic ---
-            // If stepping forward would leave ground, try sliding along the platform edge (left/right)
-            Vector3 safeHorizontalDelta = ComputeEdgeClampedDelta(transform.position, desiredForwardDelta);
+            Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-            // --- Real wall slide (optional but useful): project against hit normal if we collide with walls ---
-            // CharacterController already slides along colliders, but we can pre-project to reduce jitter.
-            if (safeHorizontalDelta.sqrMagnitude > 0f)
-            {
-                // Capsule cast forward to see if a wall blocks part of this motion.
-                float castDist = Mathf.Max(0.2f, safeHorizontalDelta.magnitude + 0.1f);
-                Vector3 castDir = safeHorizontalDelta.normalized;
+            // move the player
+            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-                // Approximate the controller as a capsule using its height/radius
-                float radius = _controller.radius * 0.95f;
-                float halfH = Mathf.Max(0.01f, (_controller.height * 0.5f) - radius);
-                Vector3 p1 = transform.position + Vector3.up * (radius);
-                Vector3 p2 = p1 + Vector3.up * (halfH * 2f);
-
-                if (Physics.CapsuleCast(p1, p2, radius, castDir, out var wallHit, castDist, ~0, QueryTriggerInteraction.Ignore))
-                {
-                    // Project the desired motion onto the plane orthogonal to wall normal (tangent slide)
-                    Vector3 tangent = ProjectOnPlane(safeHorizontalDelta, wallHit.normal);
-                    // Keep it inside ground as well (re-check)
-                    safeHorizontalDelta = ComputeEdgeClampedDelta(transform.position, tangent);
-                }
-            }
-
-            // --- Vertical component (unchanged) ---
-            Vector3 finalMove = Vector3.up * _verticalVelocity * Time.deltaTime;
-
-            // Only add horizontal if the clamped solution is valid (non-zero or still on ground)
-            if (safeHorizontalDelta.sqrMagnitude > 0f)
-                finalMove += safeHorizontalDelta;
-
-            // --- Apply movement ---
-            _controller.Move(finalMove);
-
-            // --- Animator params (unchanged) ---
+            // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
@@ -456,101 +448,5 @@ namespace StarterAssets
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
         }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            // if we hit the death plane, reset position
-            if (other.CompareTag("DeathPlane"))
-            {
-                // temporarily disable the CharacterController so moving the transform doesn't conflict with internal state
-                _controller.enabled = false;
-
-                // teleport
-                transform.position = defaultPosition;
-
-                // zero out any vertical velocity so you don't immediately fall again
-                _verticalVelocity = 0f;
-
-                // re‐enable the controller
-                _controller.enabled = true;
-            }
-
-        }
-
-        // --- Helpers: ground probing & projection ---
-
-        // Returns true if there is ground beneath the given world position within rayDistance.
-        private bool GroundBelow(Vector3 worldPos, out RaycastHit hitInfo, float rayDistance = 1.2f)
-        {
-            // Cast slightly above to avoid starting inside colliders
-            Vector3 origin = worldPos + Vector3.up * 0.5f;
-            return Physics.Raycast(origin, Vector3.down, out hitInfo, rayDistance, GroundLayers, QueryTriggerInteraction.Ignore);
-        }
-
-        // Projects a direction onto a plane defined by a normal
-        private static Vector3 ProjectOnPlane(Vector3 dir, Vector3 planeNormal)
-        {
-            return dir - Vector3.Project(dir, planeNormal);
-        }
-
-        // Try to "air-wall" clamp: if forward step leaves ground, try sliding along the platform edge.
-        private Vector3 ComputeEdgeClampedDelta(Vector3 currentPos, Vector3 desiredForwardDelta, float maxProbe = 0.6f)
-        {
-            // 1) If stepping forward still has ground, just return it.
-            if (GroundBelow(currentPos + desiredForwardDelta, out _))
-                return desiredForwardDelta;
-
-            // 2) Sample left/right near the "forward" tip to estimate which side still has ground.
-            Vector3 fwd = desiredForwardDelta.normalized;
-            float mag = desiredForwardDelta.magnitude;
-
-            // Local lateral axes (relative to current facing)
-            Vector3 right = Quaternion.Euler(0f, 90f, 0f) * fwd;
-            Vector3 left = -right;
-
-            // Probe positions close to the forward edge
-            float sideProbe = Mathf.Clamp(maxProbe, 0.1f, 1.0f);
-            bool leftOK = GroundBelow(currentPos + fwd * (mag * 0.6f) + left * sideProbe, out var leftHit);
-            bool rightOK = GroundBelow(currentPos + fwd * (mag * 0.6f) + right * sideProbe, out var rightHit);
-
-            // Prefer the side that still has ground. If both, choose the one that better matches player's input x.
-            Vector3 slideDir = Vector3.zero;
-            if (leftOK ^ rightOK)
-            {
-                slideDir = leftOK ? left : right;
-            }
-            else if (leftOK && rightOK)
-            {
-                // Choose side by which is "higher" (safer) or by player intent (input x)
-                slideDir = (leftHit.point.y >= rightHit.point.y) ? left : right;
-            }
-            else
-            {
-                // Neither side near the tip has ground: do a conservative clamp by shortening the forward step
-                // until we find ground, like a binary-ish shrink.
-                Vector3 tryDelta = desiredForwardDelta;
-                for (int i = 0; i < 5; i++)
-                {
-                    tryDelta *= 0.5f; // shrink
-                    if (tryDelta.magnitude <= 0.01f || GroundBelow(currentPos + tryDelta, out _))
-                        return tryDelta;
-                }
-                return Vector3.zero;
-            }
-
-            // 3) We have a lateral slide direction along the edge. Try to move along it while staying on ground.
-            Vector3 lateralTry = slideDir * mag; // same magnitude as intended forward delta
-                                                 // If full magnitude fails, gradually shrink until safe.
-            Vector3 candidate = lateralTry;
-            for (int i = 0; i < 5; i++)
-            {
-                if (GroundBelow(currentPos + candidate, out _))
-                    return candidate;
-                candidate *= 0.5f;
-            }
-
-            return Vector3.zero;
-        }
-
     }
 }
