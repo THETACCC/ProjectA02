@@ -50,8 +50,10 @@ public class RewardAcquire : MonoBehaviour
             {
                 if (dialoguePlayer != null)
                 {
-
+                    movement.AlignPlayerFunction();
+                    movement_player2.AlignPlayerFunction();
                     DisablePlayer();
+                    DisablePlayer2();
                     levelController.phase = LevelPhase.Speaking;
                     Debug.Log(levelController.phase);
                     dialoguePlayer.Play();
@@ -68,7 +70,9 @@ public class RewardAcquire : MonoBehaviour
             {
                 if (dialoguePlayer != null)
                 {
-
+                    movement.AlignPlayerFunction();
+                    movement_player2.AlignPlayerFunction();
+                    DisablePlayer();
                     DisablePlayer2();
                     levelController.phase = LevelPhase.Speaking;
                     Debug.Log(levelController.phase);
@@ -85,10 +89,13 @@ public class RewardAcquire : MonoBehaviour
 
     public void DisablePlayer()
     {
+        movement.AlignPlayerFunction();
+        movement_player2.AlignPlayerFunction();
         movement.canmove = false;
         movement.is_sliding = false;
         movement_player2.canmove = false;
         movement_player2.is_sliding = false;
+
     }
 
     public void EnablePlayer()
@@ -105,10 +112,13 @@ public class RewardAcquire : MonoBehaviour
 
     public void DisablePlayer2()
     {
+        movement.AlignPlayerFunction();
+        movement_player2.AlignPlayerFunction();
         movement.canmove = false;
         movement.is_sliding = false;
         movement_player2.canmove = false;
         movement_player2.is_sliding = false;
+
     }
 
     public void EnablePlayer2()

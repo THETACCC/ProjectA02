@@ -463,4 +463,9 @@ public class PlayerController : MonoBehaviour
         isMovingDiscrete = false;
     }
 
+    public void AlignPlayerFunction()
+    {
+        Alignement.AlignPlayerToCollidingObject();
+    }
+
 }

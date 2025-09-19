@@ -4,30 +4,50 @@ using UnityEngine;
 
 public class StartBlockSelector : MonoBehaviour
 {
-    public float elevation = 2;
-    [SerializeField] Collider blockCld;
-    [SerializeField] GameObject indicatorPrefab;
+    [Header("Placement")]
+    public float elevation = 2f;
+
+    [Header("References")]
+    [SerializeField] private Collider blockCld;
+    [SerializeField] private GameObject indicatorPrefab;
     public GameObject Parent;
-    Vector3[] subPositions = new Vector3[9];
+
+    // Optional fine-tune if your prefab mesh/pivot is offset
+    public Vector3 manualOffsetWorld = Vector3.zero;
+
     private void Start()
     {
-        Bounds bounds = blockCld.bounds;
-        Vector3 upperRight = bounds.max;
-        float gap = bounds.extents.x * 2.0f / 3.0f;
-        Vector3 startPos = upperRight - Vector3.one * gap / 2;
-        for (int i = 0; i < 3; i++)
+        if (!blockCld || !indicatorPrefab)
         {
-            for (int j = 0; j < 3; j++)
-            {
-                subPositions[i * 3 + j] = startPos - new Vector3(i*gap, 0, j*gap);
-                subPositions[i * 3 + j].y = bounds.max.y+ elevation;
-            }
+            Debug.LogError("[StartBlockSelector] Missing references.");
+            return;
         }
 
-        for (int i = 0;i < 9; i++)
+        // World-space bounds
+        Bounds bounds = blockCld.bounds;
+
+        // Centered top plane
+        Vector3 centerTop = new Vector3(
+            bounds.center.x,
+            bounds.max.y + elevation,
+            bounds.center.z
+        );
+
+        // Use per-axis spacing (in case X != Z)
+        float stepX = 4f;
+        float stepZ = 4f;
+
+        // Build a symmetric 3x3 around the center: indices -1, 0, +1
+        for (int ix = -1; ix <= 1; ix++)
         {
-            GameObject go = GameObject.Instantiate(indicatorPrefab,Parent.transform);
-            go.transform.position = subPositions[i];    
+            for (int iz = -1; iz <= 1; iz++)
+            {
+                Vector3 worldPos = centerTop + new Vector3(ix * stepX - 0.45f, 0f, iz * stepZ) + manualOffsetWorld;
+
+                // Place at exact world position, then parent (keeps world pos)
+                Transform parentT = Parent ? Parent.transform : null;
+                Instantiate(indicatorPrefab, worldPos, Quaternion.identity, parentT);
+            }
         }
     }
 }
