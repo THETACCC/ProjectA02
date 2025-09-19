@@ -43,7 +43,7 @@ public class RewardAcquire : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Entered");
+
         if (other.gameObject.tag == "Player1" )
         {
             if (!isReached)
@@ -55,7 +55,7 @@ public class RewardAcquire : MonoBehaviour
                     DisablePlayer();
                     DisablePlayer2();
                     levelController.phase = LevelPhase.Speaking;
-                    Debug.Log(levelController.phase);
+
                     dialoguePlayer.Play();
                     //This renderer makes the visual of the reward disappear
                     myRenderer.enabled= false;
@@ -75,7 +75,6 @@ public class RewardAcquire : MonoBehaviour
                     DisablePlayer();
                     DisablePlayer2();
                     levelController.phase = LevelPhase.Speaking;
-                    Debug.Log(levelController.phase);
                     dialoguePlayer.Play();
                     //This renderer makes the visual of the reward disappear
                     myRenderer.enabled = false;

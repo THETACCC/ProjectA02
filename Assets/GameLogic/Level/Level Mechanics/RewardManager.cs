@@ -108,10 +108,7 @@ public class RewardManager : MonoBehaviour
                 rewardReachedFlags[i] = true;
 
                 // 3) (Optional) Log or fire off an event
-                Debug.Log("[RewardManager] Reward reached on '"
-                    + RewardObjects[i].name
-                    + "'. Total reached: "
-                    + rewardsReachedCount);
+
             }
         }
     }

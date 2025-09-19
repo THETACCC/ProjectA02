@@ -211,8 +211,8 @@ public class LevelLoader : SKMonoSingleton<LevelLoader>
         CommonReference.playerCharacters = new[] { player1, player2 };
 
         // Log for debugging
-        Debug.Log($"Player1: {CommonReference.playerCharacters[0]}");
-        Debug.Log($"Player2: {CommonReference.playerCharacters[1]}");
+        //Debug.Log($"Player1: {CommonReference.playerCharacters[0]}");
+        //Debug.Log($"Player2: {CommonReference.playerCharacters[1]}");
 
         /*
         PlayerCharacter[] chars = GameObject.FindObjectsOfType<PlayerCharacter>();

@@ -132,7 +132,7 @@ public class BlockAlignment : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Enter Trigger");
+
         if(other.gameObject.tag == targetTag) 
         {
 

@@ -64,7 +64,7 @@ public class LevelController : SKMonoSingleton<LevelController>
         //myMaterial = myRenderer.material;
         // Set initial Effect_Time value
         myMaterial.SetFloat("_Effect_Time", 2f);
-        Debug.Log(myMaterial);
+
 
         mblocks = GameObject.FindGameObjectsWithTag("Block");
         mLevelbrick = GameObject.FindGameObjectsWithTag("LevelBrick");
@@ -279,7 +279,7 @@ public class LevelController : SKMonoSingleton<LevelController>
         {
             //levelLoader.AlignBlockSelection();
 
-                Debug.Log("pressed- Go");
+
                 phase = LevelPhase.Running;
             
 

@@ -425,7 +425,7 @@ public class PlayerController : MonoBehaviour
         // Normalize the target rotation to be within 0 to 360 degrees
         targetYRotation = (targetYRotation + 360) % 360;
 
-        Debug.Log(targetYRotation);
+
         while (Mathf.Abs(Mathf.DeltaAngle(visualTF.eulerAngles.y, targetYRotation)) > 0.1f)
         {
             // Calculate the next rotation step
