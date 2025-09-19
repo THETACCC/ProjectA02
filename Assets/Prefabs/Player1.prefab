@@ -174,9 +174,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 762767bd996166646a42bb78343c085a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentCollidingObject: {fileID: 0}
   parentObject: {fileID: 3846091522180061968}
-  allowedLayer: Collision
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  ignoreTriggerGround: 0
+  useClosestPoint: 0
+  snapSpeed: 20
+  stopThreshold: 0.01
+  showDebugLines: 1
 --- !u!33 &8558022739206320958
 MeshFilter:
   m_ObjectHideFlags: 0
