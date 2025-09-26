@@ -43,13 +43,16 @@ public class BlockIntro : MonoBehaviour
         if (LevelLoaderOBJ != null )
         {
             LevelLoader = LevelLoaderOBJ.GetComponent<LevelLoader>();   
-        }    
-        StartCoroutine(PlayEffectsSequentially());
-        StartCoroutine(EnablePlayer());
+        }
+
         foreach (GameObject block in mblocks)
         {
             block.transform.localScale = Vector3.zero;
         }
+
+        StartCoroutine(PlayEffectsSequentially());
+        StartCoroutine(EnablePlayer());
+
     }
 
     IEnumerator PlayEffectsSequentially()
