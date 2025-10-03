@@ -153,6 +153,14 @@ MonoBehaviour:
   bounceFrequency: 4
   geometricDecayFactor: 0.5
   fadeDuration: 0.1
+  startHidden: 1
+  blocksRaycastsWhenShown: 1
+  interactableWhenShown: 1
+  alwaysForceVisibleDuringPlay: 1
+  forceBringToFront: 1
+  sortingOrder: 5000
+  disableAncestorMasks: 1
+  useUnscaledTime: 1
 --- !u!114 &2922919567253117248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,7 +220,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1362583520060758920}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &7390010399289395932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,6 +264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: -784, y: 0}
+  targetIsOffset: 0
   dropDuration: 0.3
   returnDuration: 1
   targetRotationZ: 57.36
@@ -263,6 +272,7 @@ MonoBehaviour:
   rotationBounceDuration: 1.5
   bounceFrequency: 4
   geometricDecayFactor: 0.5
+  useUnscaledTime: 1
 --- !u!1 &1441379811887896499
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,7 +318,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1441379811887896499}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &8999206784485410058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,6 +503,14 @@ MonoBehaviour:
   bounceFrequency: 4
   geometricDecayFactor: 0.5
   fadeDuration: 0.1
+  startHidden: 1
+  blocksRaycastsWhenShown: 1
+  interactableWhenShown: 1
+  alwaysForceVisibleDuringPlay: 1
+  forceBringToFront: 1
+  sortingOrder: 5000
+  disableAncestorMasks: 1
+  useUnscaledTime: 1
 --- !u!1 &2925888534220150958
 GameObject:
   m_ObjectHideFlags: 0
@@ -539,7 +557,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2925888534220150958}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &4271310525057163969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -583,6 +601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: -743, y: 356}
+  targetIsOffset: 0
   dropDuration: 0.3
   returnDuration: 1
   targetRotationZ: 0
@@ -590,6 +609,7 @@ MonoBehaviour:
   rotationBounceDuration: 1.5
   bounceFrequency: 4
   geometricDecayFactor: 0.5
+  useUnscaledTime: 1
 --- !u!1 &3079529921379034676
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,7 +658,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3079529921379034676}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &5314305547570732215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -682,6 +702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetPosition: {x: -781, y: 0}
+  targetIsOffset: 0
   dropDuration: 0.3
   returnDuration: 1
   targetRotationZ: 57.679
@@ -689,6 +710,7 @@ MonoBehaviour:
   rotationBounceDuration: 1.5
   bounceFrequency: 4
   geometricDecayFactor: 0.5
+  useUnscaledTime: 1
 --- !u!1 &3691690039534873130
 GameObject:
   m_ObjectHideFlags: 0
@@ -1002,6 +1024,7 @@ GameObject:
   - component: {fileID: 7425718826861827000}
   - component: {fileID: 4812522681785229398}
   - component: {fileID: 1571512803899275715}
+  - component: {fileID: 106417343218779424}
   m_Layer: 5
   m_Name: WorldChapter_Canvas
   m_TagString: Untagged
@@ -1095,6 +1118,37 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &106417343218779424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4546141258585822267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0083545ad03d2324ead0119599c2dc21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoFindBouncies: 1
+  autoFindCompletes: 1
+  autoPlayOnEnable: 1
+  chainCompletesAfterBouncy: 1
+  chainUseInstantShow: 1
+  chainExtraDelay: 0.02
+  bouncies:
+  - target: {fileID: 1410772825651581216}
+    delay: 0
+  - target: {fileID: 7399394560252741440}
+    delay: 0
+  - target: {fileID: 5464404278719436768}
+    delay: 0
+  completes:
+  - target: {fileID: 6838044163158483008}
+    delay: 0
+  - target: {fileID: 2205679205114063112}
+    delay: 0
+  useUnscaledTime: 1
 --- !u!1 &4832689188387153671
 GameObject:
   m_ObjectHideFlags: 0
@@ -1140,7 +1194,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4832689188387153671}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &5246899803023844587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1276,7 +1330,7 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8364469373901370464}
-  m_CullTransparentMesh: 1
+  m_CullTransparentMesh: 0
 --- !u!114 &400782606781626641
 MonoBehaviour:
   m_ObjectHideFlags: 0
