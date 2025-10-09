@@ -79,22 +79,22 @@ public class LevelPass : MonoBehaviour
     /// </summary>
     public void LoadNextLevel()
     {
-        if (startLoading)
-            return;
+        if (startLoading) return;
+        if (!(left.leftreached && right.rightreached)) return;
 
-        if (!(left.leftreached && right.rightreached))
-            return;
+        int rewardsThisRun = rewardManager ? rewardManager.rewardsReachedCount : 0;
 
-        int rewardsThisRun = rewardManager.rewardsReachedCount;
-        Debug.Log($"[LevelPass] Saving {rewardsThisRun} rewards to Chapter {chapterIndex}, Level {levelIndex}");
-        SaveManager.Instance.SetLevelRewards(chapterIndex, levelIndex, rewardsThisRun);
+        // ✅ 记通关（奖励可为0），用于解锁世界里的下一个关卡点
+        if (SaveManager.Instance)
+            SaveManager.Instance.MarkLevelCompleted(chapterIndex, levelIndex, rewardsThisRun);
 
+        // 你原有的切场景逻辑保持
         SKUtils.InvokeAction(0.2f, () =>
         {
             flowManager.LoadScene(new SceneInfo { index = scenetitle });
         });
 
         startLoading = true;
-
     }
+
 }
