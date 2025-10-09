@@ -1,70 +1,152 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Text.RegularExpressions;
 using SKCell;
 
+[DisallowMultipleComponent]
 public class LevelTrigger : MonoBehaviour
 {
-    // References for UI animations.
+    [Header("Scene binding")]
+    [Tooltip("必须设置，比如 Chapter0_Level1 / Chapter1_Level6 等。只从这里解析章节与关卡。")]
+    public SceneTitle scenetitle;
+
+    [Header("Optional refs (动画/按钮)")]
+    [SerializeField] private ImageMover imageMover;
+    [SerializeField] private GameObject uiSelectLevel;   // 进入提示UI
+    private GameObject worldChapterCanvas;               // 含 Start 按钮的父物体（可选）
     private CompleteUI[] completeUIs;
     private BouncyUI[] bouncyUIs;
 
-    [SerializeField] private ImageMover imageMover;         // Reference to the ImageMover script.
-    [SerializeField] private GameObject uiSelectLevel;      // Reference to the UI_SelectLevel GameObject (for animations).
-
-    private GameObject worldChapterCanvas;                   // Will be located at runtime (contains Btn_Start).
     private FlowManager flowManager;
-    public SceneTitle scenetitle;                            // Set this per LevelTrigger instance in the Inspector.
-    private bool startloading = false;
-    private Coroutine uiCoroutine = null;
-
-    // Flag that allows level loading by pressing F.
+    private Coroutine uiCoroutine;
     private bool allowInput = false;
+    private bool startloading = false;
 
-    void Start()
+    // —— 从 scenetitle 解析出的内部索引（Chapter=0基，Level=0基）
+    private int chapterIndex0 = 0;
+    private int levelIndex0 = 0;
+
+    // —— 临时“软隐藏”：只关渲染器/碰撞器，仍保持脚本运行，用于等待 SaveManager
+    private Collider[] _colliders;
+    private Renderer[] _renderers;
+    private Canvas[] _canvases;
+
+    private void Awake()
     {
-        // 1) Get all UI animation components (even if disabled) among children.
+        // 解析 scenetitle（支持 Chapter0_Level1 / Chapter 0 - Level 1 / Chapter0 Level1 等）
+        var s = scenetitle.ToString();
+        var m = Regex.Match(s, @"Chapter\s*(\d+)\s*[_\-\s]\s*Level\s*(\d+)", RegexOptions.IgnoreCase);
+        if (m.Success)
+        {
+            int chap = int.Parse(m.Groups[1].Value); // 已是0基
+            int lvl1 = int.Parse(m.Groups[2].Value); // 1基
+            chapterIndex0 = Mathf.Max(0, chap);
+            levelIndex0 = Mathf.Max(0, lvl1 - 1);   // 转0基
+        }
+        else
+        {
+            Debug.LogError($"[LevelTrigger:{name}] scenetitle '{s}' 未按 'Chapter#_Level#' 格式；将按(0,0)处理。");
+            chapterIndex0 = 0;
+            levelIndex0 = 0;
+        }
+
+        // 缓存可软隐藏组件
+        _colliders = GetComponentsInChildren<Collider>(true);
+        _renderers = GetComponentsInChildren<Renderer>(true);
+        _canvases = GetComponentsInChildren<Canvas>(true);
+
+        // 初始软隐藏，等 SaveManager 判定后再决定显示或彻底关掉
+        SetSoftHidden(true);
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(WaitAndDecideVisibility());
+    }
+
+    private IEnumerator WaitAndDecideVisibility()
+    {
+        // 等 SaveManager 就绪（最多几帧）
+        int tries = 0;
+        while (SaveManager.Instance == null && tries < 10)
+        {
+            tries++;
+            yield return null;
+        }
+
+        if (SaveManager.Instance == null)
+        {
+            // 保险：如果依然没有存档系统，就保持完全不可见
+            gameObject.SetActive(false);
+            yield break;
+        }
+
+        // 判定解锁
+        bool unlocked = SaveManager.Instance.IsLevelUnlocked(chapterIndex0, levelIndex0);
+        Debug.Log($"[LevelTrigger:{name}] Unlocked? {unlocked}  (c={chapterIndex0}, l0={levelIndex0}, scenetitle={scenetitle})");
+
+        if (!unlocked)
+        {
+            // 未解锁：彻底隐藏
+            gameObject.SetActive(false);
+            yield break;
+        }
+
+        // 已解锁：恢复可见和交互，再做你的UI初始化
+        SetSoftHidden(false);
+        InitUIAndFlow();
+        CheckInitialPlayerOverlap();
+    }
+
+    private void InitUIAndFlow()
+    {
         completeUIs = GetComponentsInChildren<CompleteUI>(true);
         bouncyUIs = GetComponentsInChildren<BouncyUI>(true);
 
-        // 2) Set up FlowManager (assumes there is one in your scene named "FlowManager").
-        GameObject flowmanagerObj = GameObject.Find("FlowManager");
-        if (flowmanagerObj != null)
-            flowManager = flowmanagerObj.GetComponent<FlowManager>();
+        var fmObj = GameObject.Find("FlowManager");
+        if (fmObj) flowManager = fmObj.GetComponent<FlowManager>();
 
-        // 3) Ensure the select-level UI is initially inactive.
-        if (uiSelectLevel != null)
-            uiSelectLevel.SetActive(false);
+        if (uiSelectLevel) uiSelectLevel.SetActive(false);
 
-        // 4) Dynamically locate the WorldChapter_Canvas by finding the StartLevelButton in children.
-        //    Assume its direct parent is the canvas container that holds the button.
-        StartLevelButton btnScript = GetComponentInChildren<StartLevelButton>(true);
-        if (btnScript != null)
+        var btnScript = GetComponentInChildren<StartLevelButton>(true);
+        if (btnScript)
         {
             worldChapterCanvas = btnScript.transform.parent.gameObject;
             worldChapterCanvas.SetActive(false);
         }
-        else
-        {
-            Debug.LogWarning($"[LevelTrigger:{name}] Could not find a StartLevelButton child, so no worldChapterCanvas will be shown.");
-        }
-
-        // 5) Check if the player is already overlapping the trigger at start (for example, they landed inside).
-        CheckInitialPlayerOverlap();
     }
 
-    void CheckInitialPlayerOverlap()
+    private void SetSoftHidden(bool hidden)
     {
-        Collider triggerCollider = GetComponent<Collider>();
+        if (_colliders != null)
+            foreach (var c in _colliders) if (c) c.enabled = !hidden;
+
+        if (_renderers != null)
+            foreach (var r in _renderers) if (r) r.enabled = !hidden;
+
+        if (_canvases != null)
+            foreach (var cv in _canvases) if (cv) cv.enabled = !hidden;
+
+        if (uiSelectLevel) uiSelectLevel.SetActive(!hidden && uiSelectLevel.activeSelf); // 不强行开
+        if (worldChapterCanvas) worldChapterCanvas.SetActive(!hidden && worldChapterCanvas.activeSelf);
+    }
+
+    private void CheckInitialPlayerOverlap()
+    {
+        var trigger = GetComponent<Collider>();
+        if (!trigger) return;
+
         Collider[] hits = Physics.OverlapBox(
-            triggerCollider.bounds.center,
-            triggerCollider.bounds.extents,
-            triggerCollider.transform.rotation
+            trigger.bounds.center,
+            trigger.bounds.extents,
+            trigger.transform.rotation
         );
 
-        foreach (Collider hit in hits)
+        foreach (var h in hits)
         {
-            if (hit.CompareTag("Player"))
+            if (h.CompareTag("Player"))
             {
                 allowInput = true;
                 if (uiCoroutine != null) StopCoroutine(uiCoroutine);
@@ -74,93 +156,63 @@ public class LevelTrigger : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
-        // Allow loading the next level by pressing F if the player is inside the trigger.
         if (allowInput && Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log("F key pressed - loading next level.");
             LoadNextLevel();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player"))
-            return;
+        if (!other.CompareTag("Player")) return;
 
-        // When the player enters, allow input and play the show animation.
         allowInput = true;
-
-        if (uiCoroutine != null)
-            StopCoroutine(uiCoroutine);
+        if (uiCoroutine != null) StopCoroutine(uiCoroutine);
         uiCoroutine = StartCoroutine(AnimateUIShow());
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player"))
-            return;
+        if (!other.CompareTag("Player")) return;
 
-        // When the player leaves, disallow input and play the hide animation.
         allowInput = false;
-        if (uiCoroutine != null)
-            StopCoroutine(uiCoroutine);
+        if (uiCoroutine != null) StopCoroutine(uiCoroutine);
         uiCoroutine = StartCoroutine(AnimateUIHide());
     }
 
     IEnumerator AnimateUIShow()
     {
-        // 1) Activate the select-level UI for animations.
-        if (uiSelectLevel != null)
-            uiSelectLevel.SetActive(true);
+        if (uiSelectLevel) uiSelectLevel.SetActive(true);
+        if (worldChapterCanvas) worldChapterCanvas.SetActive(true);
 
-        // 2) Also activate worldChapterCanvas (where Btn_Start lives), if found.
-        if (worldChapterCanvas != null)
-            worldChapterCanvas.SetActive(true);
-
-        // 3) Animate the image mover if assigned.
-        if (imageMover != null)
+        if (imageMover)
         {
             StopAllCoroutines();
             StartCoroutine(imageMover.MoveImageToEnd());
         }
 
-        // 4) Immediately set UI elements to their hidden state.
-        foreach (CompleteUI ui in completeUIs)
-            ui.InstantHide();
-        foreach (BouncyUI ui in bouncyUIs)
-            ui.InstantHide();
+        if (completeUIs != null) foreach (var ui in completeUIs) ui.InstantHide();
+        if (bouncyUIs != null) foreach (var ui in bouncyUIs) ui.InstantHide();
 
-        // 5) Now animate them to show simultaneously.
-        foreach (CompleteUI ui in completeUIs)
-            StartCoroutine(ui.AnimateShow());
-        foreach (BouncyUI ui in bouncyUIs)
-            StartCoroutine(ui.AnimateShow());
+        if (completeUIs != null) foreach (var ui in completeUIs) StartCoroutine(ui.AnimateShow());
+        if (bouncyUIs != null) foreach (var ui in bouncyUIs) StartCoroutine(ui.AnimateShow());
 
-        yield return new WaitForSeconds(0.35f); // Wait for animations to complete.
+        yield return new WaitForSeconds(0.35f);
     }
 
     IEnumerator AnimateUIHide()
     {
-        // 1) Animate hiding of UI elements.
-        foreach (CompleteUI ui in completeUIs)
-            StartCoroutine(ui.AnimateHide());
-        foreach (BouncyUI ui in bouncyUIs)
-            StartCoroutine(ui.AnimateHide());
+        if (completeUIs != null) foreach (var ui in completeUIs) StartCoroutine(ui.AnimateHide());
+        if (bouncyUIs != null) foreach (var ui in bouncyUIs) StartCoroutine(ui.AnimateHide());
 
-        yield return new WaitForSeconds(0.25f); // Wait for animations to finish.
+        yield return new WaitForSeconds(0.25f);
 
-        // 2) Deactivate the select-level UI.
-        if (uiSelectLevel != null)
-            uiSelectLevel.SetActive(false);
+        if (uiSelectLevel) uiSelectLevel.SetActive(false);
+        if (worldChapterCanvas) worldChapterCanvas.SetActive(false);
 
-        // 3) Deactivate the worldChapterCanvas so the button disappears.
-        if (worldChapterCanvas != null)
-            worldChapterCanvas.SetActive(false);
-
-        // 4) Animate imageMover back to start if assigned.
-        if (imageMover != null)
+        if (imageMover)
         {
             StopAllCoroutines();
             StartCoroutine(imageMover.MoveImageToStart());
@@ -169,30 +221,27 @@ public class LevelTrigger : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        // Prevent double-calls by exiting early if we’ve already started loading.
         if (startloading) return;
         startloading = true;
 
-        // 1) Save the world position under the current scene name.
+        // —— 你的原有保存/切关逻辑 ——（保持不变）
         string currentSceneName = SceneManager.GetActiveScene().name;
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerZ", transform.position.z);
 
-        // 2) Save under the target level’s name (in case you return later).
         string targetSceneName = scenetitle.ToString();
         PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerZ", transform.position.z);
         PlayerPrefs.SetString("LastTriggerScene", targetSceneName);
 
-        // 3) Wait a short moment before loading the next level.
         SKUtils.InvokeAction(0.2f, () =>
         {
-            flowManager.LoadScene(new SceneInfo()
-            {
-                index = scenetitle,
-            });
+            if (flowManager)
+                flowManager.LoadScene(new SceneInfo() { index = scenetitle });
+            else
+                SceneManager.LoadScene(targetSceneName); // 兜底
         });
     }
 }
