@@ -11,9 +11,15 @@ public class LevelIntroTutorial : MonoBehaviour
 
     public GameObject LevelSuccessOBJ_Left;
     public GameObject LevelSuccessOBJ_Right;
+    public GameObject LevelSuccessOBJTutorial_Left;
+    public GameObject LevelSuccessOBJTutorial_Right;
+
 
     public Enterfinishleft LevelSuccessLeft;
     public EnterFinishRight LevelSuccessRight;
+    public EnterFinishLeftTutorial LevelSuccessLeftTutorial;
+    public EnterFinishRightTutorial LevelSuccessRightTutorial;
+
 
     public LevelLoader LevelLoader;
 
@@ -33,10 +39,15 @@ public class LevelIntroTutorial : MonoBehaviour
         Player2 = GameObject.FindGameObjectWithTag("Player2");
         Player1.SetActive(false);
         Player2.SetActive(false);
+        LevelSuccessOBJTutorial_Left = GameObject.FindGameObjectWithTag("FinishLeftTutorial");
+        LevelSuccessOBJTutorial_Right = GameObject.FindGameObjectWithTag("FinishRightTutorial");
         LevelSuccessOBJ_Left = GameObject.FindGameObjectWithTag("FinishLeft");
         LevelSuccessOBJ_Right = GameObject.FindGameObjectWithTag("FinishRight");
         LevelSuccessLeft = LevelSuccessOBJ_Left.GetComponent<Enterfinishleft>();
         LevelSuccessRight = LevelSuccessOBJ_Right.GetComponent<EnterFinishRight>();
+        LevelSuccessLeftTutorial = LevelSuccessOBJTutorial_Left.GetComponent<EnterFinishLeftTutorial>();
+        LevelSuccessRightTutorial = LevelSuccessOBJTutorial_Right.GetComponent<EnterFinishRightTutorial>();
+
 
         GameObject LevelLoaderOBJ = GameObject.FindGameObjectWithTag("LevelLoader");
         if (LevelLoaderOBJ != null)
@@ -79,6 +90,9 @@ public class LevelIntroTutorial : MonoBehaviour
         Player2.SetActive(true);
         LevelSuccessLeft.SerachPlayer();
         LevelSuccessRight.SerachPlayer();
+        LevelSuccessLeftTutorial.SerachPlayer();
+        LevelSuccessRightTutorial.SerachPlayer();
+
         LevelLoader.LoadCharacter();
         yield return new WaitForSeconds(1f);
         controller.phase = LevelPhase.Placing;

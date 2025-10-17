@@ -47,20 +47,47 @@ public class RewardAcquire : MonoBehaviour
 
         if (other.CompareTag("Player1") || other.CompareTag("Player2"))
         {
-            // Hide the 3D reward visual
             if (myRenderer != null)
                 myRenderer.enabled = false;
+            if (!isReached)
+            {
+                
+                if (dialoguePlayer != null)
+                {
+                    //dialoguePlayer.Play();
+                    //levelController.phase = LevelPhase.Speaking;
+                    myRenderer.enabled = false;
+                   // isReached = true;
+                    //isPlayer1 = true;
+                   // StartCoroutine(WaitAndAlignPlayers());
 
-            // Mark as collected so RewardManager sees it
-            isReached = true;
 
-            // OPTIONAL: if you previously paused the level on pickup, make sure we stay in Running
-            // if (levelController != null) levelController.phase = LevelPhase.Running;
+                
+                    isReached = true;
 
-            // OPTIONAL: if you DON'T want to stop or align players anymore, remove these:
-            // Stop any pending coroutines and skip alignment
-            // StopAllCoroutines();
-            // (do nothing else)
+                }
+                else if (other.gameObject.tag == "Player2")
+                {
+                    if (!isReached)
+                    {
+
+                        if (dialoguePlayer != null)
+                        {
+
+
+
+
+                           // dialoguePlayer.Play();
+                            //This renderer makes the visual of the reward disappear
+                           // levelController.phase = LevelPhase.Speaking;
+                            myRenderer.enabled = false;
+                          //  isReached = true;
+                           // isPlayer1 = false;
+                           // StartCoroutine(WaitAndAlignPlayers());
+                        }
+                    }
+                }
+            }
         }
     }
 

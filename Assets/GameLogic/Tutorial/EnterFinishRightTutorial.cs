@@ -4,31 +4,27 @@ using UnityEngine;
 
 public class EnterFinishRightTutorial : MonoBehaviour
 {
-    public bool leftreached = false;
-    private GameObject player1;
+    public bool rightreached = false;
+    private GameObject player2;
     private PlayerController movement;
 
     private PlayerWinVisual playerWinVisual;
-    private GameObject PlayerWin;
+    private GameObject PlayerWinVisual2;
     private Collider PlayerCollider;
-    private Collider PlayerColliderCLD;
     private Rigidbody Rigidbody;
     private void Start()
     {
 
     }
-
     public void SerachPlayer()
     {
-        player1 = GameObject.FindGameObjectWithTag("Player2Tutorial");
-        movement = player1.GetComponent<PlayerController>();
-        PlayerWin = GameObject.FindGameObjectWithTag("Player2WinVisualTutorial");
-        playerWinVisual = PlayerWin.GetComponent<PlayerWinVisual>();
-        PlayerCollider = player1.GetComponent<Collider>();
-        Rigidbody = player1.GetComponent<Rigidbody>();
-
+        player2 = GameObject.FindGameObjectWithTag("Player2Tutorial");
+        movement = player2.GetComponent<PlayerController>();
+        PlayerWinVisual2 = GameObject.FindGameObjectWithTag("Player2WinVisualTutorial");
+        playerWinVisual = PlayerWinVisual2.GetComponent<PlayerWinVisual>();
+        PlayerCollider = player2.GetComponent<Collider>();
+        Rigidbody = player2.GetComponent<Rigidbody>();
     }
-
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.tag == "Player2Tutorial" || collision.gameObject.tag == "Player1Tutorial")
@@ -40,9 +36,8 @@ public class EnterFinishRightTutorial : MonoBehaviour
             movement.canmove = false;
 
             movement.enabled = false;
-            leftreached = true;
+            rightreached = true;
             playerWinVisual.isPlayerWin = true;
-
 
         }
     }

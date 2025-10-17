@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    //Tutorial Related
+    public string Player1Tag = "Player1";
+    public string Player2Tag = "Player2";
+
 
     public int mapSide;
     Transform visualTF;
@@ -68,8 +72,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        GameObject Player1 = GameObject.FindGameObjectWithTag("Player1");
-        GameObject Player2 = GameObject.FindGameObjectWithTag("Player2");
+        GameObject Player1 = GameObject.FindGameObjectWithTag(Player1Tag);
+        GameObject Player2 = GameObject.FindGameObjectWithTag(Player2Tag);
         Player1Controll= Player1.GetComponent<PlayerController>();
         Player2Controll= Player2.GetComponent<PlayerController>();
 

@@ -21,6 +21,10 @@ public class EnterFinishLeftTutorial : MonoBehaviour
     public void SerachPlayer()
     {
         player1 = GameObject.FindGameObjectWithTag("Player1Tutorial");
+        if(player1 == null )
+        {
+            Debug.Log("ERROR PLAYER1 TUTORIAL NOT FOUND");
+        }
         movement = player1.GetComponent<PlayerController>();
         PlayerWin = GameObject.FindGameObjectWithTag("Player1WinVisualTutorial");
         playerWinVisual = PlayerWin.GetComponent<PlayerWinVisual>();
