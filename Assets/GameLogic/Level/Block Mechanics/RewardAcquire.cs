@@ -51,13 +51,13 @@ public class RewardAcquire : MonoBehaviour
  
                 if (dialoguePlayer != null)
                 {
-                    dialoguePlayer.Play();
+                    //dialoguePlayer.Play();
                     //This renderer makes the visual of the reward disappear
-                    levelController.phase = LevelPhase.Speaking;
+                    //levelController.phase = LevelPhase.Speaking;
                     myRenderer.enabled = false;
-                    isReached = true;
-                    isPlayer1 = true;
-                    StartCoroutine(WaitAndAlignPlayers());
+                    //isReached = true;
+                    //isPlayer1 = true;
+                    //StartCoroutine(WaitAndAlignPlayers());
 
 
 
@@ -75,13 +75,13 @@ public class RewardAcquire : MonoBehaviour
 
 
 
-                    dialoguePlayer.Play();
+                    //dialoguePlayer.Play();
                     //This renderer makes the visual of the reward disappear
-                    levelController.phase = LevelPhase.Speaking;
+                    //levelController.phase = LevelPhase.Speaking;
                     myRenderer.enabled = false;
-                    isReached = true;
-                    isPlayer1 = false;
-                    StartCoroutine(WaitAndAlignPlayers());
+                    //isReached = true;
+                    //isPlayer1 = false;
+                    //StartCoroutine(WaitAndAlignPlayers());
                 }
             }
         }
