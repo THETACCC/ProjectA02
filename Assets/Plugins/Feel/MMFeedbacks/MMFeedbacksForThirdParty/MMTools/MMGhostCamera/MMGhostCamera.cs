@@ -243,13 +243,13 @@ namespace MoreMountains.Tools
 			}
 			if (UseMobileControls)
 			{
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
+				//Cursor.lockState = CursorLockMode.None;
+				//Cursor.visible = true;
 			}
 			else if (Active)
 			{
-				Cursor.lockState = CursorLockMode.Locked;
-				Cursor.visible = false;
+				//Cursor.lockState = CursorLockMode.Locked;
+				//Cursor.visible = false;
 			}
 			if (LeftStickContainer != null)
 			{
@@ -355,8 +355,10 @@ namespace MoreMountains.Tools
 		protected virtual void ToggleFreeCamera()
 		{
 			Active = !Active;
-			Cursor.lockState = Active ? CursorLockMode.Locked : CursorLockMode.None;
-			Cursor.visible = !Active;
+			//
+			//
+			//Cursor.lockState = Active ? CursorLockMode.Locked : CursorLockMode.None;
+			//Cursor.visible = !Active;
 		}
 	}
 }

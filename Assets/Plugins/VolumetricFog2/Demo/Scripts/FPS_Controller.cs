@@ -50,8 +50,8 @@ namespace VolumetricFogAndMist2.Demos {
             mainCamera.rotation = Quaternion.identity;
             mainCamera.parent = transform;
             // Setup Cursor
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            //Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.visible = false;
         }
 
         // Update is called once per frame

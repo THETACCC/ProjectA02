@@ -24,11 +24,11 @@ namespace MoreMountains.Tools
 		{
 			if (CursorVisibility == CursorVisibilities.Visible)
 			{
-				Cursor.visible = true;
+				//Cursor.visible = true;
 			}
 			else
 			{
-				Cursor.visible = true;
+				//Cursor.visible = true;
 			}
 		}
 	}
