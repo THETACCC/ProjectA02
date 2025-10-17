@@ -4899,6 +4899,7 @@ GameObject:
   - component: {fileID: 2850311177224478285}
   - component: {fileID: 4972265630073897567}
   - component: {fileID: 4907938006607296869}
+  - component: {fileID: 4721691768788139799}
   m_Layer: 5
   m_Name: Reward1Holder
   m_TagString: Untagged
@@ -4946,7 +4947,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 2bc68fb58a27cf944913dcc20cb3a84b, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -4964,6 +4965,34 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4721691768788139799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2200923846604773030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b0458769b6e83d44844e8223c9487d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardManager: {fileID: 0}
+  autoFindManager: 1
+  thickness: 0.12
+  softness: 0.002
+  fillColor: {r: 1, g: 0.85, b: 0, a: 1}
+  emptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+  background: {r: 0, g: 0, b: 0, a: 0}
+  stripeDensity: 12
+  flowSpeed: 0.01
+  stripeAlpha: 0.6
+  showFlowWhenEmpty: 0
+  stopFlowWhenFull: 1
+  secondsPerFullLap: 4
+  animateFill: 1
+  timeScale: 1
+  materialOverride: {fileID: 0}
 --- !u!1 &3437678693892374135
 GameObject:
   m_ObjectHideFlags: 0
