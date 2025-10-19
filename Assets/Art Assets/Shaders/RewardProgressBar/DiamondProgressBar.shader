@@ -16,6 +16,14 @@
         _StripeAlpha   ("Stripe Alpha", Range(0,1)) = 0.6
         _ShowFlow      ("Show Flow", Float) = 1.0
 
+        // HDR glow controls
+        _GlowColor     ("Glow Color (HDR)", Color) = (1,0.85,0,1)
+        _GlowIntensity ("Glow Intensity (HDR)", Range(0,10)) = 2.5
+        _GlowWidth     ("Glow Width (diamond units)", Range(0.0,0.6)) = 0.18
+        _GlowFalloff   ("Glow Falloff", Range(0.5,8)) = 2.5
+        _GlowOnlyWhenFilled ("Glow Only On Filled", Float) = 1.0
+        _GlowFollowStripes  ("Glow Follows Stripes", Float) = 0
+
         _MainTex       ("Sprite", 2D) = "white" {}
         _Color         ("Tint", Color) = (1,1,1,1)
     }
@@ -61,12 +69,16 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            fixed4 _Color;
+            float4 _Color;
 
-            fixed4 _FillColor, _EmptyColor, _Background;
+            // Use half/float so we can output HDR > 1.0
+            half4 _FillColor, _EmptyColor, _Background;
 
             float _Progress, _Thickness, _Softness, _Aspect;
             float _StripeDensity, _FlowSpeed, _StripeAlpha, _ShowFlow;
+
+            half4 _GlowColor;
+            float _GlowIntensity, _GlowWidth, _GlowFalloff, _GlowOnlyWhenFilled, _GlowFollowStripes;
 
             float4 _ClipRect;
 
@@ -98,7 +110,7 @@
                 return (seg + s) * 0.25;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            half4 frag (v2f i) : SV_Target
             {
                 // UI clipping
                 float2 localPos = i.worldPos.xy;
@@ -119,24 +131,59 @@
 
                 if (band <= 0.0001)
                 {
-                    fixed4 bg = _Background;
+                    half4 bg = _Background;
                     return bg;
                 }
 
-                float t = perimeter_t(p);            // 0..1 along edge, CCW from top
-                float filled = step(t, _Progress);   // 1 if within progress
-                fixed4 edgeCol = lerp(_EmptyColor, _FillColor, filled);
+                // Progress along edge
+                float t = perimeter_t(p);          // 0..1 along edge, CCW from top
+                float filled = step(t, _Progress); // 1 if within progress
 
-                // Flow stripes on filled region
+                half4 edgeCol = lerp(_EmptyColor, _FillColor, filled);
+
+                // Prepare a flow mask (always defined)
+                float flowMask = 1.0;
+
+                // Flow stripes on filled region (visual only)
                 if (_ShowFlow > 0.5 && filled > 0.5)
                 {
                     float stripes = 0.5 + 0.5 * cos(6.2831853 * (t * _StripeDensity - _Time.y * _FlowSpeed));
-                    float flowMask = saturate(stripes) * _StripeAlpha;
-                    edgeCol.rgb = lerp(edgeCol.rgb, 1.0.xxx, flowMask);
+                    flowMask = saturate(stripes) * _StripeAlpha;
+                    edgeCol.rgb = lerp(edgeCol.rgb, half3(1.0,1.0,1.0), flowMask);
                 }
 
-                edgeCol.a *= band;
-                return edgeCol;
+                // Glow distance from the ring centerline (diamond metric)
+                float rOuter = 1.0;
+                float rInner = 1.0 - _Thickness;
+                float rCenter = 0.5 * (rOuter + rInner);
+                float distFromCenter = abs(sum - rCenter);
+
+                // Halo shape
+                float g = 1.0 - saturate(distFromCenter / max(_GlowWidth, 1e-4));
+                g = pow(g, _GlowFalloff);
+
+                // Gate glow to filled arc
+                if (_GlowOnlyWhenFilled > 0.5)
+                {
+                    g *= filled;
+                }
+
+                // (Optional) make glow follow stripe pulsation
+                if (_GlowFollowStripes > 0.5)
+                {
+                    g *= flowMask;
+                }
+
+                // Additive HDR emission (picked up by Bloom)
+                float3 glowRGB = (float3)_GlowColor.rgb * _GlowIntensity;
+                float3 rgb = (float3)edgeCol.rgb;
+                rgb += glowRGB * g;
+
+                // Alpha from band + tiny boost from glow for nicer edges
+                float a = edgeCol.a * band;
+                a = max(a, band * 0.02 * g);
+
+                return half4(rgb, a);
             }
             ENDCG
         }

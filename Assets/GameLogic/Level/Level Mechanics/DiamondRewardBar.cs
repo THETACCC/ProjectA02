@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 [ExecuteAlways]
 [RequireComponent(typeof(Image))]
 public class DiamondRewardBar : MonoBehaviour
 {
+    public float CurrentProgress => Mathf.Clamp01(_current);
+    void OnEnable() { EnsureImageAndMaterial(); _current = 0f; _target = 0f; ApplyAllParams(editMode: true); if (_instanceMat) _instanceMat.SetFloat("_Progress", 0f); }
+
+
     [Header("Material Source")]
     [Tooltip("If assigned, we use this as a source. If left empty, we create from ShaderPath.")]
     public Material materialOverride;
@@ -16,6 +21,12 @@ public class DiamondRewardBar : MonoBehaviour
     [Header("Data Source")]
     public RewardManager rewardManager;
     public bool autoFindManager = true;
+
+    [Header("Roman Counter (I/IV)")]
+    public TMP_Text romanCounter;
+    public bool autoFindRomanCounter = true;
+    [Tooltip("Use uppercase Roman numerals (I,V,X,...) if true; lowercase (i,v,x,...) if false.")]
+    public bool uppercaseRoman = true;
 
     [Header("Visuals (driven into shader)")]
     [Range(0f, 1f)] public float thickness = 0.18f;
@@ -44,23 +55,33 @@ public class DiamondRewardBar : MonoBehaviour
     private float _current; // displayed progress
     private float _target;  // target progress
 
-    void Awake() { EnsureImageAndMaterial(); }
-    void OnEnable() { EnsureImageAndMaterial(); }
-    void OnValidate() { EnsureImageAndMaterial(); ApplyAllParams(editMode: true); }
+    // cache to avoid重复设置TMP
+    private int _lastHave = -1;
+    private int _lastTotal = -1;
 
-    void Start()
-    {
-        if (autoFindManager && rewardManager == null)
-            rewardManager = FindObjectOfType<RewardManager>();
-    }
+    void Awake() { EnsureImageAndMaterial(); }
+    void OnValidate() { EnsureImageAndMaterial(); ApplyAllParams(editMode: true); TryAutoFinds(); UpdateRomanCounter(); }
+    void Start() { TryAutoFinds(); UpdateRomanCounter(); }
+
 
     void Update()
     {
         EnsureImageAndMaterial();
+        TryAutoFinds();             
         UpdateTargetFromRewards();
         AnimateProgress();
         ApplyAllParams(editMode: false);
+        UpdateRomanCounter();      
     }
+
+    private void TryAutoFinds()
+    {
+        if (rewardManager == null)
+            rewardManager = FindObjectOfType<RewardManager>();
+        if (romanCounter == null)
+            romanCounter = GetComponentInChildren<TMPro.TMP_Text>(true);
+    }
+
 
     // --- helpers ---
     private void EnsureImageAndMaterial()
@@ -147,10 +168,55 @@ public class DiamondRewardBar : MonoBehaviour
         _instanceMat.SetFloat("_ShowFlow", showFlow ? 1f : 0f);
     }
 
+    private void UpdateRomanCounter()
+    {
+        if (romanCounter == null || rewardManager == null) return;
+
+        int total = rewardManager != null && rewardManager.RewardObjects != null
+            ? Mathf.Max(0, rewardManager.RewardObjects.Length)
+            : 0;
+        int have = Mathf.Clamp(rewardManager.rewardsReachedCount, 0, total);
+
+        // 避免每帧刷新TMP
+        if (have == _lastHave && total == _lastTotal) return;
+
+        string lhs = ToRoman(have, uppercaseRoman);
+        string rhs = ToRoman(Mathf.Max(total, 1), uppercaseRoman); // 避免 0 分母视觉问题
+        romanCounter.text = $"{lhs}/{rhs}";
+
+        _lastHave = have;
+        _lastTotal = total;
+    }
+
     // Call this to drive manually if you ever need to
     public void SetProgress(float value, bool instant = false)
     {
         _target = Mathf.Clamp01(value);
         if (instant) _current = _target;
+    }
+
+    // --- Roman conversion (1..3999). 0 显示为 N（Nulla） ---
+    public static string ToRoman(int number, bool uppercase = true)
+    {
+        if (number <= 0) return uppercase ? "N" : "n";
+        if (number > 3999) number = 3999; // 常见UI范围足够
+
+        // 值-符号映射（减法记数法）
+        int[] vals = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
+        string[] symsU = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I" };
+        string[] symsL = { "m", "cm", "d", "cd", "c", "xc", "l", "xl", "x", "ix", "v", "iv", "i" };
+
+        var syms = uppercase ? symsU : symsL;
+        System.Text.StringBuilder sb = new System.Text.StringBuilder(16);
+
+        for (int i = 0; i < vals.Length && number > 0; i++)
+        {
+            while (number >= vals[i])
+            {
+                number -= vals[i];
+                sb.Append(syms[i]);
+            }
+        }
+        return sb.ToString();
     }
 }
