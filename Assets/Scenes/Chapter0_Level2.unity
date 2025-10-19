@@ -184,6 +184,52 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 47cd6d6f5629829418399a6f9a12a608, type: 3}
+--- !u!21 &52270411
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
+    m_Colors:
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!1001 &58896390
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2010,46 +2056,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 377973761}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!21 &442247797
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
 --- !u!43 &453346840
 Mesh:
   m_ObjectHideFlags: 0
@@ -2504,46 +2510,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!21 &562104857
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
 --- !u!1001 &579037777
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2828,6 +2794,52 @@ Transform:
   m_Father: {fileID: 231048891}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &624996436
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
+    m_Colors:
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!43 &656160849
 Mesh:
   m_ObjectHideFlags: 0
@@ -3560,7 +3572,7 @@ PrefabInstance:
     - target: {fileID: 4907938006607296869, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 562104857}
+      objectReference: {fileID: 52270411}
     - target: {fileID: 9115396668817347740, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_Name
       value: Canvas_UI

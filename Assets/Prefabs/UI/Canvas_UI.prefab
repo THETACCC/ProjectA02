@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 4b7843dbf2594804bad3c35990ecd931, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -4900,6 +4900,7 @@ GameObject:
   - component: {fileID: 4972265630073897567}
   - component: {fileID: 4907938006607296869}
   - component: {fileID: 4721691768788139799}
+  - component: {fileID: 3902002871669032126}
   m_Layer: 5
   m_Name: Reward1Holder
   m_TagString: Untagged
@@ -4982,6 +4983,9 @@ MonoBehaviour:
   overrideMaterialProperties: 1
   rewardManager: {fileID: 0}
   autoFindManager: 1
+  romanCounter: {fileID: 5076954567726651365}
+  autoFindRomanCounter: 1
+  uppercaseRoman: 1
   thickness: 0.12
   softness: 0.002
   fillColor: {r: 1, g: 0.85, b: 0, a: 1}
@@ -4995,6 +4999,35 @@ MonoBehaviour:
   animateFill: 1
   secondsPerFullLap: 4
   timeScale: 1
+--- !u!114 &3902002871669032126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2200923846604773030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f4608f4fe3eb05429f4853c85c3d7e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bar: {fileID: 4721691768788139799}
+  dots:
+  - {fileID: 2930433960925802096}
+  - {fileID: 4514667053704066661}
+  - {fileID: 8923446586147097713}
+  - {fileID: 3064915470816283126}
+  cornerT:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  offColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+  onColor: {r: 1, g: 0.6738252, b: 0, a: 1}
+  glowOn: 2.5
+  glowOff: 0
+  safetyStartFrames: 6
+  forceBarProgressZeroOnEnable: 1
 --- !u!1 &3437678693892374135
 GameObject:
   m_ObjectHideFlags: 0
@@ -5053,7 +5086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 4b7843dbf2594804bad3c35990ecd931, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -5129,7 +5162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 4b7843dbf2594804bad3c35990ecd931, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -5213,7 +5246,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: I / IV
+  m_text: N/I
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9ae203d03c0464293aecd56315c4f7c0, type: 2}
   m_sharedMaterial: {fileID: -2693972700034639247, guid: 9ae203d03c0464293aecd56315c4f7c0, type: 2}
@@ -5568,7 +5601,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 4b7843dbf2594804bad3c35990ecd931, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
