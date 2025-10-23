@@ -31,6 +31,9 @@ public class TutorialManager : MonoBehaviour
     public GameObject TutorialMoveLow2;
     public GameObject FinalTutorialSpeak;
 
+
+    //Tutorial Showcase
+    public GameObject TutorialUI;
     void Update()
     {
         // Trigger the transition when left side is reached
