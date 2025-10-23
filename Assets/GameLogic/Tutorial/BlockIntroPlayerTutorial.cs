@@ -7,7 +7,8 @@ public class BlockIntroPlayerTutorial : MonoBehaviour
     public GameObject[] mblocks;
     public GameObject Player1;
     public GameObject Player2;
-
+    public GameObject Player1Tutorial;
+    public GameObject Player2Tutorial;
     public GameObject InitialConv;
 
     public GameObject LevelSuccessOBJ_Left;
@@ -37,6 +38,10 @@ public class BlockIntroPlayerTutorial : MonoBehaviour
         //get player and disable player for visual effects
         Player1 = GameObject.FindGameObjectWithTag("Player1");
         Player2 = GameObject.FindGameObjectWithTag("Player2");
+        Player1Tutorial = GameObject.FindGameObjectWithTag("Player1Tutorial");
+        Player2Tutorial = GameObject.FindGameObjectWithTag("Player2Tutorial");
+        Player1Tutorial.SetActive(false);
+        Player2Tutorial.SetActive(false);
         Player1.SetActive(false);
         Player2.SetActive(false);
         LevelSuccessOBJTutorial_Left = GameObject.FindGameObjectWithTag("FinishLeftTutorial");
@@ -87,6 +92,9 @@ public class BlockIntroPlayerTutorial : MonoBehaviour
         Player1.SetActive(true);
 
         Player2.SetActive(true);
+        Player1Tutorial.SetActive(true);
+
+        Player2Tutorial.SetActive(true);
         InitialConv.SetActive(true);
         LevelSuccessLeft.SerachPlayer();
         LevelSuccessRight.SerachPlayer();

@@ -13,7 +13,10 @@ public class TutorialConversationStarter : MonoBehaviour
     private PlayerController movement;
     private GameObject player2;
     private PlayerController movement_player2;
-
+    private GameObject player1Tutorial;
+    private PlayerController movement_player1Tutorial;
+    private GameObject player2Tutorial;
+    private PlayerController movement_player2Tutorial;
 
     private LevelController levelController;
     private MeshRenderer myRenderer;
@@ -28,6 +31,11 @@ public class TutorialConversationStarter : MonoBehaviour
         {
             levelController = LevelControll.GetComponent<LevelController>();
         }
+
+        player1Tutorial = GameObject.FindGameObjectWithTag("Player1Tutorial");
+        movement_player1Tutorial = player1Tutorial.GetComponent<PlayerController>();
+        player2Tutorial = GameObject.FindGameObjectWithTag("Player2Tutorial");
+        movement_player2Tutorial = player2Tutorial.GetComponent<PlayerController>();
 
         player1 = GameObject.FindGameObjectWithTag("Player1");
         movement = player1.GetComponent<PlayerController>();
@@ -45,7 +53,7 @@ public class TutorialConversationStarter : MonoBehaviour
     {
         if (isReached) return; // already collected
 
-        if (other.CompareTag("Player1") || other.CompareTag("Player2"))
+        if (other.CompareTag("Player1") || other.CompareTag("Player2") || other.CompareTag("Player2Tutorial") || other.CompareTag("Player1Tutorial"))
         {
             if (myRenderer != null)
                 myRenderer.enabled = false;
@@ -87,6 +95,49 @@ public class TutorialConversationStarter : MonoBehaviour
                         }
                     }
                 }
+                else if (other.gameObject.tag == "Player1Tutorial")
+                {
+                    if (!isReached)
+                    {
+
+                        if (dialoguePlayer != null)
+                        {
+
+
+
+
+                            dialoguePlayer.Play();
+                            //This renderer makes the visual of the reward disappear
+                            levelController.phase = LevelPhase.Speaking;
+                            myRenderer.enabled = false;
+                            isReached = true;
+                            isPlayer1 = false;
+                            StartCoroutine(WaitAndAlignPlayers());
+                        }
+                    }
+                }
+                else if (other.gameObject.tag == "Player2Tutorial")
+                {
+                    if (!isReached)
+                    {
+
+                        if (dialoguePlayer != null)
+                        {
+
+
+
+
+                            dialoguePlayer.Play();
+                            //This renderer makes the visual of the reward disappear
+                            levelController.phase = LevelPhase.Speaking;
+                            myRenderer.enabled = false;
+                            isReached = true;
+                            isPlayer1 = false;
+                            StartCoroutine(WaitAndAlignPlayers());
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -98,6 +149,10 @@ public class TutorialConversationStarter : MonoBehaviour
         movement.is_sliding = false;
         movement_player2.canmove = false;
         movement_player2.is_sliding = false;
+        movement_player1Tutorial.canmove = false;
+        movement_player1Tutorial.is_sliding = false;
+        movement_player2Tutorial.canmove = false;
+        movement_player2Tutorial.is_sliding = false;
     }
 
 
@@ -110,7 +165,8 @@ public class TutorialConversationStarter : MonoBehaviour
         DisablePlayer2();
         movement.AlignPlayerFunction();
         movement_player2.AlignPlayerFunction();
-
+        movement_player1Tutorial.AlignPlayerFunction();
+        movement_player2Tutorial.AlignPlayerFunction();
 
     }
 
@@ -122,7 +178,10 @@ public class TutorialConversationStarter : MonoBehaviour
         movement.is_sliding = false;
         movement_player2.canmove = true;
         movement_player2.is_sliding = false;
-
+        movement_player1Tutorial.canmove = true;
+        movement_player1Tutorial.is_sliding = false;
+        movement_player2Tutorial.canmove = true;
+        movement_player2Tutorial.is_sliding = false;
 
     }
 
@@ -133,6 +192,10 @@ public class TutorialConversationStarter : MonoBehaviour
         movement.is_sliding = false;
         movement_player2.canmove = false;
         movement_player2.is_sliding = false;
+        movement_player1Tutorial.canmove = false;
+        movement_player1Tutorial.is_sliding = false;
+        movement_player2Tutorial.canmove = false;
+        movement_player2Tutorial.is_sliding = false;
     }
 
     public void EnablePlayer2()
@@ -142,5 +205,9 @@ public class TutorialConversationStarter : MonoBehaviour
         movement.is_sliding = false;
         movement_player2.canmove = true;
         movement_player2.is_sliding = false;
+        movement_player1Tutorial.canmove = true;
+        movement_player1Tutorial.is_sliding = false;
+        movement_player2Tutorial.canmove = true;
+        movement_player2Tutorial.is_sliding = false;
     }
 }

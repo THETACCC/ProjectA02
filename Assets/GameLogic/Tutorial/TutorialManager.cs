@@ -29,7 +29,7 @@ public class TutorialManager : MonoBehaviour
 
     public GameObject TutorialMoveHigh2;
     public GameObject TutorialMoveLow2;
-
+    public GameObject FinalTutorialSpeak;
 
     void Update()
     {
@@ -67,8 +67,7 @@ public class TutorialManager : MonoBehaviour
         //Phase 2
         if (enterFinishRight.rightreached && !isPositionToRight2 && !isTransitioning2)
         {
-            TutorialMoveHigh2.SetActive(false);
-            TutorialMoveLow2.SetActive(false);
+            StartCoroutine(DisableTutorialsAfterDelay(0.2f)); // <---- delayed disable
             isTransitioning2 = true;
         }
 
@@ -97,14 +96,15 @@ public class TutorialManager : MonoBehaviour
                 isTransitioning2 = false;
             }
         }
-
-
-
-
-
-
-
-
-
     }
+
+    // Coroutine that waits 0.5 seconds, then disables tutorial objects
+    private IEnumerator DisableTutorialsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        TutorialMoveHigh2.SetActive(false);
+        TutorialMoveLow2.SetActive(false);
+        FinalTutorialSpeak.SetActive(true);
+    }
+
 }
