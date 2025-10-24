@@ -11,6 +11,16 @@ using MoreMountains.Feedbacks;
 
 public class Block : MonoBehaviour
 {
+    // ===== Debug (visible in build) =====
+    [Header("Debug")]
+    public bool showMirrorGhostInBuild = true;   // toggle in Inspector (or set true by default)
+    public KeyCode toggleMirrorGhostKey = KeyCode.F9;
+
+    private GameObject _mirrorGhost;             // the intended mirror position
+    private GameObject _mirrorActual;            // where the clone actually ended up (after instantiate)
+    private LineRenderer _mirrorLine;            // line from this -> intended mirror
+    private TextMesh _mirrorLabel;
+
     static float MOUSE_OVER_SCALE = 1.15f;
     //This is the type of the block
     public BlockType type;
@@ -50,8 +60,9 @@ public class Block : MonoBehaviour
     [SerializeField] public GameObject blockb;
     [SerializeField] private Block B_blocka;
     [SerializeField] private Block B_blockb;
-     private float offset = 60.1f;
-    private float offsetz =  -60.1f;
+    //60f in editor
+    private float offset = 78.1f;
+    private float offsetz =  -78.1f;
     [SerializeField] private bool linked = false;
     private Vector3 bcpos;
     private Vector3 bnpos;
@@ -128,7 +139,16 @@ public class Block : MonoBehaviour
 
     private void Awake()
     {
+        // Robust outline assignment (works for originals & clones; Editor & Player)
+        if (outlineEffectOBJ == null)
+        {
+            var child = transform.Find("OutlineEffect");
+            if (child != null) outlineEffectOBJ = child.gameObject;
+        }
 
+        // Optional: cache Outline too, but guard it.
+        if (outlineEffect == null)
+            outlineEffect = GetComponentInChildren<Outline>();
     }
 
     private void Start()
@@ -149,9 +169,16 @@ public class Block : MonoBehaviour
         }
 
         subBlock = transform.Find("SubBlock");
-        effectContainer = subBlock.Find("Effects");
-        FX_HOVER = effectContainer.Find("FX_HOVER").gameObject;
-        
+        if (subBlock != null)
+        {
+            effectContainer = subBlock.Find("Effects");
+            if (effectContainer != null)
+            {
+                var fx = effectContainer.Find("FX_HOVER");
+                if (fx != null) FX_HOVER = fx.gameObject;
+            }
+        }
+
         //instantiate outline effect
         if (outlineEffectOBJ != null)
         {
@@ -235,6 +262,9 @@ public class Block : MonoBehaviour
             //offset = Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) - 24.7521f;
             //offsetz = -Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) + 24.7521f;
             Debug.Log(offset);
+            //THis is for build use
+            offset += 18f;
+            offsetz -= 18f;
         }
     }
     private void Update()
@@ -396,19 +426,21 @@ public class Block : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if((other.gameObject.tag == "Player1") || (other.gameObject.tag == "Player2"))
+        if (other.CompareTag("Player1") || other.CompareTag("Player2"))
         {
-            isPlayerOnBlock= true;
-            if(type == BlockType.Free)
-            {
-                outlineEffectOBJ.SetActive(false);
-            }
-            else if(type == BlockType.Regular)
-            {
-                B_blocka.outlineEffectOBJ.SetActive(false);
-                B_blockb.outlineEffectOBJ.SetActive(false);
-            }
+            isPlayerOnBlock = true;
 
+            if (type == BlockType.Free)
+            {
+                if (outlineEffectOBJ != null) outlineEffectOBJ.SetActive(false);
+            }
+            else if (type == BlockType.Regular)
+            {
+                if (B_blocka != null && B_blocka.outlineEffectOBJ != null)
+                    B_blocka.outlineEffectOBJ.SetActive(false);
+                if (B_blockb != null && B_blockb.outlineEffectOBJ != null)
+                    B_blockb.outlineEffectOBJ.SetActive(false);
+            }
         }
     }
 
@@ -1484,9 +1516,9 @@ public void instantiateBlocks()
     B_blockb.offsetz = offsetz;
     B_blockb.instantiated = true;
     instantiated = true;
-    B_blockb.cld_0 = transform.Find("Base")?.gameObject;
-    B_blockb.cld_1 = transform.Find("Lower")?.gameObject;
-    B_blockb.cld_2 = transform.Find("Upper")?.gameObject;
+    B_blockb.cld_0 = b.transform.Find("Base")?.gameObject;
+    B_blockb.cld_1 = b.transform.Find("Lower")?.gameObject;
+    B_blockb.cld_2 = b.transform.Find("Upper")?.gameObject;
 
         //Instatiation of the new mechanics
 
@@ -1499,6 +1531,8 @@ public void instantiateBlocks()
         //B_blockb.cld_0.SetActive(true);
 
         //Get the outline stuff
+        //ShowMirrorGhost(b);
+
         B_blockb.outlineEffect = blockb.GetComponentInChildren<Outline>();
     B_blocka.BlockAlignment();
     //B_blockb.BlockAlignment();
@@ -1662,26 +1696,29 @@ public void instantiateBlocks()
 
         foreach (GameObject levelBrickA in levelBricksA)
         {
-            float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
+            float distanceA = DistanceXZ(blocka.transform.position, levelBrickA.transform.position);
+
             BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 7.5f)
+            if (distanceA < nearestDistanceA && !alignmentA.isBlocked && distanceA <= 15f)
             {
                 nearestDistanceA = distanceA;
                 nearestBlockA = levelBrickA;
+                Debug.Log("DistanceA is" + nearestDistanceA);
             }
         }
 
         foreach (GameObject levelBrickB in levelBricksB)
         {
-            float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
+            float distanceB = DistanceXZ(blockb.transform.position, levelBrickB.transform.position);
+
             BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 7.5f)
+            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 15f)
             {
                 nearestDistanceB = distanceB;
                 nearestBlockB = levelBrickB;
-                Debug.Log(nearestBlockB);
+                Debug.Log("DistanceB is" + nearestDistanceB);
             }
         }
 
@@ -1689,6 +1726,8 @@ public void instantiateBlocks()
         {
             BlockAlignment alignmentA = nearestBlockA.GetComponent<BlockAlignment>();
             BlockAlignment alignmentB = nearestBlockB.GetComponent<BlockAlignment>();
+
+
             if (!alignmentA.isBlocked && !alignmentB.isBlocked)
             {
                 //Make the inventory clear
@@ -1756,259 +1795,6 @@ public void instantiateBlocks()
 
 
     }
-    /*
-    public void BlockAlignmentMirrorInMap()
-    {
-        //Find all the inventory bricks and Level Bricks
-        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
-        GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
-        List<GameObject> allBricks = new List<GameObject>();
-        allBricks.AddRange(levelBricks);
-        allBricks.AddRange(inventoryBricks);
-        GameObject[] levelBricksA = allBricks.ToArray();
-        GameObject[] levelBricksB = allBricks.ToArray();
-
-        GameObject nearestBlockA = null;
-        GameObject nearestBlockB = null;
-        float nearestDistanceA = Mathf.Infinity;
-        float nearestDistanceB = Mathf.Infinity;
-
-
-        foreach (GameObject levelBrickA in levelBricksA)
-        {
-            float distanceA = Vector3.Distance(blocka.transform.position, levelBrickA.transform.position);
-            BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
-            // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceA < nearestDistanceA && (!alignmentA.isBlocked) && distanceA <= 7.5f)
-            {
-                nearestDistanceA = distanceA;
-                nearestBlockA = levelBrickA;
-            }
-        }
-
-        foreach (GameObject levelBrickB in levelBricksB)
-        {
-            float distanceB = Vector3.Distance(blockb.transform.position, levelBrickB.transform.position);
-            BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
-            // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 7.5f)
-            {
-                nearestDistanceB = distanceB;
-                nearestBlockB = levelBrickB;
-            }
-        }
-
-        if (nearestBlockA != null && nearestBlockB != null)
-        {
-            BlockAlignment alignmentA = nearestBlockA.GetComponent<BlockAlignment>();
-            BlockAlignment alignmentB = nearestBlockB.GetComponent<BlockAlignment>();
-            if ((!alignmentA.isBlocked && alignmentA.gameObject.tag == "LevelBrick") && (!alignmentB.isBlocked && alignmentB.gameObject.tag == "LevelBrick"))
-            {
-                //Make the inventory clear
-                B_blocka.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick.isBlocked = false;
-
-                B_blocka.myAlignedBrick = alignmentA;
-                B_blockb.myAlignedBrick = alignmentB;
-
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, nearestBlockA.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, nearestBlockB.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-                alignmentA.isBlocked = true;
-                alignmentB.isBlocked = true;
-
-                //Blocks are Put into the Map
-                B_blocka.isInventory = false;
-                B_blockb.isInventory = false;
-                RegularBlockMapAlign();
-                Debug.Log("Put Block");
-            }
-            else if ((!alignmentA.isBlocked && alignmentA.gameObject.tag == "LevelBrickInventory"))
-            {
-                //Make the inventory clear
-                B_blocka.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick.isBlocked = false;
-                B_blocka.myAlignedBrick = alignmentA;
-                Debug.Log("Block A Back to Inventory");
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                B_blocka.myAlignedBrick.isBlocked = true;
-                B_blocka.isInventory = true;
-                B_blocka.instantiated = false;
-
-                if (blockb != null)
-                {
-                    Destroy(blockb);
-                }
-
-            }
-            else if ((!alignmentB.isBlocked && alignmentB.gameObject.tag == "LevelBrickInventory"))
-            {
-                //Make the inventory clear
-                B_blocka.myAlignedBrick.isBlocked = false;
-                Debug.Log(B_blockb.myAlignedBrick);
-                B_blockb.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick = alignmentA;
-                Debug.Log("Block A Back to Inventory");
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                B_blockb.myAlignedBrick.isBlocked = true;
-                B_blockb.isInventory = true;
-                B_blockb.instantiated = false;
-
-                if (blocka != null)
-                {
-                    Destroy(blocka);
-                }
-            }
-            else
-            {
-                Debug.Log("Still In Map with one of the block Nool");
-                Debug.Log(myAlignedBrick);
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-                B_blocka.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick.isBlocked = false;
-            }
-        }
-        else if(nearestBlockA != null)
-        {
-            BlockAlignment alignmentA = nearestBlockA.GetComponent<BlockAlignment>();
-            if ((!alignmentA.isBlocked && alignmentA.gameObject.tag == "LevelBrickInventory"))
-            {
-                //Make the inventory clear
-                B_blocka.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick.isBlocked = false;
-                B_blocka.myAlignedBrick = alignmentA;
-                Debug.Log("Block A Back to Inventory");
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                B_blocka.myAlignedBrick.isBlocked = true;
-                B_blocka.isInventory = true;
-                B_blocka.instantiated = false;
-                //Make the inventory the parent again
-                GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
-                if (levelInventory != null)
-                {
-                    B_blocka.transform.SetParent(levelInventory.transform);
-                }
-
-                if (blockb != null)
-                {
-                    Destroy(blockb);
-                }
-
-            }
-            else
-            {
-                Debug.Log("Still In Map Block A");
-                Debug.Log(myAlignedBrick);
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-                B_blocka.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick.isBlocked = false;
-            }
-
-        }
-        else if (nearestBlockB != null)
-        {
-            BlockAlignment alignmentB = nearestBlockB.GetComponent<BlockAlignment>();
-            if ((!alignmentB.isBlocked && alignmentB.gameObject.tag == "LevelBrickInventory"))
-            {
-                //Make the inventory clear
-                B_blocka.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick = alignmentB;
-                Debug.Log("Block A Back to Inventory");
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                B_blockb.myAlignedBrick.isBlocked = true;
-                B_blockb.isInventory = true;
-                B_blockb.instantiated = false;
-                //Make the inventory the parent again
-                GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
-                if (levelInventory != null)
-                {
-                    B_blockb.transform.SetParent(levelInventory.transform);
-                }
-
-                if (blocka != null)
-                {
-                    Destroy(blocka);
-                }
-                Outline blockB_Outline = B_blockb.outlineEffect;
-                blockB_Outline.RemakeMaterial();
-
-            }
-            else
-            {
-                Debug.Log("Still In Map Block B");
-                Debug.Log(myAlignedBrick);
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-
-                SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-                {
-                    blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-                }, null, gameObject.GetInstanceID() + "drag_success");
-                B_blocka.myAlignedBrick.isBlocked = false;
-                B_blockb.myAlignedBrick.isBlocked = false;
-            }
-        }
-        else if ((nearestBlockA == null && nearestBlockB == null && blocka != null && blockb != null))
-        {
-            Debug.Log(this.gameObject.name);
-            Debug.Log("Still In Map");
-            Debug.Log(myAlignedBrick);
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-            B_blocka.myAlignedBrick.isBlocked = false;
-            B_blockb.myAlignedBrick.isBlocked = false;
-        }
-    }
-    */
 
     public void BlockAlignmentMirrorInMap()
     {
@@ -2024,6 +1810,9 @@ public void instantiateBlocks()
 
         BlockAlignment alignmentA = nearestBlockA != null ? nearestBlockA.GetComponent<BlockAlignment>() : null;
         BlockAlignment alignmentB = nearestBlockB != null ? nearestBlockB.GetComponent<BlockAlignment>() : null;
+
+
+
 
         // If both blocks are found and unblocked, align them
         if (alignmentA != null && alignmentB != null && !alignmentA.isBlocked && !alignmentB.isBlocked)
@@ -2050,6 +1839,8 @@ public void instantiateBlocks()
         {
             HandleSingleOrNoAlignment(alignmentA, alignmentB);
         }
+
+
     }
 
     private GameObject FindNearestBlock(Vector3 position, List<GameObject> blocks)
@@ -2225,7 +2016,144 @@ public void instantiateBlocks()
 
         
     }
+    static float DistanceXZ(Vector3 a, Vector3 b)
+    {
+        float dx = a.x - b.x;
+        float dz = a.z - b.z;
+        return Mathf.Sqrt(dx * dx + dz * dz);
+    }
 
+
+private void ShowMirrorGhost(GameObject actualCloneIfAny = null)
+{
+    if (!showMirrorGhostInBuild) return;
+
+    // Ensure containers exist
+    if (_mirrorGhost == null)
+    {
+        _mirrorGhost = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        _mirrorGhost.name = $"MirrorGhost_{name}";
+        _mirrorGhost.transform.localScale = Vector3.one * 2.0f; // small cube
+        _mirrorGhost.GetComponent<Collider>().enabled = false;
+
+        // make it semi-transparent
+        var mr = _mirrorGhost.GetComponent<MeshRenderer>();
+        mr.material = new Material(Shader.Find("Standard"));
+        mr.material.SetFloat("_Mode", 3f);           // Transparent
+        mr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        mr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        mr.material.SetInt("_ZWrite", 0);
+        mr.material.DisableKeyword("_ALPHATEST_ON");
+        mr.material.EnableKeyword("_ALPHABLEND_ON");
+        mr.material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        mr.material.renderQueue = 3000;
+        mr.material.color = new Color(0f, 1f, 1f, 0.35f); // cyan, translucent
+    }
+
+    if (_mirrorLine == null)
+    {
+        var go = new GameObject($"MirrorLine_{name}");
+        _mirrorLine = go.AddComponent<LineRenderer>();
+        _mirrorLine.positionCount = 2;
+        _mirrorLine.widthMultiplier = 0.03f;
+        _mirrorLine.material = new Material(Shader.Find("Sprites/Default"));
+        _mirrorLine.numCapVertices = 4;
+        _mirrorLine.numCornerVertices = 4;
+    }
+
+    if (_mirrorLabel == null)
+    {
+        var labelGO = new GameObject($"MirrorLabel_{name}");
+        _mirrorLabel = labelGO.AddComponent<TextMesh>();
+        _mirrorLabel.fontSize = 32;
+        _mirrorLabel.characterSize = 0.05f;
+        _mirrorLabel.anchor = TextAnchor.LowerCenter;
+        _mirrorLabel.alignment = TextAlignment.Center;
+        _mirrorLabel.color = Color.white;
+    }
+
+    // Compute intended mirror position based on your current logic
+    bool isLeft = transform.position.x < LevelLoader.center.x;
+    Vector3 intended = new Vector3(
+        transform.position.x + (isLeft ? offset : -offset),
+        transform.position.y,
+        transform.position.z + (isLeft ? offsetz : -offsetz)
+    );
+
+    // Place/update visuals
+    _mirrorGhost.transform.position = intended;
+
+    _mirrorLine.SetPosition(0, transform.position + Vector3.up * 0.1f);
+    _mirrorLine.SetPosition(1, intended + Vector3.up * 0.1f);
+
+    // Update label
+    float distXZ = DistanceXZ(intended, transform.position);
+    string text = $"INTENDED MIRROR\n" +
+                  $"offset=({offset:0.00},{offsetz:0.00})\n" +
+                  $"distXZ={distXZ:0.00}";
+
+    // If we also know the actual clone pos, show delta
+    if (actualCloneIfAny != null)
+    {
+        if (_mirrorActual == null)
+        {
+            _mirrorActual = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            _mirrorActual.name = $"MirrorActual_{name}";
+            _mirrorActual.transform.localScale = Vector3.one * 1.6f;
+            _mirrorActual.GetComponent<Collider>().enabled = false;
+
+            var mrA = _mirrorActual.GetComponent<MeshRenderer>();
+            mrA.material = new Material(Shader.Find("Standard"));
+            mrA.material.color = new Color(1f, 0.3f, 0.3f, 0.8f); // reddish
+        }
+        _mirrorActual.transform.position = actualCloneIfAny.transform.position;
+
+        float delta = Vector3.Distance(intended, actualCloneIfAny.transform.position);
+        text += $"\nactual¦¤3D={delta:0.00}";
+    }
+
+    // keep label above the ghost and facing camera
+    _mirrorLabel.transform.position = intended + Vector3.up * 1.6f;
+    var cam = Camera.main;
+    if (cam != null)
+    {
+        _mirrorLabel.transform.rotation = Quaternion.LookRotation(_mirrorLabel.transform.position - cam.transform.position);
+    }
+    _mirrorLabel.text = text;
+}
+
+// Hide/remove the ghost (optional)
+private void HideMirrorGhost()
+{
+    if (_mirrorGhost != null) Destroy(_mirrorGhost);
+    if (_mirrorActual != null) Destroy(_mirrorActual);
+    if (_mirrorLine != null) Destroy(_mirrorLine.gameObject);
+    if (_mirrorLabel != null) Destroy(_mirrorLabel.gameObject);
+
+    _mirrorGhost = null;
+    _mirrorActual = null;
+    _mirrorLine = null;
+    _mirrorLabel = null;
+}
+
+// Let you toggle in builds with a key (optional)
+private void LateUpdate()
+{
+        /*
+    if (Input.GetKeyDown(toggleMirrorGhostKey))
+    {
+        showMirrorGhostInBuild = !showMirrorGhostInBuild;
+        if (!showMirrorGhostInBuild) HideMirrorGhost();
+        else ShowMirrorGhost(blockb); // try to refresh immediately
+    }
+
+    // Keep the ghost tracking while dragging or moving
+    if (showMirrorGhostInBuild && type == BlockType.Regular)
+    {
+        ShowMirrorGhost(blockb);
+    }
+        */
+}
 
 }
 

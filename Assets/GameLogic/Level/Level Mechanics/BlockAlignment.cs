@@ -13,7 +13,7 @@ public class BlockAlignment : MonoBehaviour
 
     public GameObject PlaceIndicator;
     // The distance threshold within which the object will align with the block
-    private float proximityThreshold = 5f;
+    private float proximityThreshold = 10f;
 
     // The layer or tag to detect
     public string targetTag = "Block";

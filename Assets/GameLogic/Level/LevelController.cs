@@ -307,14 +307,22 @@ public class LevelController : SKMonoSingleton<LevelController>
         if (playerLeft == null)
         {
             GameObject playerleft = GameObject.FindGameObjectWithTag("Player1");
-            playerLeftCollider = playerleft.GetComponent<Collider>();
-            playerLeftRB = playerleft.GetComponent<Rigidbody>();
-            playerLeft = playerleft.GetComponent<PlayerController>();
+            if (playerleft != null)
+            {
+                playerLeftCollider = playerleft.GetComponent<Collider>();
+                playerLeftRB = playerleft.GetComponent<Rigidbody>();
+                playerLeft = playerleft.GetComponent<PlayerController>();
+            }
+
             GameObject playerright = GameObject.FindGameObjectWithTag("Player2");
-            playerRight = playerright.GetComponent<PlayerController>();
-            playerRightCollider = playerright.GetComponent<Collider>();
-            playerRightRB = playerright.GetComponent<Rigidbody>();
-            isPlayerFound= true;
+            if (playerright != null)
+            {
+                playerRight = playerright.GetComponent<PlayerController>();
+                playerRightCollider = playerright.GetComponent<Collider>();
+                playerRightRB = playerright.GetComponent<Rigidbody>();
+                isPlayerFound = true;
+            }
+
         }
     }
 

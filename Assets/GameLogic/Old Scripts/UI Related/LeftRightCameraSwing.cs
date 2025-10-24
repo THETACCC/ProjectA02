@@ -32,62 +32,65 @@ public class LeftRightCameraSwing : MonoBehaviour
             }
 
         }
-
-
-        if(levelController.isAnyBlockDragging)
-        {
-            Vector3 mousePosition = Input.mousePosition;
-
-            // Determine the middle of the screen
-            float screenWidth = Screen.width;
-            float middleOfScreen = screenWidth / 2;
-
-            // If the mouse is on the left side of the screen, lerp to the left swing
-            // If the mouse is on the left side of the screen, lerp to the left swing rotation
-            /*
-            if (mousePosition.x > middleOfScreen)
-            {
-                myCamera.transform.rotation = Quaternion.Lerp(
-                    myCamera.transform.rotation,
-                    Quaternion.Euler(leftSwing),
-                    Time.deltaTime * lerpSpeed
-                );
-            }
-            // If the mouse is on the right side of the screen, lerp to the right swing rotation
-            else
-            {
-                myCamera.transform.rotation = Quaternion.Lerp(
-                    myCamera.transform.rotation,
-                    Quaternion.Euler(rightSwing),
-                    Time.deltaTime * lerpSpeed
-                );
-            }
-            */
-
-            float distanceFromCenter = (mousePosition.x - middleOfScreen) / middleOfScreen;
-
-            // Clamp the value between -1 and 1 (i.e., -1 is far left, 1 is far right)
-            distanceFromCenter = Mathf.Clamp(distanceFromCenter, -1f, 1f);
-
-            // Lerp between leftSwing and rightSwing based on the distance from center
-            Vector3 targetRotation = Vector3.Lerp(rightSwing, leftSwing, (distanceFromCenter + 1) / 2);
-
-            // Smoothly rotate the camera towards the target rotation
-            myCamera.transform.rotation = Quaternion.Lerp(
-                myCamera.transform.rotation,
-                Quaternion.Euler(targetRotation),
-                Time.deltaTime * lerpSpeedSwing
-            );
-
-        }
         else
         {
-            // Lerp back to the original rotation if no block is being dragged
-            myCamera.transform.rotation = Quaternion.Lerp(
-                myCamera.transform.rotation,
-                Quaternion.Euler(OriginalSwing),
-                Time.deltaTime * lerpSpeed
-            );
+            if (levelController.isAnyBlockDragging)
+            {
+                Vector3 mousePosition = Input.mousePosition;
+
+                // Determine the middle of the screen
+                float screenWidth = Screen.width;
+                float middleOfScreen = screenWidth / 2;
+
+                // If the mouse is on the left side of the screen, lerp to the left swing
+                // If the mouse is on the left side of the screen, lerp to the left swing rotation
+                /*
+                if (mousePosition.x > middleOfScreen)
+                {
+                    myCamera.transform.rotation = Quaternion.Lerp(
+                        myCamera.transform.rotation,
+                        Quaternion.Euler(leftSwing),
+                        Time.deltaTime * lerpSpeed
+                    );
+                }
+                // If the mouse is on the right side of the screen, lerp to the right swing rotation
+                else
+                {
+                    myCamera.transform.rotation = Quaternion.Lerp(
+                        myCamera.transform.rotation,
+                        Quaternion.Euler(rightSwing),
+                        Time.deltaTime * lerpSpeed
+                    );
+                }
+                */
+
+                float distanceFromCenter = (mousePosition.x - middleOfScreen) / middleOfScreen;
+
+                // Clamp the value between -1 and 1 (i.e., -1 is far left, 1 is far right)
+                distanceFromCenter = Mathf.Clamp(distanceFromCenter, -1f, 1f);
+
+                // Lerp between leftSwing and rightSwing based on the distance from center
+                Vector3 targetRotation = Vector3.Lerp(rightSwing, leftSwing, (distanceFromCenter + 1) / 2);
+
+                // Smoothly rotate the camera towards the target rotation
+                myCamera.transform.rotation = Quaternion.Lerp(
+                    myCamera.transform.rotation,
+                    Quaternion.Euler(targetRotation),
+                    Time.deltaTime * lerpSpeedSwing
+                );
+
+            }
+            else
+            {
+                // Lerp back to the original rotation if no block is being dragged
+                myCamera.transform.rotation = Quaternion.Lerp(
+                    myCamera.transform.rotation,
+                    Quaternion.Euler(OriginalSwing),
+                    Time.deltaTime * lerpSpeed
+                );
+            }
         }
+
+
     }
 }
