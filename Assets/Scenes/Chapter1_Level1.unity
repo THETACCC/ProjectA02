@@ -3547,7 +3547,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6327452503516347089, guid: ac698a6491c164b40907c5be006e09f0, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6327452503516347094, guid: ac698a6491c164b40907c5be006e09f0, type: 3}
       propertyPath: m_RootOrder
@@ -3595,6 +3595,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac698a6491c164b40907c5be006e09f0, type: 3}
+--- !u!1 &711300000 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6327452503516347089, guid: ac698a6491c164b40907c5be006e09f0, type: 3}
+  m_PrefabInstance: {fileID: 711299999}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &746616595
 Mesh:
   m_ObjectHideFlags: 0
@@ -5013,6 +5018,52 @@ Transform:
   m_Father: {fileID: 1309301976}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!21 &1023355146
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
+    m_Colors:
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!1001 &1108279944
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5412,6 +5463,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8182122727659110680, guid: 45129c65d08ab4b4e8ac1c98a4099e74, type: 3}
   m_PrefabInstance: {fileID: 1108279944}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1108279947 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2720689254615505250, guid: 45129c65d08ab4b4e8ac1c98a4099e74, type: 3}
+  m_PrefabInstance: {fileID: 1108279944}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1159533336
 GameObject:
   m_ObjectHideFlags: 0
@@ -5465,6 +5521,151 @@ MonoBehaviour:
   LevelSuccessRight: {fileID: 0}
   LevelLoader: {fileID: 1377626446}
   controller: {fileID: 0}
+--- !u!1001 &1192683397
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1108279947}
+    m_Modifications:
+    - target: {fileID: 123495490981462715, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_Name
+      value: DialogueTrigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: asset
+      value: 
+      objectReference: {fileID: 11400000, guid: c95d5450a75484742b33cb302a396c6e, type: 2}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 711300000}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SetActive
+      objectReference: {fileID: 0}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UnityEngine.GameObject, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 809443557587148273, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: onDialogueEnded.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.07999992
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.14999962
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1587585494654952599, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1614853001268418997, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766577429647258756, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766577429647258756, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766577429647258756, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766577429647258756, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938376720156223676, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938376720156223676, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938376720156223676, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4938376720156223676, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8752355271195329909, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8752355271195329909, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8752355271195329909, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8752355271195329909, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 12104c4154aa83f44bf2432a503ffdf7, type: 3}
 --- !u!1001 &1220391368
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8419,52 +8620,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6074627141392584196, guid: b4bf7f09071bb4bad80efb510450ba75, type: 3}
   m_PrefabInstance: {fileID: 2070617264}
   m_PrefabAsset: {fileID: 0}
---- !u!21 &2075790644
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _GlowFalloff: 2.5
-    - _GlowFollowStripes: 0
-    - _GlowIntensity: 2.5
-    - _GlowOnlyWhenFilled: 1
-    - _GlowWidth: 0.18
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
 --- !u!1 &2138166822
 GameObject:
   m_ObjectHideFlags: 0
