@@ -40,6 +40,15 @@ namespace SKCell
             if (playOnStart)
                 Play();
         }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnContentButtonPressed();
+            }
+        }
+
         private void OnApplicationQuit()
         {
             if (asset != null)

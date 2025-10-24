@@ -102,7 +102,7 @@ public class BlockIntroPlayerTutorial : MonoBehaviour
         LevelSuccessRightTutorial.SerachPlayer();
         LevelLoader.LoadCharacter();
         yield return new WaitForSeconds(1f);
-        controller.phase = LevelPhase.Placing;
+        //controller.phase = LevelPhase.Placing;
     }
 
     void PlayVisualEffect(GameObject block)

@@ -24,7 +24,9 @@ public class PlayerCharacter : MonoBehaviour
     private PlayerController _player2Movement;
 
     public LevelController controller;
-    //Reference to Outline
+    //Reference to
+    //
+
     public Outline outlineLeft;
     public Outline outlineRight;
     public GameObject outlineOBJLeft;
@@ -74,7 +76,7 @@ public class PlayerCharacter : MonoBehaviour
 
     void Update()
     {
-        if(controller.phase == LevelPhase.Running)
+        if((controller.phase == LevelPhase.Running ))
         {
             /*
             if (Input.GetKeyDown(KeyCode.G))

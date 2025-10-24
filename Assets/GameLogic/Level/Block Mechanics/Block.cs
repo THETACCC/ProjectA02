@@ -78,6 +78,7 @@ public class Block : MonoBehaviour
     public InventoryManager inventoryManager;
 
     //Get the map OBJ
+
     [SerializeField]
     private GameObject LevelLeft;
     [SerializeField]
@@ -86,7 +87,9 @@ public class Block : MonoBehaviour
     private LevelRotation levelrotation;
     private bool rotationFound = false;
 
-    //Get the outline effect
+    //Get the
+    //
+    //effect
     public Outline outlineEffect;
     public GameObject outlineEffectOBJ;
     public bool allowOutline = true;

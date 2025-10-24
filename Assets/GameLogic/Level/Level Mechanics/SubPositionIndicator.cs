@@ -27,7 +27,7 @@ public class SubPositionIndicator : MonoBehaviour
 
     private void Update()
     {
-        if (levelController.phase == LevelPhase.Placing)
+        if ((levelController.phase == LevelPhase.Placing) && (levelController.phase != LevelPhase.Speaking))
         {
             // Reset hover state at the beginning of each frame
             bool wasMouseOver = isMouseOver;

@@ -70,6 +70,9 @@ public class PlayerController : MonoBehaviour
     // Flag to prevent overlapping discrete moves
     private bool isMovingDiscrete = false;
 
+    private bool isRecordingSpace = false;
+    private float recordInterval = 0.075f;
+
     void Start()
     {
         GameObject Player1 = GameObject.FindGameObjectWithTag(Player1Tag);
@@ -113,14 +116,20 @@ public class PlayerController : MonoBehaviour
                     {
                         axis_x = 0;
                     }
+
                     if (Input.GetKey(KeyCode.Space))
                     {
-
                         axis_z = 1;
+
+                        if (!isRecordingSpace)
+                        {
+                            StartCoroutine(RecordSpaceHold());
+                        }
                     }
                     else
                     {
                         axis_z = 0;
+                        isRecordingSpace = false;
                     }
                 }
                 else
@@ -151,14 +160,20 @@ public class PlayerController : MonoBehaviour
                     {
                         axis_x = 0;
                     }
+
                     if (Input.GetKey(KeyCode.Space))
                     {
-
                         axis_z = 1;
+
+                        if (!isRecordingSpace)
+                        {
+                            StartCoroutine(RecordSpaceHold());
+                        }
                     }
                     else
                     {
                         axis_z = 0;
+                        isRecordingSpace = false;
                     }
                 }
                 else
@@ -218,12 +233,12 @@ public class PlayerController : MonoBehaviour
 
                 if (startMoving)
                 {
-                    if (!is_sliding)
+                    if (!is_sliding )
                     {
 
                         rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
-                        if (axis_x != 0 && !isRotating)
+                        if (axis_x != 0 && !isRotating && canmove)
                         {
                             StartCoroutine(RotateCharacter());
                         }
@@ -325,12 +340,12 @@ public class PlayerController : MonoBehaviour
 
                 if (startMoving)
                 {
-                    if (!is_sliding)
+                    if (!is_sliding )
                     {
 
                         rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
-                        if (axis_x != 0 && !isRotating)
+                        if (axis_x != 0 && !isRotating && canmove)
                         {
                             StartCoroutine(RotateCharacter());
                         }
@@ -470,6 +485,20 @@ public class PlayerController : MonoBehaviour
     public void AlignPlayerFunction()
     {
         Alignement.AlignPlayerToCollidingObject();
+    }
+
+    IEnumerator RecordSpaceHold()
+    {
+        isRecordingSpace = true;
+        while (Input.GetKey(KeyCode.Space))
+        {
+            Debug.Log("Space input recorded at " + Time.time);
+            // You can replace this with any function call, e.g.:
+            // HandleSpaceInput();
+
+            yield return new WaitForSeconds(recordInterval);
+        }
+        isRecordingSpace = false;
     }
 
 }

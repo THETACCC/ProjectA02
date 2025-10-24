@@ -33,6 +33,9 @@ public class LevelTrigger : MonoBehaviour
     private Renderer[] _renderers;
     private Canvas[] _canvases;
 
+    //For now
+    public GameObject spaceIndicator;
+
     private void Awake()
     {
         // 解析 scenetitle（支持 Chapter0_Level1 / Chapter 0 - Level 1 / Chapter0 Level1 等）
@@ -158,7 +161,7 @@ public class LevelTrigger : MonoBehaviour
 
     private void Update()
     {
-        if (allowInput && Input.GetKeyDown(KeyCode.F))
+        if (allowInput && Input.GetKeyDown(KeyCode.Space))
         {
             LoadNextLevel();
         }
@@ -167,19 +170,25 @@ public class LevelTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
-
+        spaceIndicator.SetActive(true);
         allowInput = true;
+        //Opt out for this version
+        /*
         if (uiCoroutine != null) StopCoroutine(uiCoroutine);
         uiCoroutine = StartCoroutine(AnimateUIShow());
+        */
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
-
+        spaceIndicator.SetActive(false);
         allowInput = false;
+        //Opt out for this version
+        /*
         if (uiCoroutine != null) StopCoroutine(uiCoroutine);
         uiCoroutine = StartCoroutine(AnimateUIHide());
+        */
     }
 
     IEnumerator AnimateUIShow()

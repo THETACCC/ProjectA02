@@ -12,7 +12,23 @@ public class LevelController : SKMonoSingleton<LevelController>
     public int chapterIndex = 0;
 
     public int Level { get; private set; }
-    public LevelPhase phase;
+    [SerializeField]
+    private LevelPhase _phase;
+    public LevelPhase phase
+    {
+        get => _phase;
+        set
+        {
+            if (_phase != value)
+            {
+              //  Debug.Log($"[PHASE CHANGE] {Time.time:F2}s: {name} changed phase from {_phase} ¡ú {value}.\n" +
+              //            $"Call stack:\n{new System.Diagnostics.StackTrace()}");
+
+                _phase = value;
+            }
+        }
+    }
+
 
     public Block curDraggedblock = null;
     public Block curOverBlock = null;
@@ -115,8 +131,6 @@ public class LevelController : SKMonoSingleton<LevelController>
         {
             FindPlayers();
         }
-
-
 
         if (phase == LevelPhase.Running)
         {
@@ -275,7 +289,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
 
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if ( (phase != LevelPhase.Speaking ) && (Input.GetKeyDown(KeyCode.Space)))
         {
             //levelLoader.AlignBlockSelection();
 
