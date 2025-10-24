@@ -368,9 +368,9 @@ public class PlayerController : MonoBehaviour
                         counting = true;
 
 
-                        rb.velocity = new Vector3(visualTF.forward.x * moveSpeed * cur_spd_boost, rb.velocity.y, visualTF.forward.z * moveSpeed * cur_spd_boost);
+                        rb.velocity = new Vector3(visualTF.forward.x * moveSpeed, rb.velocity.y, visualTF.forward.z * moveSpeed);
 
-                        if (cur_sliding_time > .125f)
+                        if (cur_sliding_time > .2f)
                         {
 
 
@@ -380,10 +380,10 @@ public class PlayerController : MonoBehaviour
                                 is_sliding = false;
 
                                 // Move player slightly backward upon stopping
-                                Vector3 moveBackDirection = -visualTF.forward; // Move back along the player's current forward direction
-                                float moveBackDistance = 0.25f; // Adjust this value based on how far back you want to move
+                                //Vector3 moveBackDirection = -visualTF.forward; // Move back along the player's current forward direction
+                                //float moveBackDistance = 0.25f; // Adjust this value based on how far back you want to move
 
-                                rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
+                                //rb.MovePosition(rb.position + moveBackDirection * moveBackDistance);
 
                                 rb.velocity = new Vector3(0, rb.velocity.y, 0);
 
