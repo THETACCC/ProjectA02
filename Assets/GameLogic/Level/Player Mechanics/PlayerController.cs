@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
     private bool isMovingDiscrete = false;
 
     private bool isRecordingSpace = false;
-    private float recordInterval = 0.075f;
+    private float recordInterval = 0.01f;
 
     void Start()
     {
