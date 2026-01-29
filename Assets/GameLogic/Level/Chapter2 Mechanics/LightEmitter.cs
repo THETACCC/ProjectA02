@@ -4,56 +4,62 @@ using UnityEngine;
 
 public class LightEmitter : MonoBehaviour
 {
-    [Header("Raycast Settings")]
     public float maxDistance = 50f;
     public LayerMask raycastLayers;
 
-    private void Update()
+    private readonly HashSet<LightReciever> lastFrameHit = new HashSet<LightReciever>();
+
+    void Update()
     {
         CastLightBeam();
     }
 
     private void CastLightBeam()
     {
+        // Reset: anything hit last frame is assumed not hit this frame until proven otherwise
+        foreach (var r in lastFrameHit)
+            r.isHit = false;
+        lastFrameHit.Clear();
+
+        Vector3 origin = transform.position;
         Vector3 direction = transform.right;
-        Ray ray = new Ray(transform.position, direction);
-        RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, maxDistance, raycastLayers))
-        {
-            HandleHit(hit);
-            Debug.DrawLine(transform.position, hit.point, Color.red);
-        }
-        else
-        {
-            Debug.DrawLine(
-                transform.position,
-                transform.position + direction * maxDistance,
-                Color.green
-            );
-        }
-    }
+        RaycastHit[] hits = Physics.RaycastAll(origin, direction, maxDistance, raycastLayers);
 
-    private void HandleHit(RaycastHit hit)
-    {
-        // Stop beam if wall is hit
-        if (hit.collider.CompareTag("wall"))
+        // No hits: draw full beam and done
+        if (hits.Length == 0)
         {
+            Debug.DrawLine(origin, origin + direction * maxDistance, Color.green);
             return;
         }
 
-        // Trigger LightEffector logic
-        if (hit.collider.CompareTag("LightEffector"))
-        {
-            TriggerLightEffector(hit.collider.gameObject);
-        }
-    }
+        // Sort by distance so we process from near to far
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
-    private void TriggerLightEffector(GameObject target)
-    {
-        if (target.TryGetComponent<LightReciever>(out LightReciever receiver))
+        // Process hits until we hit a wall
+        foreach (var hit in hits)
         {
-            receiver.HitByLight();
+            if (hit.collider == null) continue;
+
+            // Beam stops at wall
+            if (hit.collider.CompareTag("wall"))
+            {
+                Debug.DrawLine(origin, hit.point, Color.red);
+                return;
+            }
+
+            // Hit receivers before the wall
+            if (hit.collider.CompareTag("LightEffector"))
+            {
+                if (hit.collider.TryGetComponent(out LightReciever receiver))
+                {
+                    receiver.HitByLight();
+                    lastFrameHit.Add(receiver);
+                }
+            }
         }
+
+        // If we never hit a wall, beam goes full distance
+        Debug.DrawLine(origin, origin + direction * maxDistance, Color.yellow);
     }
 }

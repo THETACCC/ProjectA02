@@ -4,30 +4,37 @@ using UnityEngine;
 
 public class LightReciever : MonoBehaviour
 {
-
     public bool isHit = false;
-    private BoxCollider myCollider;
+
     private MeshRenderer myRenderer;
-    // Start is called before the first frame update
+
+    [Header("Collision Child (auto-assigned)")]
+    public GameObject myCollider;
+
     void Start()
     {
-        myCollider = GetComponent<BoxCollider>();
-        myRenderer = GetComponent<MeshRenderer>();  
-    }
+        myRenderer = GetComponent<MeshRenderer>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(isHit)
+        // Auto-get first child as collider object
+        if (transform.childCount > 0)
         {
-            myCollider.enabled = false;
-            myRenderer.enabled = false;
+            myCollider = transform.GetChild(0).gameObject;
         }
         else
         {
-            myCollider.enabled = true;
-            myRenderer.enabled = true;
+            Debug.LogWarning(
+                $"LightReciever on {gameObject.name} has no child to use as collider."
+            );
         }
+    }
+
+    void Update()
+    {
+        if (myRenderer != null)
+            myRenderer.enabled = !isHit;
+
+        if (myCollider != null)
+            myCollider.SetActive(!isHit);
     }
 
     public void HitByLight()
