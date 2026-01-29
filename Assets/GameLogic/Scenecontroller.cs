@@ -99,8 +99,7 @@ public enum SceneTitle
     Chapter1_Level15 = 31,
     Chapter1MoveTest = 33,
 
-    //Common Scenes
-    Main_Menu = 13,
+
 
 
 
@@ -114,14 +113,23 @@ public enum SceneTitle
     Chapter0_Level4 = 105,
     Chapter0_Level5 = 106,
     Chapter0_Level6 = 107,
-    Chapter0_Level7 = 108
+    Chapter0_Level7 = 108,
 
+
+
+    //Chapter 2
+    Chapter2_Test = 201,
+
+
+    //Common Scenes
+    Main_Menu = 13
 }
 
 public enum SceneCategory
 {
     Common = 0,
     Chapter0 = 1,
-    Chapter1 = 100
+    Chapter1 = 100,
+    Chapter2 = 200
 
 }
