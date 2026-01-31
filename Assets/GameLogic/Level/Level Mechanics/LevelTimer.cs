@@ -15,11 +15,14 @@ public class LevelTimer : MonoBehaviour
     [SerializeField] private bool isRunning;
     [SerializeField] private float elapsedSeconds;
 
+    [SerializeField] private bool hasStarted = false;
+    [SerializeField] private bool hasFinished = false;
+
     // 当前关卡索引（用于存best time）
     private int chapterIndex;
     private int levelIndex;
 
-    private const string BestKeyPrefix = "BEST_TIME_"; // PlayerPrefs key 前缀
+    //private const string BestKeyPrefix = "BEST_TIME_"; // PlayerPrefs key 前缀
 
     private bool pausedByMenu = false;
     private bool wasRunningBeforeMenuPause = false;
@@ -71,12 +74,15 @@ public class LevelTimer : MonoBehaviour
 
     public void StartTimer()
     {
-        // 只允许从 0 开始跑；如果你想允许暂停继续，就删掉下面判断
-        if (isRunning) return;
+        // 通关后不允许再开始（避免归零）
+        if (hasFinished) return;
 
-        // 你说 Space 开始后从0往上，所以这里确保是0起步
+        // 只允许第一次开始（避免反复按Space归零）
+        if (hasStarted) return;
+
         elapsedSeconds = 0f;
         isRunning = true;
+        hasStarted = true;
 
         UpdateAllTimerTexts();
     }
@@ -84,13 +90,13 @@ public class LevelTimer : MonoBehaviour
     /// <summary>停止计时并返回本次用时（秒）</summary>
     public float StopTimer()
     {
-        if (!isRunning) return elapsedSeconds;
+        // 如果从没开始过，就别动（防御）
+        if (!hasStarted) return elapsedSeconds;
 
         isRunning = false;
-        UpdateAllTimerTexts();     // 停止那一刻把 HUD/Finish 都更新成最终时间
-        SaveBestTimeIfNeeded();    // 保存最好成绩（更小更好）
-        UpdateBestTextIfAny();     // 可选：刷新best显示
+        hasFinished = true;
 
+        UpdateAllTimerTexts();  // 写最终时间到 HUD/Finish
         return elapsedSeconds;
     }
 
@@ -98,6 +104,8 @@ public class LevelTimer : MonoBehaviour
     {
         isRunning = false;
         elapsedSeconds = 0f;
+        hasStarted = false;
+        hasFinished = false;
     }
 
     public float GetElapsedSeconds() => elapsedSeconds;
@@ -117,16 +125,11 @@ public class LevelTimer : MonoBehaviour
         // 还没解析到关卡索引就先不存（避免key乱）
         if (chapterIndex < 0 || levelIndex < 0) return;
 
-        string key = MakeBestKey(chapterIndex, levelIndex);
+        // SaveManager 不存在就不存（例如某些测试场景没放 SaveManager）
+        if (SaveManager.Instance == null) return;
 
-        // 如果之前没存过，PlayerPrefs.GetFloat会返回默认值，这里用 -1 区分
-        float oldBest = PlayerPrefs.GetFloat(key, -1f);
-
-        if (oldBest < 0f || elapsedSeconds < oldBest)
-        {
-            PlayerPrefs.SetFloat(key, elapsedSeconds);
-            PlayerPrefs.Save();
-        }
+        // ✅ 存到 save.json：更小就覆盖并 Save()
+        SaveManager.Instance.SetBestTimeIfBetter(chapterIndex, levelIndex, elapsedSeconds);
     }
 
     private void UpdateBestTextIfAny()
@@ -134,11 +137,14 @@ public class LevelTimer : MonoBehaviour
         if (bestTimerText == null) return;
         if (chapterIndex < 0 || levelIndex < 0) { bestTimerText.text = ""; return; }
 
-        float best = PlayerPrefs.GetFloat(MakeBestKey(chapterIndex, levelIndex), -1f);
+        if (SaveManager.Instance == null) { bestTimerText.text = ""; return; }
+
+        float best = SaveManager.Instance.GetBestTime(chapterIndex, levelIndex);
         bestTimerText.text = (best < 0f) ? "" : $"Best: {FormatMMSSCC(best)}";
     }
 
-    private string MakeBestKey(int chap, int lvl) => $"{BestKeyPrefix}C{chap}_L{lvl}";
+
+    //private string MakeBestKey(int chap, int lvl) => $"{BestKeyPrefix}C{chap}_L{lvl}";
 
     /*
     private string FormatMMSS(float seconds)
@@ -225,4 +231,10 @@ public class LevelTimer : MonoBehaviour
 
         UpdateAllTimerTexts();
     }
+
+    public void RefreshBestUI()
+    {
+        UpdateBestTextIfAny();
+    }
+
 }

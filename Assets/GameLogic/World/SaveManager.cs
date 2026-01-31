@@ -8,6 +8,8 @@ public class ChapterData
 {
     public List<int> rewards;
     public List<bool> cleared;
+
+    public List<float> bestTimes;
 }
 
 [Serializable]
@@ -145,10 +147,25 @@ public class SaveManager : MonoBehaviour
                 }
                 ch.cleared = newList;
             }
+
+            // bestTimes
+            if (ch.bestTimes == null) ch.bestTimes = new List<float>();
+
+            if (ch.bestTimes.Count != count)
+            {
+                // 默认用 -1f 表示没有记录
+                var newList = new List<float>(new float[count]);
+                for (int i = 0; i < count; i++) newList[i] = -1f;
+
+                int copy = Mathf.Min(ch.bestTimes.Count, count);
+                for (int i = 0; i < copy; i++) newList[i] = ch.bestTimes[i];
+
+                ch.bestTimes = newList;
+            }
         }
+
     }
 
-    // ========= 原有接口 =========
     public void SetLevelRewards(int chapterIndex, int levelIndex, int rewards)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return;
@@ -197,6 +214,47 @@ public class SaveManager : MonoBehaviour
         return IsLevelCleared(chapterIndex, levelIndex - 1);
     }
 
+    public float GetBestTime(int chapterIndex, int levelIndex)
+    {
+        if (!ValidateLevelIndex(chapterIndex, levelIndex)) return -1f;
+
+        var ch = data.chapters[chapterIndex];
+        if (ch.bestTimes == null || levelIndex < 0 || levelIndex >= ch.bestTimes.Count) return -1f;
+
+        return ch.bestTimes[levelIndex];
+    }
+
+    /// <summary>
+    /// 如果 newTime 更好（更小）就替换并保存；返回是否更新了 best
+    /// </summary>
+    public bool SetBestTimeIfBetter(int chapterIndex, int levelIndex, float newTimeSeconds)
+    {
+        if (!ValidateLevelIndex(chapterIndex, levelIndex)) return false;
+        if (newTimeSeconds < 0f) return false;
+
+        var ch = data.chapters[chapterIndex];
+
+        // 防御：确保结构存在（理论上 EnsureStructure 已做）
+        if (ch.bestTimes == null)
+        {
+            ch.bestTimes = new List<float>();
+            for (int i = 0; i < levelsPerChapter[chapterIndex]; i++) ch.bestTimes.Add(-1f);
+        }
+
+        float oldBest = ch.bestTimes[levelIndex];
+
+        // oldBest < 0 表示还没记录；newTime 更小表示更好
+        if (oldBest < 0f || newTimeSeconds < oldBest)
+        {
+            ch.bestTimes[levelIndex] = newTimeSeconds;
+            Save();
+            return true;
+        }
+
+        return false;
+    }
+
+
     // ========= Playtest 辅助 =========
 
     /// <summary>
@@ -239,7 +297,15 @@ public class SaveManager : MonoBehaviour
     {
         if (!ValidateChapterIndex(ci)) return false;
         var ch = data.chapters[ci];
-        return ch != null && ch.rewards != null && ch.cleared != null &&
-               li >= 0 && li < ch.rewards.Count && li < ch.cleared.Count;
+
+        return ch != null &&
+               ch.rewards != null &&
+               ch.cleared != null &&
+               ch.bestTimes != null &&
+               li >= 0 &&
+               li < ch.rewards.Count &&
+               li < ch.cleared.Count &&
+               li < ch.bestTimes.Count;
     }
+
 }

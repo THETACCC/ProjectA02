@@ -71,8 +71,18 @@ public class LevelPass : MonoBehaviour
         {
             Debug.Log("[LevelPass] Level complete!");
 
+            float used = -1f;
+
             if (LevelTimer.Instance != null)
-                LevelTimer.Instance.StopTimer();
+                used = LevelTimer.Instance.StopTimer();
+
+            // 写入 save.json bestTimes
+            if (SaveManager.Instance && used >= 0f)
+                SaveManager.Instance.SetBestTimeIfBetter(chapterIndex, levelIndex, used);
+
+            // 刷新best文本
+            if (LevelTimer.Instance != null)
+                LevelTimer.Instance.RefreshBestUI();
 
             FinishUI.SetActive(true);
         }
