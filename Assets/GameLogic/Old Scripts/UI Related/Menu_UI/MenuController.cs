@@ -17,6 +17,7 @@ public class MenuController : MonoBehaviour
     private int uiLayerMask;
     private bool gamePaused = false;
 
+
     private void Start()
     {
         flowmanager = GameObject.Find("FlowManager");
@@ -48,14 +49,12 @@ public class MenuController : MonoBehaviour
     {
         if (!gamePaused)
         {
-            // Disable raycasts on everything except the UI
             EnableOnlyUILayerRaycasts(true);
-
-            // Optionally, stop the time in-game
-            Time.timeScale = 0;  // Freezes the game
-
-            // Disable interactions outside of UI
+            Time.timeScale = 0;
             DisableInputOutsideUI(true);
+
+            var timer = GetLevelTimer();
+            if (timer != null) timer.PauseFromMenu();
 
             gamePaused = true;
         }
@@ -65,18 +64,17 @@ public class MenuController : MonoBehaviour
     {
         if (gamePaused)
         {
-            // Re-enable raycasts for all layers
             EnableOnlyUILayerRaycasts(false);
-
-            // Resume time in the game
-            Time.timeScale = 1;  // Unfreeze the game
-
-            // Re-enable interactions outside of UI
+            Time.timeScale = 1;
             DisableInputOutsideUI(false);
+
+            var timer = GetLevelTimer();
+            if (timer != null) timer.ResumeFromMenu();
 
             gamePaused = false;
         }
     }
+
 
     private void EnableOnlyUILayerRaycasts(bool uiOnly)
     {
@@ -154,5 +152,10 @@ public class MenuController : MonoBehaviour
         */
     }
 
+    private LevelTimer GetLevelTimer()
+    {
+        if (LevelTimer.Instance != null) return LevelTimer.Instance;
+        return FindObjectOfType<LevelTimer>();
+    }
 
 }

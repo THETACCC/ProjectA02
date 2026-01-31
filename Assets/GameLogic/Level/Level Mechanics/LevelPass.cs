@@ -70,6 +70,10 @@ public class LevelPass : MonoBehaviour
         if (left.leftreached && right.rightreached && !FinishUI.activeSelf && !startLoading)
         {
             Debug.Log("[LevelPass] Level complete!");
+
+            if (LevelTimer.Instance != null)
+                LevelTimer.Instance.StopTimer();
+
             FinishUI.SetActive(true);
         }
     }

@@ -293,11 +293,12 @@ public class LevelController : SKMonoSingleton<LevelController>
         {
             //levelLoader.AlignBlockSelection();
 
+            bool wasRunning = (phase == LevelPhase.Running);
 
-                phase = LevelPhase.Running;
-            
+            phase = LevelPhase.Running;
 
-
+            if (!wasRunning && LevelTimer.Instance != null)
+                LevelTimer.Instance.StartTimer();
         }
         
     }
