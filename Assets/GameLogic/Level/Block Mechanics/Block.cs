@@ -61,8 +61,9 @@ public class Block : MonoBehaviour
     [SerializeField] private Block B_blocka;
     [SerializeField] private Block B_blockb;
     //60f in editor
-    private float offset = 78.1f;
-    private float offsetz =  -78.1f;
+    //78.1 in Build
+    private float offset = 60f;
+    private float offsetz =  -60f;
     [SerializeField] private bool linked = false;
     private Vector3 bcpos;
     private Vector3 bnpos;
