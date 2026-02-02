@@ -27,4 +27,9 @@ public class LevelFail : MonoBehaviour
         }
     }
 
+    public void FailLevel()
+    {
+        Scenecontroller.instance.LoadSceneAsset(sceneInfo);
+    }
+
 }
