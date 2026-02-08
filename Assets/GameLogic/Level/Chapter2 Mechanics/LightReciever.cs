@@ -13,7 +13,8 @@ public class LightReciever : MonoBehaviour
     private MeshRenderer myRenderer;
 
     [Header("Collision Child (auto-assigned)")]
-    public GameObject myCollider;
+    public GameObject myColliderLight;
+    public GameObject myCOlliderDark;
 
     private Coroutine reenableRoutine;
 
@@ -23,7 +24,8 @@ public class LightReciever : MonoBehaviour
 
         if (transform.childCount > 0)
         {
-            myCollider = transform.GetChild(0).gameObject;
+            myColliderLight = transform.GetChild(0).gameObject;
+            myCOlliderDark = transform.GetChild(1).gameObject;
         }
         else
         {
@@ -38,8 +40,11 @@ public class LightReciever : MonoBehaviour
         if (myRenderer != null)
             myRenderer.enabled = !isHit;
 
-        if (myCollider != null)
-            myCollider.SetActive(!isHit);
+        if (myColliderLight != null)
+            myColliderLight.SetActive(!isHit);
+
+        if (myCOlliderDark != null)
+            myCOlliderDark.SetActive(isHit);
     }
 
     /// <summary>
