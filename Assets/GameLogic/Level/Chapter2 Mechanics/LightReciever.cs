@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class LightReciever : MonoBehaviour
 {
+    [Header("Activation")]
+    [Tooltip("Seconds of continuous light required to activate")]
+    public float requiredHitTime = 0.5f;
+
     public bool isHit = false;
 
     [Header("Reappear Delay")]
@@ -14,48 +18,72 @@ public class LightReciever : MonoBehaviour
 
     [Header("Collision Child (auto-assigned)")]
     public GameObject myColliderLight;
-    public GameObject myCOlliderDark;
+    public GameObject myColliderDark;
 
     private Coroutine reenableRoutine;
+
+    // --- NEW ---
+    private float hitTimer = 0f;
+    private bool hitThisFrame = false;
 
     void Start()
     {
         myRenderer = GetComponent<MeshRenderer>();
 
-        if (transform.childCount > 0)
+        if (transform.childCount >= 2)
         {
             myColliderLight = transform.GetChild(0).gameObject;
-            myCOlliderDark = transform.GetChild(1).gameObject;
+            myColliderDark = transform.GetChild(1).gameObject;
         }
         else
         {
-            Debug.LogWarning(
-                $"LightReciever on {gameObject.name} has no child to use as collider."
-            );
+            Debug.LogWarning($"LightReciever on {gameObject.name} needs 2 children.");
         }
     }
 
     void Update()
     {
+        // ----- VISUAL / COLLIDER STATE -----
         if (myRenderer != null)
             myRenderer.enabled = !isHit;
 
         if (myColliderLight != null)
             myColliderLight.SetActive(!isHit);
 
-        if (myCOlliderDark != null)
-            myCOlliderDark.SetActive(isHit);
+        if (myColliderDark != null)
+            myColliderDark.SetActive(isHit);
+
+        // ----- HIT TIMER LOGIC -----
+        if (hitThisFrame)
+        {
+            hitTimer += Time.deltaTime;
+
+            if (!isHit && hitTimer >= requiredHitTime)
+            {
+                Activate();
+            }
+        }
+        else
+        {
+            // Light not hitting ¡ú reset accumulation
+            hitTimer = 0f;
+
+            if (isHit)
+                NotifyNotHit();
+        }
+
+        // Reset for next frame (emitter must call HitByLight again)
+        hitThisFrame = false;
     }
 
     /// <summary>
-    /// Called by the light when hit this frame.
-    /// Immediately disables the receiver and cancels any pending re-enable.
+    /// Called EVERY FRAME the beam hits this receiver.
     /// </summary>
     public void HitByLight()
     {
-        isHit = true;
+        hitThisFrame = true;
 
-        // If we were waiting to re-enable, cancel it
+        // Cancel pending re-enable if light comes back
         if (reenableRoutine != null)
         {
             StopCoroutine(reenableRoutine);
@@ -63,13 +91,15 @@ public class LightReciever : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called when the light is NOT hitting this receiver this frame.
-    /// Starts a delayed re-enable if not already running.
-    /// </summary>
+    private void Activate()
+    {
+        isHit = true;
+        hitTimer = requiredHitTime;
+    }
+
     public void NotifyNotHit()
     {
-        if (isHit && reenableRoutine == null)
+        if (reenableRoutine == null)
         {
             reenableRoutine = StartCoroutine(ReenableAfterDelay());
         }
