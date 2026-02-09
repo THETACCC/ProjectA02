@@ -119,7 +119,7 @@ public enum SceneTitle
 
     //Chapter 2
     Chapter2_Test = 201,
-
+    Chapter2_4x4Test = 202,
 
     //Common Scenes
     Main_Menu = 13
