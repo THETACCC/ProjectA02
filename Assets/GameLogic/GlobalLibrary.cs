@@ -240,8 +240,12 @@ public static class GlobalLibrary
         {
 
 
-        }}
+        }},
+        {SceneTitle.Chapter2_4x4Test, new SceneSpecifics()
+        {
 
+
+        }}
 
 
     };
@@ -257,7 +261,7 @@ public static class GlobalLibrary
         {SceneCategory.Chapter0, new SceneTitle[]{ SceneTitle.Chapter0World, SceneTitle.Chapter0_GYM, SceneTitle.Chapter0_Level0, SceneTitle.Chapter0_Level1, SceneTitle.Chapter0_Level2, SceneTitle.Chapter0_Level3, SceneTitle.Chapter0_Level4, SceneTitle.Chapter0_Level5 , SceneTitle.Chapter0_Level6 , SceneTitle.Chapter0_Level7 } },
         {SceneCategory.Chapter1, new SceneTitle[]{ SceneTitle.Chapter1Base3x3, SceneTitle.Chapter1BaseVisualGym, SceneTitle.Chapter1_Level1, SceneTitle.Chapter1_Level2, SceneTitle.Chapter1_Level3, SceneTitle.Chapter1_Level4, SceneTitle.Chapter1_Level5, SceneTitle.Chapter1_Level6, SceneTitle.Chapter1_Level7, SceneTitle.Chapter1_Level8, SceneTitle.Chapter1_Level9, SceneTitle.Chapter1_Level10, SceneTitle.Chapter1_Level11, SceneTitle.Chapter1_Level12, SceneTitle.Chapter1_Level13, SceneTitle.Chapter1_Level14, SceneTitle.Chapter1_Level15, 
             SceneTitle.Chapter1Base4x4, SceneTitle.Level1_1_MapTest,  SceneTitle.Chapter1World , SceneTitle.Chapter1MoveTest } },
-        {SceneCategory.Chapter2, new SceneTitle[]{  SceneTitle.Chapter2_Test  }}
+        {SceneCategory.Chapter2, new SceneTitle[]{  SceneTitle.Chapter2_Test,  SceneTitle.Chapter2_4x4Test  }}
 
     };
 
@@ -317,7 +321,7 @@ public static class GlobalLibrary
 
         //Chapter2
         {SceneTitle.Chapter2_Test, "Chapter2_Test" },
-
+        {SceneTitle.Chapter2_4x4Test, "Chapter2_4x4Test" },
 
 
 
