@@ -117,7 +117,18 @@ public class DialogueTrigger : MonoBehaviour
 
     public void EnablePlayer()
     {
-        levelController.phase = LevelPhase.Running;
+        levelController.phase = LevelPhase.Placing;
+        movement.canmove = true;
+        movement.is_sliding = false;
+        movement_player2.canmove = true;
+        movement_player2.is_sliding = false;
+
+
+    }
+
+    public void EnablePlayerInitial()
+    {
+        levelController.phase = LevelPhase.Placing;
         movement.canmove = true;
         movement.is_sliding = false;
         movement_player2.canmove = true;
