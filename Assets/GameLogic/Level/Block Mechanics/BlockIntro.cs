@@ -81,7 +81,7 @@ public class BlockIntro : MonoBehaviour
         LevelSuccessLeft.SerachPlayer();    
         LevelSuccessRight.SerachPlayer();
         LevelLoader.LoadCharacter();
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
         controller.phase = LevelPhase.Placing;
     }
 

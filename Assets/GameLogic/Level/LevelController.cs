@@ -127,6 +127,8 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private void Update()
     {
+        Debug.Log(phase);
+
         if(!isPlayerFound)
         {
             FindPlayers();
