@@ -19,6 +19,10 @@ public class RewardAcquire : MonoBehaviour
     private MeshRenderer myRenderer;
 
     private bool isPlayer1 = false;
+
+    //AudioRelated
+    [SerializeField] private AudioClip[] collectSoundClip;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,7 +55,9 @@ public class RewardAcquire : MonoBehaviour
                 myRenderer.enabled = false;
             if (!isReached)
             {
-                
+                //Audio
+                //SoundFXManager.instance.PlaySoundFXClip(collectSoundClip, transform, 1f);
+                SoundFXManager.instance.PlayRandomSoundFXClip(collectSoundClip, transform, 1f);
                 if (dialoguePlayer != null)
                 {
                     //dialoguePlayer.Play();
