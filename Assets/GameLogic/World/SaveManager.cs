@@ -8,7 +8,6 @@ public class ChapterData
 {
     public List<int> rewards;
     public List<bool> cleared;
-
     public List<float> bestTimes;
 }
 
@@ -36,6 +35,10 @@ public class SaveManager : MonoBehaviour
     [Header("Dev / Playtest")]
     [Tooltip("Normal=逐关解锁；UnlockAll_Session=本次运行全解锁(不写存档)；UnlockAll_Persist=把所有关卡写成已通关(写存档)")]
     public UnlockPolicy unlockPolicy = UnlockPolicy.Normal;
+
+    [Header("Dev / Debug")]
+    [Tooltip("勾上后：启动时清空所有记录（rewards/cleared/bestTimes），并写入存档。执行一次后会自动取消勾选。")]
+    public bool resetAllProgressOnNextLaunch = false;
 
     private SaveData data;
     private string savePath;
@@ -66,6 +69,17 @@ public class SaveManager : MonoBehaviour
             data = new SaveData { chapters = new List<ChapterData>() };
             EnsureStructure();
             Save();
+        }
+
+        // === Dev: Reset everything once ===
+        if (resetAllProgressOnNextLaunch)
+        {
+            ResetAllProgress();
+            Save();
+
+            // Run once then auto-off (prevents wiping every launch)
+            resetAllProgressOnNextLaunch = false;
+            Debug.Log("[SaveManager] ✅ ResetAllProgress done and saved.");
         }
 
         // 若选择持久化全解锁：一次性把所有关卡标记为已通关并写盘
@@ -150,7 +164,6 @@ public class SaveManager : MonoBehaviour
 
             // bestTimes
             if (ch.bestTimes == null) ch.bestTimes = new List<float>();
-
             if (ch.bestTimes.Count != count)
             {
                 // 默认用 -1f 表示没有记录
@@ -163,7 +176,27 @@ public class SaveManager : MonoBehaviour
                 ch.bestTimes = newList;
             }
         }
+    }
 
+    // ===== Reset API =====
+    public void ResetAllProgress()
+    {
+        if (data?.chapters == null) return;
+
+        for (int c = 0; c < data.chapters.Count; c++)
+        {
+            var ch = data.chapters[c];
+            if (ch == null) continue;
+
+            if (ch.rewards != null)
+                for (int i = 0; i < ch.rewards.Count; i++) ch.rewards[i] = 0;
+
+            if (ch.cleared != null)
+                for (int i = 0; i < ch.cleared.Count; i++) ch.cleared[i] = false;
+
+            if (ch.bestTimes != null)
+                for (int i = 0; i < ch.bestTimes.Count; i++) ch.bestTimes[i] = -1f;
+        }
     }
 
     public void SetLevelRewards(int chapterIndex, int levelIndex, int rewards)
@@ -254,7 +287,6 @@ public class SaveManager : MonoBehaviour
         return false;
     }
 
-
     // ========= Playtest 辅助 =========
 
     /// <summary>
@@ -293,6 +325,7 @@ public class SaveManager : MonoBehaviour
         if (data?.chapters == null) return false;
         return ci >= 0 && ci < data.chapters.Count;
     }
+
     private bool ValidateLevelIndex(int ci, int li)
     {
         if (!ValidateChapterIndex(ci)) return false;
@@ -307,5 +340,4 @@ public class SaveManager : MonoBehaviour
                li < ch.cleared.Count &&
                li < ch.bestTimes.Count;
     }
-
 }

@@ -182,10 +182,8 @@ public class WorldLevelUI : MonoBehaviour
 
     private string FormatSeconds(float sec)
     {
-        // -1 = no record (your design)
-        // 0 or near 0 should ALSO be treated as "no record" to avoid showing 00:00.00
-        if (sec < 0f || sec <= 0.0001f)
-            return "--:--.--";
+        // -1 = no record; 0 or near 0 also treated as no record
+        if (sec < 0f || sec <= 0.0001f) return "--:--.--";
 
         int totalMs = Mathf.RoundToInt(sec * 1000f);
         int minutes = totalMs / 60000;
