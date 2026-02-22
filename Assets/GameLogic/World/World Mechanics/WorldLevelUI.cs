@@ -182,13 +182,14 @@ public class WorldLevelUI : MonoBehaviour
 
     private string FormatSeconds(float sec)
     {
-        // -1 = no record; 0 or near 0 also treated as no record
-        if (sec < 0f || sec <= 0.0001f) return "--:--.--";
+        // no record: -1 or 0/near-0
+        if (sec < 0f || sec <= 0.0001f) return "--:--:--";
 
         int totalMs = Mathf.RoundToInt(sec * 1000f);
         int minutes = totalMs / 60000;
         int seconds = (totalMs % 60000) / 1000;
-        int centi = (totalMs % 1000) / 10;
-        return $"{minutes:00}:{seconds:00}.{centi:00}";
+        int centi = (totalMs % 1000) / 10;   // 0..99
+
+        return $"{minutes:00}:{seconds:00}:{centi:00}";
     }
 }
