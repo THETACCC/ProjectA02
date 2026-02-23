@@ -13,6 +13,10 @@ public class Enterfinishleft : MonoBehaviour
     private Collider PlayerCollider;
     private Collider PlayerColliderCLD;
     private Rigidbody Rigidbody;
+
+    //Audio
+    [SerializeField] private AudioClip[] enterClip;
+
     private void Start()
     {
 
@@ -43,7 +47,8 @@ public class Enterfinishleft : MonoBehaviour
             leftreached = true;
             playerWinVisual.isPlayerWin = true;
 
-
+            //Audio
+            SoundFXManager.instance.PlayRandomSoundFXClip(enterClip, transform, 1f);
         }
     }
 }

@@ -73,6 +73,10 @@ public class PlayerController : MonoBehaviour
     private bool isRecordingSpace = false;
     private float recordInterval = 0.01f;
 
+
+    //Audio Related
+    [SerializeField] private AudioClip[] walkSoundClip;
+
     void Start()
     {
         GameObject Player1 = GameObject.FindGameObjectWithTag(Player1Tag);
@@ -160,6 +164,13 @@ public class PlayerController : MonoBehaviour
                     {
                         axis_x = 0;
                     }
+
+                    //Audio Related
+                    if(Input.GetKeyDown(KeyCode.Space))
+                    {
+                        SoundFXManager.instance.PlayRandomSoundFXClip(walkSoundClip, transform, 1f);
+                    }
+
 
                     if (Input.GetKey(KeyCode.Space))
                     {

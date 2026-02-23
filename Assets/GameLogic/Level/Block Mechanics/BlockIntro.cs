@@ -20,6 +20,10 @@ public class BlockIntro : MonoBehaviour
 
     public LevelController controller;
     // Start is called before the first frame update
+
+    //Audio
+    [SerializeField] private AudioClip[] popSoundClip;
+
     void Start()
     {
         GameObject level_controller = GameObject.Find("LevelController");
@@ -64,7 +68,7 @@ public class BlockIntro : MonoBehaviour
             // Trigger the visual effect for the current block.
             // This assumes you have a method to play the effect. Replace "PlayVisualEffect" with your actual method.
             PlayVisualEffect(block);
-
+            SoundFXManager.instance.PlayRandomSoundFXClip(popSoundClip, transform, 1f);
             // Wait for 0.2 seconds before continuing to the next iteration of the loop
             yield return new WaitForSeconds(0.1f);
         }

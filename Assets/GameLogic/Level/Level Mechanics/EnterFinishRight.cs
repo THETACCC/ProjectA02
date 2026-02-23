@@ -14,6 +14,9 @@ public class EnterFinishRight : MonoBehaviour
     private GameObject PlayerWinVisual2;
     private Collider PlayerCollider;
     private Rigidbody Rigidbody;
+
+    //Audio
+    [SerializeField] private AudioClip[] enterClip;
     private void Start()
     {
 
@@ -40,7 +43,8 @@ public class EnterFinishRight : MonoBehaviour
             movement.enabled= false;
             rightreached = true;
             playerWinVisual.isPlayerWin = true;
-
+            //Audio
+            SoundFXManager.instance.PlayRandomSoundFXClip(enterClip, transform, 1f);
         }
     }
 }

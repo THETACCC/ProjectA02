@@ -4612,6 +4612,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3649f2395c0ff648995bfb5a5763b43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showMirrorGhostInBuild: 1
+  toggleMirrorGhostKey: 290
   type: 2
   isInventory: 0
   draggable: 1
@@ -10998,6 +11000,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rightreached: 0
+  enterClip:
+  - {fileID: 8300000, guid: 20a657152f1255c4ba9be5c232a078c4, type: 3}
 --- !u!136 &4751647003678583281
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11008,7 +11012,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.45
+  m_Radius: 0.4
   m_Height: 1.283338
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

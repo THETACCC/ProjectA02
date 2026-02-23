@@ -3796,6 +3796,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3649f2395c0ff648995bfb5a5763b43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showMirrorGhostInBuild: 1
+  toggleMirrorGhostKey: 290
   type: 2
   isInventory: 0
   draggable: 1
@@ -15874,7 +15876,7 @@ GameObject:
   - component: {fileID: 3122294566890624832}
   - component: {fileID: 678817385007047190}
   - component: {fileID: 3045220882241388402}
-  - component: {fileID: 5323114006916984556}
+  - component: {fileID: 8438047284072975100}
   m_Layer: 0
   m_Name: Finish_Left
   m_TagString: FinishLeft
@@ -15910,6 +15912,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftreached: 0
+  enterClip:
+  - {fileID: 8300000, guid: 20a657152f1255c4ba9be5c232a078c4, type: 3}
 --- !u!23 &678817385007047190
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -15960,8 +15964,8 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7856365594120459557}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &5323114006916984556
-BoxCollider:
+--- !u!136 &8438047284072975100
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -15970,9 +15974,10 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.87, y: 0.87, z: 0.87}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Radius: 0.4
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.000000059604645, z: 0}
 --- !u!1 &7897793224316594056
 GameObject:
   m_ObjectHideFlags: 0
