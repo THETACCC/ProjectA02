@@ -6,6 +6,10 @@ using UnityEngine;
 public class LevelFail : MonoBehaviour
 {
     public SceneInfo sceneInfo;
+
+    //Audio
+    [SerializeField] private AudioClip[] loseClip;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +28,8 @@ public class LevelFail : MonoBehaviour
         if (collision.gameObject.tag == "Player1" || collision.gameObject.tag == "Player2" || collision.gameObject.tag == "Player2Tutorial" || collision.gameObject.tag == "Player1Tutorial")
         {
             Scenecontroller.instance.LoadSceneAsset(sceneInfo);
+            //Audio
+            SoundFXManager.instance.PlayRandomSoundFXClip(loseClip, transform, 1f);
         }
     }
 

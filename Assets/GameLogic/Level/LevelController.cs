@@ -71,6 +71,11 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private bool isPlayerFound = false;
 
+    //Audio Related
+    [SerializeField] private AudioClip[] startClip;
+    private bool isStartPlayed = false;
+
+
     private void Start()
     {
 
@@ -298,6 +303,15 @@ public class LevelController : SKMonoSingleton<LevelController>
             bool wasRunning = (phase == LevelPhase.Running);
 
             phase = LevelPhase.Running;
+
+
+            //Audio
+            if(!isStartPlayed)
+            {
+                SoundFXManager.instance.PlayRandomSoundFXClip(startClip, transform, 1f);
+                isStartPlayed= true;
+            }
+
 
             if (!wasRunning && LevelTimer.Instance != null)
                 LevelTimer.Instance.StartTimer();
