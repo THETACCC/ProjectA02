@@ -657,6 +657,7 @@ MonoBehaviour:
   playerRightRB: {fileID: 0}
   playerLeftCollider: {fileID: 0}
   playerRightCollider: {fileID: 0}
+  startClip: []
 --- !u!1 &912324231
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,6 +705,61 @@ MonoBehaviour:
   levelsPerChapter: 070000000f000000
   unlockPolicy: 1
   resetAllProgressOnNextLaunch: 0
+--- !u!1 &1052290263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1052290264}
+  - component: {fileID: 1052290265}
+  m_Layer: 0
+  m_Name: AudioBase
+  m_TagString: AudioPlayer
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1052290264
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052290263}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1661561398}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1052290265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052290263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b220f502e919a4db07684948d332d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockSelectSound:
+  - {fileID: 8300000, guid: 414c54dd335919e4283af6bd372a0e51, type: 3}
+  - {fileID: 8300000, guid: 11a786d60a3923f4e93818678a9471b6, type: 3}
+  - {fileID: 8300000, guid: 722a90127ee2dd34abc9e7ca12532628, type: 3}
+  blockPlaceSound:
+  - {fileID: 8300000, guid: c78d89a0c00685e4abd3bc2b84970d8e, type: 3}
+  - {fileID: 8300000, guid: dc1e3f34761143b4894c2f2ef509db94, type: 3}
+  blockRotateSound:
+  - {fileID: 8300000, guid: 4b28b6c4764091c48bdcb26daf13a1ca, type: 3}
+  - {fileID: 8300000, guid: 14fa200aec6267047966b19f9a66e526, type: 3}
+  - {fileID: 8300000, guid: dec771062b91a5f42b65c0e401049978, type: 3}
 --- !u!1 &1295622514
 GameObject:
   m_ObjectHideFlags: 0
@@ -1012,6 +1068,7 @@ Transform:
   - {fileID: 97587205424409187}
   - {fileID: 626011421}
   - {fileID: 1769295849}
+  - {fileID: 1052290264}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

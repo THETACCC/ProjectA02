@@ -497,6 +497,11 @@ public class Block : MonoBehaviour
         }
         if (!mouse_drag && LevelController.instance.curDraggedblock == null && mouse_over && Input.GetMouseButtonDown(0))
         {
+            //Audio
+            AudioPlayer.instance.playBlockSelectSound();
+
+
+
             mouse_drag = true;
             controller.DisablePlayerColliders();
             _OnStartDrag();
@@ -504,6 +509,8 @@ public class Block : MonoBehaviour
         }
         if (!mouse_drag && LevelController.instance.curDraggedblock == null && mouse_over && Input.GetMouseButtonDown(1))
         {
+            //Audio
+            AudioPlayer.instance.playBlockRotateSound();
 
             if (type == BlockType.Regular)
             {
@@ -985,7 +992,10 @@ public class Block : MonoBehaviour
 
     public void _OnEndDrag()
     {
-        if(!isInventory)
+        //Audio
+        AudioPlayer.instance.playBlockPlaceSound();
+
+        if (!isInventory)
         {
             if (type == BlockType.Regular)
             {

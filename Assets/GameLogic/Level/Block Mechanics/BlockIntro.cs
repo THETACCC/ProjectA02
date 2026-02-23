@@ -23,7 +23,7 @@ public class BlockIntro : MonoBehaviour
 
     //Audio
     [SerializeField] private AudioClip[] popSoundClip;
-
+    [SerializeField] private AudioClip[] enablePlayerSoundClip;
     void Start()
     {
         GameObject level_controller = GameObject.Find("LevelController");
@@ -78,6 +78,11 @@ public class BlockIntro : MonoBehaviour
     IEnumerator EnablePlayer()
     {
         yield return new WaitForSeconds(4f);
+
+
+        //Audio
+        SoundFXManager.instance.PlayRandomSoundFXClip(enablePlayerSoundClip, transform, 1f);
+
 
         Player1.SetActive(true);
 
