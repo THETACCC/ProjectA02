@@ -50,6 +50,9 @@ public class MainMenuButton : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData e)
     {
+
+        //Audio
+        AudioPlayer.instance.playUIHoverSound();
         // tell manager which target to use
         switch (buttonType)
         {
