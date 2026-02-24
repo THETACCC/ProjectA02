@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
     //Audio Related
     [SerializeField] private AudioClip[] walkSoundClip;
-
+    [SerializeField] private AudioClip[] rotateSoundClip;
     void Start()
     {
         GameObject Player1 = GameObject.FindGameObjectWithTag(Player1Tag);
@@ -447,6 +447,9 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator RotateCharacter()
     {
+        //Audio
+        SoundFXManager.instance.PlayRandomSoundFXClip(rotateSoundClip, transform, 0.3f);
+
         isRotating = true;
 
         float rotationSpeed = 20f; //Determines how fast the player will turn
