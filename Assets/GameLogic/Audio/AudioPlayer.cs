@@ -11,6 +11,7 @@ public class AudioPlayer : MonoBehaviour
     [SerializeField] private AudioClip[] blockSelectSound;
     [SerializeField] private AudioClip[] blockPlaceSound;
     [SerializeField] private AudioClip[] blockRotateSound;
+    [SerializeField] private AudioClip[] blockHoverSound;
 
     private void Awake()
     {
@@ -35,5 +36,8 @@ public class AudioPlayer : MonoBehaviour
         SoundFXManager.instance.PlayRandomSoundFXClip(blockRotateSound, transform, 1f);
     }
 
-
+    public void playBlockHoverSound()
+    {
+        SoundFXManager.instance.PlayRandomSoundFXClip(blockHoverSound, transform, 0.3f);
+    }
 }

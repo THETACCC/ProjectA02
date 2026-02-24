@@ -580,6 +580,8 @@ public class Block : MonoBehaviour
 
     private void _OnMouseEnter()
     {
+        //Audio
+        AudioPlayer.instance.playBlockHoverSound();
 
         if (!isInventory)
         {
