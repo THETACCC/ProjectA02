@@ -28,7 +28,7 @@ public class LevelPassTutorial : MonoBehaviour
 
     // Prevent multiple loads
     private bool startLoading = false;
-
+    private bool isPlayed = false;
     void Awake()
     {
         // Parse scene name "ChapterX_LevelY" for X and Y
@@ -72,6 +72,12 @@ public class LevelPassTutorial : MonoBehaviour
         if (left.leftreached && right.rightreached && !FinishUI.activeSelf && !startLoading)
         {
             Debug.Log("[LevelPass] Level complete!");
+
+            if (!isPlayed)
+            {
+                AudioPlayer.instance.playlevelSuccessSound();
+                isPlayed = true;
+            }
             FinishUI.SetActive(true);
         }
     }
@@ -81,6 +87,7 @@ public class LevelPassTutorial : MonoBehaviour
     /// </summary>
     public void LoadNextLevel()
     {
+        AudioPlayer.instance.playlevelEndSound();
         if (startLoading) return;
         if (!(left.leftreached && right.rightreached)) return;
 

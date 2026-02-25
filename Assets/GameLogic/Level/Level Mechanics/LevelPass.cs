@@ -26,6 +26,8 @@ public class LevelPass : MonoBehaviour
 
     // Prevent multiple loads
     private bool startLoading = false;
+    private bool isPlayed = false;
+
 
     void Awake()
     {
@@ -84,6 +86,12 @@ public class LevelPass : MonoBehaviour
             if (LevelTimer.Instance != null)
                 LevelTimer.Instance.RefreshBestUI();
 
+            if(!isPlayed)
+            {
+                AudioPlayer.instance.playlevelSuccessSound();
+                isPlayed= true;
+            }
+
             FinishUI.SetActive(true);
         }
     }
@@ -93,6 +101,8 @@ public class LevelPass : MonoBehaviour
     /// </summary>
     public void LoadNextLevel()
     {
+        AudioPlayer.instance.playlevelEndSound();
+
         if (startLoading) return;
         if (!(left.leftreached && right.rightreached)) return;
 

@@ -15,6 +15,8 @@ public class AudioPlayer : MonoBehaviour
 
     //Menu related Audio
     [SerializeField] private AudioClip[] hoverSound;
+    [SerializeField] private AudioClip[] levelEndSound;
+    [SerializeField] private AudioClip[] levelSuccessSound;
 
     private void Awake()
     {
@@ -49,4 +51,12 @@ public class AudioPlayer : MonoBehaviour
         SoundFXManager.instance.PlayRandomSoundFXClip(hoverSound, transform, 0.3f);
     }
 
+    public void playlevelEndSound()
+    {
+        SoundFXManager.instance.PlayRandomSoundFXClip(levelEndSound, transform, 1f);
+    }
+    public void playlevelSuccessSound()
+    {
+        SoundFXManager.instance.PlayRandomSoundFXClip(levelSuccessSound, transform, 1f);
+    }
 }
