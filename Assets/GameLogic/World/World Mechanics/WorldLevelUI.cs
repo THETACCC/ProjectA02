@@ -9,7 +9,7 @@ public class WorldLevelUI : MonoBehaviour
     public static WorldLevelUI Instance { get; private set; }
 
     [Header("Hide/Show")]
-    [SerializeField] private CanvasGroup canvasGroup; // optional; auto-find if null
+    [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private bool hideOnStart = true;
 
     [Header("Input")]
@@ -21,6 +21,7 @@ public class WorldLevelUI : MonoBehaviour
     [Header("UI Refs (optional if autoWireByNames=true)")]
     [SerializeField] private TMP_Text txtLevel;       // Txt_Level
     [SerializeField] private TMP_Text txtTime;        // Txt_Time
+    [SerializeField] private TMP_Text txtRewards;     // ✅ Txt_Rewards (new)
     [SerializeField] private Image imgComplete;       // Img_Complete
     [SerializeField] private Button btnStart;         // Btn_Start
 
@@ -58,7 +59,6 @@ public class WorldLevelUI : MonoBehaviour
             OnClickStart();
     }
 
-    // ===== called by LevelTrigger =====
     public void EnterTrigger(LevelTrigger t)
     {
         if (t == null) return;
@@ -115,15 +115,21 @@ public class WorldLevelUI : MonoBehaviour
         if (SaveManager.Instance != null)
             best = SaveManager.Instance.GetBestTime(chap0, lvl0);
 
-        string timeStr = FormatSeconds(best);
+        if (txtTime) txtTime.text = FormatSeconds(best);
 
-        if (txtTime) txtTime.text = timeStr;
+        // ✅ reward x/total
+        if (txtRewards)
+        {
+            if (SaveManager.Instance != null)
+                txtRewards.text = SaveManager.Instance.GetLevelRewardProgressText(chap0, lvl0);
+            else
+                txtRewards.text = "0/0";
+        }
     }
 
     private void OnClickStart()
     {
         if (current == null) return;
-
         current.LoadNextLevel();
     }
 
@@ -154,11 +160,15 @@ public class WorldLevelUI : MonoBehaviour
         insideOrder.Clear();
     }
 
-    // ===== helpers =====
     private void AutoWire()
     {
         if (txtTime == null) txtTime = FindByName<TMP_Text>("Txt_Time");
         if (txtLevel == null) txtLevel = FindByName<TMP_Text>("Txt_Level");
+        if (txtRewards == null)
+        {
+            txtRewards = FindByName<TMP_Text>("Txt_Rewards");
+            if (txtRewards == null) txtRewards = FindByName<TMP_Text>("Txt_Reward");
+        }
         if (imgComplete == null) imgComplete = FindByName<Image>("Img_Complete");
         if (btnStart == null) btnStart = FindByName<Button>("Btn_Start");
     }
@@ -182,13 +192,12 @@ public class WorldLevelUI : MonoBehaviour
 
     private string FormatSeconds(float sec)
     {
-        // no record: -1 or 0/near-0
         if (sec < 0f || sec <= 0.0001f) return "--:--:--";
 
         int totalMs = Mathf.RoundToInt(sec * 1000f);
         int minutes = totalMs / 60000;
         int seconds = (totalMs % 60000) / 1000;
-        int centi = (totalMs % 1000) / 10;   // 0..99
+        int centi = (totalMs % 1000) / 10;
 
         return $"{minutes:00}:{seconds:00}:{centi:00}";
     }

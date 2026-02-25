@@ -6,7 +6,12 @@ using UnityEngine;
 [Serializable]
 public class ChapterData
 {
+    // 已收集数量（最小0）
     public List<int> rewards;
+
+    // 每关总奖励数（默认3，可被运行时更新）
+    public List<int> rewardTotals;
+
     public List<bool> cleared;
     public List<float> bestTimes;
 }
@@ -24,12 +29,16 @@ public class SaveManager : MonoBehaviour
     [Header("Configure number of levels per chapter (e.g. {5,6,4})")]
     public int[] levelsPerChapter;
 
+    [Header("Rewards")]
+    [Tooltip("New/empty save 初始化每关 rewardTotals 的默认值（现在=3；以后想改就改这个）")]
+    public int defaultRewardTotalPerLevel = 3;
+
     // ========== Playtest Unlock ==========
     public enum UnlockPolicy
     {
-        Normal,               // 正常：逐关解锁
-        UnlockAll_Session,    // 本次运行全解锁（不写入存档）
-        UnlockAll_Persist     // 将所有关卡标记为已通关（写入存档）
+        Normal,
+        UnlockAll_Session,
+        UnlockAll_Persist
     }
 
     [Header("Dev / Playtest")]
@@ -45,7 +54,6 @@ public class SaveManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
@@ -71,18 +79,14 @@ public class SaveManager : MonoBehaviour
             Save();
         }
 
-        // === Dev: Reset everything once ===
         if (resetAllProgressOnNextLaunch)
         {
             ResetAllProgress();
             Save();
-
-            // Run once then auto-off (prevents wiping every launch)
             resetAllProgressOnNextLaunch = false;
             Debug.Log("[SaveManager] ✅ ResetAllProgress done and saved.");
         }
 
-        // 若选择持久化全解锁：一次性把所有关卡标记为已通关并写盘
         if (unlockPolicy == UnlockPolicy.UnlockAll_Persist)
         {
             MarkAllClearedPersist();
@@ -122,26 +126,38 @@ public class SaveManager : MonoBehaviour
     {
         if (data.chapters == null) data.chapters = new List<ChapterData>();
 
-        // 章节数量对齐
         while (data.chapters.Count < levelsPerChapter.Length)
             data.chapters.Add(new ChapterData());
         if (data.chapters.Count > levelsPerChapter.Length)
             data.chapters.RemoveRange(levelsPerChapter.Length, data.chapters.Count - levelsPerChapter.Length);
 
-        // 每章长度对齐
         for (int c = 0; c < levelsPerChapter.Length; c++)
         {
             int count = levelsPerChapter[c];
             var ch = data.chapters[c] ?? (data.chapters[c] = new ChapterData());
 
-            // rewards
+            // rewards (collected)
             if (ch.rewards == null) ch.rewards = new List<int>();
             if (ch.rewards.Count != count)
             {
                 var newList = new List<int>(new int[count]);
                 int copy = Mathf.Min(ch.rewards.Count, count);
-                for (int i = 0; i < copy; i++) newList[i] = ch.rewards[i];
+                for (int i = 0; i < copy; i++) newList[i] = Mathf.Max(0, ch.rewards[i]);
                 ch.rewards = newList;
+            }
+
+            // rewardTotals (total per level)
+            if (ch.rewardTotals == null) ch.rewardTotals = new List<int>();
+            if (ch.rewardTotals.Count != count)
+            {
+                var newList = new List<int>(new int[count]);
+                // 默认全部填 defaultRewardTotalPerLevel
+                for (int i = 0; i < count; i++) newList[i] = Mathf.Max(0, defaultRewardTotalPerLevel);
+
+                int copy = Mathf.Min(ch.rewardTotals.Count, count);
+                for (int i = 0; i < copy; i++) newList[i] = Mathf.Max(0, ch.rewardTotals[i]);
+
+                ch.rewardTotals = newList;
             }
 
             // cleared
@@ -152,7 +168,7 @@ public class SaveManager : MonoBehaviour
                 int copy = Mathf.Min(ch.cleared.Count, count);
                 for (int i = 0; i < copy; i++) newList[i] = ch.cleared[i];
 
-                // 兼容旧存档：奖励>0 视为已通关
+                // 兼容旧存档：如果旧存档没有 cleared，则 rewards>0 视为已通关
                 if (ch.cleared.Count == 0 && ch.rewards != null)
                 {
                     int m = Mathf.Min(ch.rewards.Count, count);
@@ -166,7 +182,6 @@ public class SaveManager : MonoBehaviour
             if (ch.bestTimes == null) ch.bestTimes = new List<float>();
             if (ch.bestTimes.Count != count)
             {
-                // 默认用 -1f 表示没有记录
                 var newList = new List<float>(new float[count]);
                 for (int i = 0; i < count; i++) newList[i] = -1f;
 
@@ -174,6 +189,13 @@ public class SaveManager : MonoBehaviour
                 for (int i = 0; i < copy; i++) newList[i] = ch.bestTimes[i];
 
                 ch.bestTimes = newList;
+            }
+
+            // 额外防御：保证 collected 不超过 total（如果你之后改了 total 更小）
+            for (int i = 0; i < count; i++)
+            {
+                int total = Mathf.Max(0, ch.rewardTotals[i]);
+                ch.rewards[i] = Mathf.Clamp(ch.rewards[i], 0, total);
             }
         }
     }
@@ -196,35 +218,79 @@ public class SaveManager : MonoBehaviour
 
             if (ch.bestTimes != null)
                 for (int i = 0; i < ch.bestTimes.Count; i++) ch.bestTimes[i] = -1f;
+
+            // totals 重置回默认（避免你以后改默认值但旧存档还卡在旧 total）
+            if (ch.rewardTotals != null)
+                for (int i = 0; i < ch.rewardTotals.Count; i++)
+                    ch.rewardTotals[i] = Mathf.Max(0, defaultRewardTotalPerLevel);
         }
     }
 
+    // ===== Rewards (Collected) =====
     public void SetLevelRewards(int chapterIndex, int levelIndex, int rewards)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return;
-        data.chapters[chapterIndex].rewards[levelIndex] = rewards;
+
+        int total = GetLevelRewardTotal(chapterIndex, levelIndex);
+        data.chapters[chapterIndex].rewards[levelIndex] = Mathf.Clamp(rewards, 0, total);
         Save();
     }
 
     public int GetLevelRewards(int chapterIndex, int levelIndex)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return 0;
-        return data.chapters[chapterIndex].rewards[levelIndex];
+        return Mathf.Max(0, data.chapters[chapterIndex].rewards[levelIndex]);
+    }
+
+    // ===== Rewards (Total) =====
+    public void SetLevelRewardTotal(int chapterIndex, int levelIndex, int total)
+    {
+        if (!ValidateLevelIndex(chapterIndex, levelIndex)) return;
+
+        total = Mathf.Max(0, total);
+        data.chapters[chapterIndex].rewardTotals[levelIndex] = total;
+
+        // 同步 clamp collected
+        int collected = data.chapters[chapterIndex].rewards[levelIndex];
+        data.chapters[chapterIndex].rewards[levelIndex] = Mathf.Clamp(collected, 0, total);
+
+        Save();
+    }
+
+    public int GetLevelRewardTotal(int chapterIndex, int levelIndex)
+    {
+        if (!ValidateLevelIndex(chapterIndex, levelIndex)) return Mathf.Max(0, defaultRewardTotalPerLevel);
+        return Mathf.Max(0, data.chapters[chapterIndex].rewardTotals[levelIndex]);
+    }
+
+    public string GetLevelRewardProgressText(int chapterIndex, int levelIndex)
+    {
+        int collected = GetLevelRewards(chapterIndex, levelIndex);
+        int total = GetLevelRewardTotal(chapterIndex, levelIndex);
+        return $"{collected}/{total}";
     }
 
     public int GetChapterTotal(int chapterIndex)
     {
         if (data?.chapters == null || chapterIndex < 0 || chapterIndex >= data.chapters.Count) return 0;
         int sum = 0;
-        foreach (var r in data.chapters[chapterIndex].rewards) sum += r;
+        foreach (var r in data.chapters[chapterIndex].rewards) sum += Mathf.Max(0, r);
         return sum;
     }
 
-    public void MarkLevelCompleted(int chapterIndex, int levelIndex, int rewards)
+    // ✅ 这里改成：同时记录 collected 和 total（total 可选）
+    public void MarkLevelCompleted(int chapterIndex, int levelIndex, int rewardsCollected, int rewardTotal = -1)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return;
+
         data.chapters[chapterIndex].cleared[levelIndex] = true;
-        data.chapters[chapterIndex].rewards[levelIndex] = rewards; // 可为0
+
+        if (rewardTotal >= 0)
+            data.chapters[chapterIndex].rewardTotals[levelIndex] = Mathf.Max(0, rewardTotal);
+
+        int totalNow = GetLevelRewardTotal(chapterIndex, levelIndex);
+        data.chapters[chapterIndex].rewards[levelIndex] = Mathf.Clamp(rewardsCollected, 0, totalNow);
+
         Save();
     }
 
@@ -234,10 +300,8 @@ public class SaveManager : MonoBehaviour
         return data.chapters[chapterIndex].cleared[levelIndex];
     }
 
-    // 规则：第一关(索引0)默认解锁；其他关卡=前一关已通关
     public bool IsLevelUnlocked(int chapterIndex, int levelIndex)
     {
-        // Playtest: Session 全解锁（不改存档）
         if (unlockPolicy == UnlockPolicy.UnlockAll_Session) return true;
 
         if (!ValidateChapterIndex(chapterIndex)) return false;
@@ -257,9 +321,6 @@ public class SaveManager : MonoBehaviour
         return ch.bestTimes[levelIndex];
     }
 
-    /// <summary>
-    /// 如果 newTime 更好（更小）就替换并保存；返回是否更新了 best
-    /// </summary>
     public bool SetBestTimeIfBetter(int chapterIndex, int levelIndex, float newTimeSeconds)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return false;
@@ -267,7 +328,6 @@ public class SaveManager : MonoBehaviour
 
         var ch = data.chapters[chapterIndex];
 
-        // 防御：确保结构存在（理论上 EnsureStructure 已做）
         if (ch.bestTimes == null)
         {
             ch.bestTimes = new List<float>();
@@ -276,7 +336,6 @@ public class SaveManager : MonoBehaviour
 
         float oldBest = ch.bestTimes[levelIndex];
 
-        // oldBest < 0 表示还没记录；newTime 更小表示更好
         if (oldBest < 0f || newTimeSeconds < oldBest)
         {
             ch.bestTimes[levelIndex] = newTimeSeconds;
@@ -288,10 +347,6 @@ public class SaveManager : MonoBehaviour
     }
 
     // ========= Playtest 辅助 =========
-
-    /// <summary>
-    /// 运行时切换解锁策略（比如在开发菜单/按钮里调用）
-    /// </summary>
     public void SetUnlockPolicy(UnlockPolicy policy, bool persistNow = false)
     {
         unlockPolicy = policy;
@@ -302,9 +357,6 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 一键把所有关卡标记为已通关（写入存档）
-    /// </summary>
     [ContextMenu("Playtest/Mark All Levels Cleared (Persist)")]
     public void MarkAllClearedPersist()
     {
@@ -333,10 +385,12 @@ public class SaveManager : MonoBehaviour
 
         return ch != null &&
                ch.rewards != null &&
+               ch.rewardTotals != null &&
                ch.cleared != null &&
                ch.bestTimes != null &&
                li >= 0 &&
                li < ch.rewards.Count &&
+               li < ch.rewardTotals.Count &&
                li < ch.cleared.Count &&
                li < ch.bestTimes.Count;
     }
