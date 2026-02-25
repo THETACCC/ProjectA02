@@ -162,14 +162,14 @@ public class LevelController : SKMonoSingleton<LevelController>
         //New method
         if(curOverBlock!= null)
         {
-            Debug.Log("Showing block");
+
             if (curOverBlock.type == BlockType.Regular)
             {
                 foreach (RegularBlockPlacement mRegularBlockPlace in mRegularPlacement)
                 {
                     if (mRegularBlockPlace != null && mRegularBlockPlace.isRegularCanPlace == true)
                     {
-                        Debug.Log("Showing regular area");
+
                         mRegularBlockPlace.PlaceIndicator.SetActive(true);
                     }
                 }
@@ -181,7 +181,7 @@ public class LevelController : SKMonoSingleton<LevelController>
                     if (mAlign != null && mAlign.isBlocked == false)
                     {
 
-                        Debug.Log("Showing normal area");
+
                         mAlign.PlaceIndicator.SetActive(true);
                     }
                 }
