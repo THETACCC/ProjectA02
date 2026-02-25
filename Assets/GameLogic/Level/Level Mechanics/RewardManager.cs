@@ -1,64 +1,74 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RewardManager : MonoBehaviour
 {
-
-    LevelController levelcontroller;
-
-    private bool isRewardSetup = false;
-    // This array will be populated at runtime with all GameObjects tagged "Reward"
-    public GameObject[] RewardObjects;
-
-    // Internal cache: one RewardAcquire per RewardObject
-    private RewardAcquire[] rewardAcquireScripts;
-
-    // Flags to remember if we've already counted a given RewardAcquire.isReached
-    private bool[] rewardReachedFlags;
-
-    // The total number of rewards that have become "isReached == true" so far
-    public int rewardsReachedCount = 0;
-    //public GameObject[] RewardObjects;
     private LevelController levelController;
 
-    // Start is called before the first frame update
+    private bool isRewardSetup = false;
+
+    public GameObject[] RewardObjects;
+
+    private RewardAcquire[] rewardAcquireScripts;
+    private bool[] rewardReachedFlags;
+
+    public int rewardsReachedCount = 0;
+
+    // ✅ 这一关总共有多少 reward（用于显示 x/total）
+    public int totalRewardsInLevel = 0;
+
+    // scene -> indices
+    private int chapterIndex = 0;
+    private int levelIndex = 0;
+
+    void Awake()
+    {
+        // Parse scene name "ChapterX_LevelY"
+        string sceneName = SceneManager.GetActiveScene().name;
+        var match = Regex.Match(sceneName, @"^Chapter(\d+)_Level(\d+)$");
+        if (match.Success)
+        {
+            chapterIndex = int.Parse(match.Groups[1].Value);
+            int rawLevel = int.Parse(match.Groups[2].Value);
+            levelIndex = Mathf.Max(0, rawLevel - 1);
+        }
+    }
+
     void Start()
     {
         GameObject levelcontrollerOBVJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
-        levelcontroller = levelcontrollerOBVJ.GetComponent<LevelController>();
+        if (levelcontrollerOBVJ) levelController = levelcontrollerOBVJ.GetComponent<LevelController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Once the level is in the Running phase, perform the one-time search
-        if (levelcontroller != null
-            && levelcontroller.phase == LevelPhase.Running
+        if (levelController != null
+            && levelController.phase == LevelPhase.Running
             && !isRewardSetup)
         {
-            SreachRewardObjects();
+            SearchRewardObjects();
             isRewardSetup = true;
         }
 
-        // After setup is done, continuously check for newly reached rewards
         if (isRewardSetup)
         {
             UpdateRewardCount();
         }
     }
 
-    void SreachRewardObjects()
+    void SearchRewardObjects()
     {
-        // 1. Find every GameObject tagged "Reward"
         RewardObjects = GameObject.FindGameObjectsWithTag("Reward");
 
-        // 2. Allocate arrays of the same length
         int count = RewardObjects.Length;
         rewardAcquireScripts = new RewardAcquire[count];
         rewardReachedFlags = new bool[count];
 
-        // 3. For each reward GameObject, get its RewardAcquire component
+        // ✅ reset count & total
+        rewardsReachedCount = 0;
+        totalRewardsInLevel = count;
+
         for (int i = 0; i < count; i++)
         {
             GameObject go = RewardObjects[i];
@@ -67,12 +77,13 @@ public class RewardManager : MonoBehaviour
             if (acquireScript != null)
             {
                 rewardAcquireScripts[i] = acquireScript;
-                // Initialize the flag to whatever the current isReached is
+
+                // ✅ 如果一开始就已经 reached（比如存档还原/特殊逻辑），这里也要计入
                 rewardReachedFlags[i] = acquireScript.isReached;
+                if (acquireScript.isReached) rewardsReachedCount++;
             }
             else
             {
-                // If any Reward�\tagged object lacks RewardAcquire, log a warning
                 Debug.LogWarning("[RewardManager] GameObject '"
                     + go.name
                     + "' has tag 'Reward' but does not contain a RewardAcquire component.");
@@ -81,45 +92,27 @@ public class RewardManager : MonoBehaviour
             }
         }
 
-        Debug.Log("[RewardManager] Found "
-            + count
-            + " reward object(s) in the scene.");
+        // ✅ 把 total 写进存档：这样你以后改 reward 数量，World UI 就能显示正确的 “0/5”
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.SetLevelRewardTotal(chapterIndex, levelIndex, totalRewardsInLevel);
+
+        Debug.Log("[RewardManager] Found " + count + " reward object(s) in the scene.");
     }
 
     void UpdateRewardCount()
     {
-        if (rewardAcquireScripts == null)
-            return;
+        if (rewardAcquireScripts == null) return;
 
         for (int i = 0; i < rewardAcquireScripts.Length; i++)
         {
             RewardAcquire script = rewardAcquireScripts[i];
+            if (script == null) continue;
 
-            if (script == null)
-                continue;
-
-            // If this reward has just become "reached" but wasn't before
             if (script.isReached && !rewardReachedFlags[i])
             {
-                // 1) Increment the total
                 rewardsReachedCount++;
-
-                // 2) Mark as counted
                 rewardReachedFlags[i] = true;
-
-                // 3) (Optional) Log or fire off an event
-
             }
         }
     }
-
-    void OnLevelComplete()
-    {
-        int chapter = levelController.chapterIndex;    // Chapter #: 0 or 1
-        int thisLevelRewardCount = rewardsReachedCount; // your running total for this level
-
-        Debug.Log($"Saved {thisLevelRewardCount} rewards to Chapter {chapter}. Total now: " +
-                  $"{SaveManager.Instance.GetChapterTotal(chapter)}");
-    }
-
 }
