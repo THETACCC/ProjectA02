@@ -15,45 +15,55 @@ public class MainMenuButton : MonoBehaviour,
     public MenuButtonType buttonType;
     public MainMenuPlayerMovement playerMovement;
     public TextMeshProUGUI label;
-    public Image[] highlightImages;     // now an array!
+
+    [Tooltip("Only put images here that should FADE in/out on hover. Do NOT include SideLeft.")]
+    public Image[] highlightImages;
+
+    [Tooltip("SideLeft object (RectTransform) that should NEVER disappear, only scale on hover.")]
+    public RectTransform sideLeft;
 
     [Header("Animation Settings")]
     public float hoverScale = 1.1f;
     public float hoverSpeed = 0.2f;
     public float clickScale = 0.9f;
     public float clickSpeed = 0.1f;
+
+    [Header("SideLeft Hover Scale")]
+    public float sideLeftHoverScale = 1.1f;
+    public float sideLeftScaleSpeed = 0.2f;
+
     public Color defaultColor = new Color(0.8f, 0.8f, 0.8f, 1f);
     public Color hoverColor = Color.white;
 
     Vector3 originalScale;
-    Color originalTextColor;
-    float[] originalImgAlphas;
+    Vector3 sideLeftOriginalScale;
 
     void Awake()
     {
         originalScale = transform.localScale;
-        originalTextColor = label.color;
 
-        // cache and zero-out all highlight images
-        originalImgAlphas = new float[highlightImages.Length];
-        for (int i = 0; i < highlightImages.Length; i++)
+        if (sideLeft != null)
+            sideLeftOriginalScale = sideLeft.localScale;
+
+        // zero-out ONLY highlight images (SideLeft is NOT in this array)
+        if (highlightImages != null)
         {
-            originalImgAlphas[i] = highlightImages[i].color.a;
-            var c = highlightImages[i].color;
-            c.a = 0f;
-            highlightImages[i].color = c;
+            for (int i = 0; i < highlightImages.Length; i++)
+            {
+                if (highlightImages[i] == null) continue;
+                var c = highlightImages[i].color;
+                c.a = 0f;
+                highlightImages[i].color = c;
+            }
         }
 
-        // initialize label
         label.color = defaultColor;
     }
 
     public void OnPointerEnter(PointerEventData e)
     {
-
-        //Audio
         AudioPlayer.instance.playUIHoverSound();
-        // tell manager which target to use
+
         switch (buttonType)
         {
             case MenuButtonType.StartGame: playerMovement.OnHoverStartGame(); break;
@@ -63,37 +73,42 @@ public class MainMenuButton : MonoBehaviour,
         }
 
         StopAllCoroutines();
-        StartCoroutine(ScaleTo(originalScale * hoverScale, hoverSpeed));
+        StartCoroutine(ScaleTo(transform, originalScale * hoverScale, hoverSpeed));
         StartCoroutine(ColorTo(label, defaultColor, hoverColor, hoverSpeed));
         StartCoroutine(FadeImages(0f, 1f, hoverSpeed));
+
+        if (sideLeft != null)
+            StartCoroutine(ScaleTo(sideLeft, sideLeftOriginalScale * sideLeftHoverScale, sideLeftScaleSpeed));
     }
 
     public void OnPointerExit(PointerEventData e)
     {
         StopAllCoroutines();
-        StartCoroutine(ScaleTo(originalScale, hoverSpeed));
+        StartCoroutine(ScaleTo(transform, originalScale, hoverSpeed));
         StartCoroutine(ColorTo(label, hoverColor, defaultColor, hoverSpeed));
         StartCoroutine(FadeImages(1f, 0f, hoverSpeed));
+
+        if (sideLeft != null)
+            StartCoroutine(ScaleTo(sideLeft, sideLeftOriginalScale, sideLeftScaleSpeed));
     }
 
     public void OnPointerClick(PointerEventData e)
     {
         StopAllCoroutines();
         StartCoroutine(ClickEffect());
-        // add your click logic here or via the Button OnClick in the Inspector
     }
 
-    IEnumerator ScaleTo(Vector3 target, float duration)
+    IEnumerator ScaleTo(Transform targetTransform, Vector3 target, float duration)
     {
-        Vector3 start = transform.localScale;
+        Vector3 start = targetTransform.localScale;
         float t = 0f;
         while (t < duration)
         {
             t += Time.unscaledDeltaTime;
-            transform.localScale = Vector3.Lerp(start, target, t / duration);
+            targetTransform.localScale = Vector3.Lerp(start, target, t / duration);
             yield return null;
         }
-        transform.localScale = target;
+        targetTransform.localScale = target;
     }
 
     IEnumerator ColorTo(TextMeshProUGUI txt, Color from, Color to, float duration)
@@ -110,27 +125,28 @@ public class MainMenuButton : MonoBehaviour,
 
     IEnumerator FadeImages(float from, float to, float duration)
     {
-        float t = 0f;
-        // capture starting alphas in case you need non-zero originals
-        float[] starts = new float[highlightImages.Length];
-        for (int i = 0; i < highlightImages.Length; i++)
-            starts[i] = from;
+        if (highlightImages == null || highlightImages.Length == 0) yield break;
 
+        float t = 0f;
         while (t < duration)
         {
             t += Time.unscaledDeltaTime;
             float alpha = Mathf.Lerp(from, to, t / duration);
+
             for (int i = 0; i < highlightImages.Length; i++)
             {
+                if (highlightImages[i] == null) continue;
                 var c = highlightImages[i].color;
                 c.a = alpha;
                 highlightImages[i].color = c;
             }
+
             yield return null;
         }
-        // ensure final
+
         for (int i = 0; i < highlightImages.Length; i++)
         {
+            if (highlightImages[i] == null) continue;
             var c = highlightImages[i].color;
             c.a = to;
             highlightImages[i].color = c;
@@ -139,11 +155,12 @@ public class MainMenuButton : MonoBehaviour,
 
     IEnumerator ClickEffect()
     {
-        // shrink
-        yield return ScaleTo(originalScale * clickScale, clickSpeed);
-        // bounce back to hover‐scale if still hovered, else to normal
-        bool stillHovered = EventSystem.current.IsPointerOverGameObject();
+        yield return ScaleTo(transform, originalScale * clickScale, clickSpeed);
+
+        // If you want "still hovered" logic to be accurate per-button, track a bool instead.
+        bool stillHovered = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         Vector3 target = stillHovered ? originalScale * hoverScale : originalScale;
-        yield return ScaleTo(target, clickSpeed);
+
+        yield return ScaleTo(transform, target, clickSpeed);
     }
 }
