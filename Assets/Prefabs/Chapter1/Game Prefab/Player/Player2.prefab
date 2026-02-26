@@ -1398,6 +1398,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8af862b7ae6ab04439bf8abbd0c6ed8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Player1Tag: Player1
+  Player2Tag: Player2
   mapSide: 0
   controller: {fileID: 0}
   moveSpeed: 20
@@ -1414,6 +1416,14 @@ MonoBehaviour:
   Player2Controll: {fileID: 0}
   Alignement: {fileID: 7459368667084199926}
   whichChapter: 1
+  walkSoundClip:
+  - {fileID: 8300000, guid: ba3dcf7fcb9fe3744811442a6b2b99d8, type: 3}
+  - {fileID: 8300000, guid: 0993a2bcc914f9c4db6d7f12b78d9c85, type: 3}
+  - {fileID: 8300000, guid: c9b27638ff5fc97498e01704577aaa11, type: 3}
+  rotateSoundClip:
+  - {fileID: 8300000, guid: c3fbae6e7b0750046a8e18da615f08a9, type: 3}
+  - {fileID: 8300000, guid: 379c1a188433be84f818d400b58f79bd, type: 3}
+  - {fileID: 8300000, guid: 0dbdb75303ba8a9408ac74224606fe74, type: 3}
 --- !u!54 &2257545507642584591
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5575,6 +5585,9 @@ MonoBehaviour:
   useClosestPoint: 0
   snapSpeed: 20
   stopThreshold: 0.01
+  groundGraceSeconds: 0.08
+  fallbackOverlapIfLost: 1
+  fallbackRadius: 0.4
   showDebugLines: 1
 --- !u!33 &1005822406101518956
 MeshFilter:
