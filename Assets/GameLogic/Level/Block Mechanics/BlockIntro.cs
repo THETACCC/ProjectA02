@@ -19,6 +19,9 @@ public class BlockIntro : MonoBehaviour
     public LevelLoader LevelLoader;
 
     public LevelController controller;
+
+    public bool isBigMap = false;
+
     // Start is called before the first frame update
 
     //Audio
@@ -55,7 +58,16 @@ public class BlockIntro : MonoBehaviour
         }
 
         StartCoroutine(PlayEffectsSequentially());
-        StartCoroutine(EnablePlayer());
+
+        if(!isBigMap)
+        {
+            StartCoroutine(EnablePlayer());
+        }
+        else if(isBigMap)
+        {
+            StartCoroutine(EnablePlayerBigMap());
+        }
+
 
     }
 
@@ -88,6 +100,25 @@ public class BlockIntro : MonoBehaviour
 
         Player2.SetActive(true);
         LevelSuccessLeft.SerachPlayer();    
+        LevelSuccessRight.SerachPlayer();
+        LevelLoader.LoadCharacter();
+        yield return new WaitForSeconds(0.1f);
+        controller.phase = LevelPhase.Placing;
+    }
+
+    IEnumerator EnablePlayerBigMap()
+    {
+        yield return new WaitForSeconds(6f);
+
+
+        //Audio
+        SoundFXManager.instance.PlayRandomSoundFXClip(enablePlayerSoundClip, transform, 1f);
+
+
+        Player1.SetActive(true);
+
+        Player2.SetActive(true);
+        LevelSuccessLeft.SerachPlayer();
         LevelSuccessRight.SerachPlayer();
         LevelLoader.LoadCharacter();
         yield return new WaitForSeconds(0.1f);

@@ -121,6 +121,13 @@ public class PlayerController : MonoBehaviour
                         axis_x = 0;
                     }
 
+
+                    //Audio Related
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        SoundFXManager.instance.PlayRandomSoundFXClip(walkSoundClip, transform, 1f);
+                    }
+
                     if (Input.GetKey(KeyCode.Space))
                     {
                         axis_z = 1;
