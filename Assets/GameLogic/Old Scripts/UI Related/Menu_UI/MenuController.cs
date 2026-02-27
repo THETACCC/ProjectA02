@@ -3,11 +3,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using SKCell;
 
-
 public class MenuController : MonoBehaviour
 {
     [Header("Levels To Load - Chapter 0 World")]
-    [SerializeField] private SceneTitle sceneToLoad_Chp1_World;  // Pick from available SceneTitles
+    [SerializeField] private SceneTitle sceneToLoad_Chp1_World;
     private bool startLoading = false;
     private FlowManager flowManager;
     private GameObject flowmanager;
@@ -17,21 +16,44 @@ public class MenuController : MonoBehaviour
     private int uiLayerMask;
     private bool gamePaused = false;
 
-    [Header("Start Game Animations")]
-    private float Circle_PosY_start;
-
+    [Header("Start Game Animations (UI)")]
     [SerializeField] private RectTransform circle;
     [SerializeField] private float Circle_PosY_end = 542f;
 
-    [SerializeField] private float circleLerpDuration = 0.35f;
+    [SerializeField] private RectTransform circleBig;
+    [SerializeField] private float CircleBig_PosX_end = 995f;
+    [SerializeField] private float CircleBig_PosY_end = -6.103516e-05f;
+
+    [SerializeField] private RectTransform Title;
+    [SerializeField] private float Title_PosX_end = -937f;
+    [SerializeField] private float Title_PosY_end = 113f;
+    [SerializeField] private float Title_scale_end = 0.8f;
+
+    [SerializeField] private float uiLerpDuration = 0.35f;
     [SerializeField] private AnimationCurve ease = null;
+    [SerializeField] private bool useUnscaledTime = true;
 
-    private Coroutine _circleCo;
+    private Vector2 _circleStart;
+    private Vector2 _circleBigStart;
+    private Vector2 _titleStart;
+    private Vector3 _titleScaleStart;
 
+    private Coroutine _uiCo;
 
     private void Start()
     {
-        Circle_PosY_start = circle.anchoredPosition.y;
+        if (circle != null) _circleStart = circle.anchoredPosition;
+
+        if (circleBig != null)
+        {
+            _circleBigStart = circleBig.anchoredPosition; // ✅ 修正：记录 circleBig 自己的起点
+        }
+
+        if (Title != null)
+        {
+            _titleStart = Title.anchoredPosition;
+            _titleScaleStart = Title.localScale;
+        }
 
         flowmanager = GameObject.Find("FlowManager");
         if (flowmanager != null)
@@ -44,14 +66,12 @@ public class MenuController : MonoBehaviour
         }
     }
 
-
     public void newGameDialogYes()
     {
         LoadNextLevel(sceneToLoad_Chp1_World);
         print("LOADING LEVEL! " + sceneToLoad_Chp1_World);
         ResumeGame();
     }
-
 
     public void ExitButton()
     {
@@ -88,81 +108,62 @@ public class MenuController : MonoBehaviour
         }
     }
 
-
     private void EnableOnlyUILayerRaycasts(bool uiOnly)
     {
-        // Set the event system's raycast blocking based on uiOnly
         var eventSystem = UnityEngine.EventSystems.EventSystem.current;
 
         if (eventSystem != null)
         {
-            // Enable or disable raycast target on all non-UI objects
             foreach (var obj in FindObjectsOfType<Collider2D>())
             {
                 if (uiOnly)
                 {
-                    // Disable raycast target for non-UI objects
                     if (obj.gameObject.layer != LayerMask.NameToLayer("UI"))
                     {
-                        obj.GetComponent<Collider2D>().enabled = false;  // Disable collider
+                        obj.GetComponent<Collider2D>().enabled = false;
                     }
                 }
                 else
                 {
-                    // Re-enable all colliders
-                    obj.GetComponent<Collider2D>().enabled = true;  // Enable collider
+                    obj.GetComponent<Collider2D>().enabled = true;
                 }
             }
         }
     }
 
-    // Disable or Enable input outside of UI
     private void DisableInputOutsideUI(bool disable)
     {
-        // Get all draggable objects or interactive components and disable them during pause
-        var dragObjects = FindObjectsOfType<Block>();  // Replace with actual drag-drop component or similar
+        var dragObjects = FindObjectsOfType<Block>();
         foreach (var dragObject in dragObjects)
         {
-            dragObject.enabled = !disable;  // Disable drag functionality while paused
+            dragObject.enabled = !disable;
         }
 
-        var playerMoveScripts = FindObjectsOfType<SubPositionIndicator>();  // Example, adjust for your player scripts
+        var playerMoveScripts = FindObjectsOfType<SubPositionIndicator>();
         foreach (var script in playerMoveScripts)
         {
-            script.enabled = !disable;  // Disable movement during pause
+            script.enabled = !disable;
         }
     }
 
     private void LoadNextLevel(SceneTitle sceneTitle)
     {
-        // Use SKUtils.InvokeAction to add a delay before loading the scene
         SKUtils.InvokeAction(0.2f, () =>
         {
             flowManager.LoadScene(new SceneInfo()
             {
-                index = sceneTitle,  // Load the scene by SceneTitle
+                index = sceneTitle,
             });
         });
+
         startLoading = true;
     }
 
     public void ResetCurrentScene()
     {
-        // Get the current active scene's index
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-
-        SceneManager.LoadScene(currentSceneIndex);  // Directly reload the scene
+        SceneManager.LoadScene(currentSceneIndex);
         ResumeGame();
-
-        /*
-        // Add a delay before reloading the scene
-        SKUtils.InvokeAction(0.2f, () =>
-        {
-            SceneManager.LoadScene(currentSceneIndex);  // Directly reload the scene
-        });
-
-        startLoading = true;
-        */
     }
 
     private LevelTimer GetLevelTimer()
@@ -171,45 +172,65 @@ public class MenuController : MonoBehaviour
         return FindObjectOfType<LevelTimer>();
     }
 
-    public void CircleLerpToEnd()
-    {
-        StartCircleMove(Circle_PosY_end);
-    }
-  
-    public void CircleLerpToStart()
-    {
-        StartCircleMove(Circle_PosY_start);
-    }
+    // ---------------- UI Animation API ----------------
 
-    private void StartCircleMove(float targetY)
+    // ONE call: circle + circleBig + title to end, and title scales to end
+    public void MoveUIToEnd()
     {
-        if (circle == null) return;
+        if (circle == null || circleBig == null || Title == null) return;
 
-        if (_circleCo != null) StopCoroutine(_circleCo);
-        _circleCo = StartCoroutine(CoMoveCircleY(targetY));
+        Vector2 circleEnd = new Vector2(_circleStart.x, Circle_PosY_end);
+        Vector2 circleBigEnd = new Vector2(CircleBig_PosX_end, CircleBig_PosY_end);
+        Vector2 titleEnd = new Vector2(Title_PosX_end, Title_PosY_end);
+        Vector3 titleScaleEnd = new Vector3(Title_scale_end, Title_scale_end, _titleScaleStart.z);
+
+        StartUIMove(circleEnd, circleBigEnd, titleEnd, titleScaleEnd);
     }
 
-    private IEnumerator CoMoveCircleY(float targetY)
+    // ONE call: circle + circleBig + title back to start, and title scales back to start
+    public void MoveUIToStart()
     {
-        Vector2 from = circle.anchoredPosition;
-        Vector2 to = new Vector2(from.x, targetY);
+        if (circle == null || circleBig == null || Title == null) return;
+        StartUIMove(_circleStart, _circleBigStart, _titleStart, _titleScaleStart);
+    }
 
-        float dur = Mathf.Max(0.0001f, circleLerpDuration);
+    private void StartUIMove(Vector2 circleTarget, Vector2 circleBigTarget, Vector2 titleTarget, Vector3 titleScaleTarget)
+    {
+        if (_uiCo != null) StopCoroutine(_uiCo);
+        _uiCo = StartCoroutine(CoMoveUI(circleTarget, circleBigTarget, titleTarget, titleScaleTarget));
+    }
+
+    private IEnumerator CoMoveUI(Vector2 circleTarget, Vector2 circleBigTarget, Vector2 titleTarget, Vector3 titleScaleTarget)
+    {
+        Vector2 circleFrom = circle.anchoredPosition;
+        Vector2 circleBigFrom = circleBig.anchoredPosition;
+        Vector2 titleFrom = Title.anchoredPosition;
+        Vector3 titleScaleFrom = Title.localScale;
+
+        float dur = Mathf.Max(0.0001f, uiLerpDuration);
         float t = 0f;
 
         while (t < 1f)
         {
-            float dt = Time.deltaTime;
+            float dt = useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
             t += dt / dur;
 
-            float k = (ease != null && ease.length > 0) ? ease.Evaluate(Mathf.Clamp01(t)) : Mathf.Clamp01(t);
-            circle.anchoredPosition = Vector2.LerpUnclamped(from, to, k);
+            float u = Mathf.Clamp01(t);
+            float k = (ease != null && ease.length > 0) ? ease.Evaluate(u) : u;
+
+            circle.anchoredPosition = Vector2.LerpUnclamped(circleFrom, circleTarget, k);
+            circleBig.anchoredPosition = Vector2.LerpUnclamped(circleBigFrom, circleBigTarget, k);
+            Title.anchoredPosition = Vector2.LerpUnclamped(titleFrom, titleTarget, k);
+            Title.localScale = Vector3.LerpUnclamped(titleScaleFrom, titleScaleTarget, k);
 
             yield return null;
         }
 
-        circle.anchoredPosition = to;
-        _circleCo = null;
-    }
+        circle.anchoredPosition = circleTarget;
+        circleBig.anchoredPosition = circleBigTarget;
+        Title.anchoredPosition = titleTarget;
+        Title.localScale = titleScaleTarget;
 
+        _uiCo = null;
+    }
 }
