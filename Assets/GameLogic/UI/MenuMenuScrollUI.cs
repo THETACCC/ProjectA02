@@ -5,21 +5,21 @@ using UnityEngine.UI;
 
 public class MenuMenuScrollUI : MonoBehaviour
 {
-    [Header("Anchors (can be moving children; we SNAPSHOT positions at start)")]
-    public Transform[] anchors;          // 你现在拖的child也行（会动没事）
-    public Transform[] moduleRoots;      // 你要移动的 empty parent（pivot）
+    [Header("Anchors (can be moving children; used only for INITIAL snapshot)")]
+    public Transform[] anchors;          // OK if moving; we only use it at startup
+    public Transform[] moduleRoots;      // empty parents (pivots) you actually move
 
     [Header("Optional visuals (actual visible child)")]
-    [Tooltip("不填则自动找：优先Graphic(UI)，否则第一个child，否则root本身。")]
+    [Tooltip("If not assigned: auto pick Graphic(UI) > first child > root.")]
     public Transform[] moduleVisuals;
 
     [Header("Space (coordinate root)")]
-    [Tooltip("建议填：anchors/modules都在同一个Canvas/父物体下。为空用this.transform。")]
+    [Tooltip("Recommended: anchors/modules under the same canvas/root. If null uses this.transform.")]
     public Transform space;
 
     [Header("Top/Center/Bottom are defined by SLOT index")]
     public int topSlotIndex = 7;
-    public int centerSlotIndex = 0;  // 这就是“左边中间位置”的slot
+    public int centerSlotIndex = 0;  // the left-middle focus slot
     public int bottomSlotIndex = 1;
 
     [Header("Move")]
@@ -29,59 +29,70 @@ public class MenuMenuScrollUI : MonoBehaviour
     public bool listenMouseScroll = true;
     public float scrollThreshold = 0.01f;
     public bool listenArrowKeys = true;
-    public KeyCode clockwiseKey = KeyCode.UpArrow;            // 顺时针
-    public KeyCode counterClockwiseKey = KeyCode.DownArrow;   // 逆时针
+    public KeyCode clockwiseKey = KeyCode.DownArrow;             // clockwise
+    public KeyCode counterClockwiseKey = KeyCode.UpArrow;    // counter-clockwise
     public bool invertClockwise = false;
 
     [Header("Rendering Range (fix flicker)")]
-    [Tooltip("完全可见半径：1=3个(上中下), 2=5个, 3=7个")]
-    public int fullyVisibleRadius = 2;    // 推荐 2（5个）
-    [Tooltip("预渲染半径：比fullyVisibleRadius大1即可避免闪烁（例如3=7个）")]
-    public int preRenderRadius = 3;       // 推荐 3（7个）
+    [Tooltip("Fully visible radius: 1=3 (top/center/bottom), 2=5, 3=7")]
+    public int fullyVisibleRadius = 2;     // recommended 2 (5 visible)
+    [Tooltip("Pre-render radius: usually fullyVisibleRadius+1 to prevent flicker (e.g. 3 => 7 items)")]
+    public int preRenderRadius = 3;        // recommended 3 (7 pre-render)
     [Range(0f, 1f)]
     public float preRenderMinAlpha = 0.12f;
 
     [Header("Interaction")]
-    [Tooltip("只允许上/中/下可以点，其它即使可见也不拦截Raycast，避免点歪。")]
+    [Tooltip("Only Top/Center/Bottom are interactable; others (even if visible) won't block raycasts.")]
     public bool onlyTopCenterBottomInteractable = true;
 
     [Header("Center Scaling (scale children, not root)")]
-    [Tooltip("中心位(左边中间)的模块：其 parent 的所有直接 child 放大到原始的这个倍数。")]
+    [Tooltip("When a module is in center slot, scale ALL direct children of its root by this multiplier.")]
     public float centerChildrenScaleMultiplier = 1.33f;
 
     [Header("Init mapping")]
-    [Tooltip("不要求你moduleRoots顺序正确：用“唯一最近slot匹配”自动建立初始映射。建议开。")]
+    [Tooltip("If true, modules don't need to be ordered: we build a unique nearest-slot mapping at runtime.")]
     public bool autoUniqueNearestMapping = true;
+
+    [Header("Auto Refresh On Screen/Canvas Size Change")]
+    [Tooltip("On resize we DO NOT rebuild slot order and DO NOT reset positions. We re-capture slots from current module visuals.")]
+    public bool autoRefreshOnResize = true;
+    public float resizeDebounceSeconds = 0.05f;
 
     public int TopModuleIndex { get; private set; } = -1;
     public int CenterModuleIndex { get; private set; } = -1;
     public int BottomModuleIndex { get; private set; } = -1;
 
     // ===== internal =====
-    Vector3[] _slotLocalPos;        // 记录下来的固定slot（space local）
+    Vector3[] _slotLocalPos;        // slots in space local
     Vector3[] _visualOffsetLocal;   // visualLocal - rootLocal
-    int[] _baseSlotIndex;           // module i 初始属于哪个slot
+    int[] _baseSlotIndex;           // module i initially belongs to which slot
     CanvasGroup[] _cg;
 
-    // child scale cache (direct children)
-    Transform[][] _scaleChildren;
-    Vector3[][] _childOrigScales;
+    Transform[][] _scaleChildren;   // direct children to scale (per module)
+    Vector3[][] _childOrigScales;   // cached original local scales
 
     int _offsetSteps;
     bool _animating;
     int _queuedSteps;
 
+    int _lastScreenW, _lastScreenH;
+    Coroutine _refreshCo;
+    Coroutine _moveCo;
+
     IEnumerator Start()
     {
         if (space == null) space = transform;
 
-        if (anchors == null || moduleRoots == null || anchors.Length < 3 || anchors.Length != moduleRoots.Length)
+        if (moduleRoots == null || moduleRoots.Length < 3)
         {
-            Debug.LogError("[MenuMenuScrollUI] anchors and moduleRoots must exist and have same length (>=3).");
+            Debug.LogError("[MenuMenuScrollUI] moduleRoots must exist and have length >= 3.");
             yield break;
         }
 
-        int n = anchors.Length;
+        int n = moduleRoots.Length;
+
+        // anchors must match length if you want initial snapshot from anchors
+        bool hasAnchors = (anchors != null && anchors.Length == n);
 
         fullyVisibleRadius = Mathf.Clamp(fullyVisibleRadius, 0, n / 2);
         preRenderRadius = Mathf.Clamp(preRenderRadius, fullyVisibleRadius, n / 2);
@@ -97,33 +108,35 @@ public class MenuMenuScrollUI : MonoBehaviour
         _scaleChildren = new Transform[n][];
         _childOrigScales = new Vector3[n][];
 
-        // 等UI布局稳定（Canvas/LayoutGroup 常在第一帧后才就位）
+        // Let UI/layout settle
         yield return null;
         yield return new WaitForEndOfFrame();
 
-        SnapshotSlots(); // 记录slots（之后anchors动不动都无所谓）
+        // 1) INITIAL slots:
+        // - if anchors provided: snapshot anchors (even if moving) ONCE
+        // - otherwise: snapshot from current modules (keeps your manual layout)
+        if (hasAnchors) SnapshotSlotsFromAnchors();
+        else SnapshotSlotsFromCurrentModules();
 
+        // 2) setup visuals, offsets, CanvasGroups, scale caches, click hooks
         for (int i = 0; i < n; i++)
         {
             var root = moduleRoots[i];
             if (!root)
             {
-                Debug.LogError($"[MenuMenuScrollUI] moduleRoots[{i}] null");
+                Debug.LogError($"[MenuMenuScrollUI] moduleRoots[{i}] is null");
                 yield break;
             }
 
             if (!moduleVisuals[i])
                 moduleVisuals[i] = AutoPickVisual(root);
 
-            Vector3 rootLocal = space.InverseTransformPoint(root.position);
-            Vector3 visLocal = space.InverseTransformPoint(moduleVisuals[i].position);
-            _visualOffsetLocal[i] = visLocal - rootLocal;
+            RecomputeVisualOffset(i);
 
             var cg = root.GetComponent<CanvasGroup>();
             if (!cg) cg = root.gameObject.AddComponent<CanvasGroup>();
             _cg[i] = cg;
 
-            // cache direct children scales (so we can restore)
             CacheChildrenScales(i);
 
             var btn = root.GetComponentInChildren<Button>(true);
@@ -134,12 +147,17 @@ public class MenuMenuScrollUI : MonoBehaviour
             }
         }
 
+        // 3) build base mapping
         if (autoUniqueNearestMapping) BuildUniqueNearestMapping();
         else for (int i = 0; i < n; i++) _baseSlotIndex[i] = i;
 
+        // 4) snap once
         SnapAllToSlots();
         RefreshTopCenterBottom();
-        ApplyVisibilityAndScaleImmediate(); // 初始一次
+        ApplyVisibilityAndScaleImmediate();
+
+        _lastScreenW = Screen.width;
+        _lastScreenH = Screen.height;
     }
 
     void Update()
@@ -158,6 +176,23 @@ public class MenuMenuScrollUI : MonoBehaviour
             if (Input.GetKeyDown(clockwiseKey)) StepClockwise();
             if (Input.GetKeyDown(counterClockwiseKey)) StepCounterClockwise();
         }
+
+        if (autoRefreshOnResize)
+        {
+            if (Screen.width != _lastScreenW || Screen.height != _lastScreenH)
+            {
+                _lastScreenW = Screen.width;
+                _lastScreenH = Screen.height;
+                MarkLayoutDirty();
+            }
+        }
+    }
+
+    // Works when this is on a RectTransform; harmless otherwise
+    void OnRectTransformDimensionsChange()
+    {
+        if (autoRefreshOnResize)
+            MarkLayoutDirty();
     }
 
     // ===== public =====
@@ -167,17 +202,97 @@ public class MenuMenuScrollUI : MonoBehaviour
     public void OnModuleClicked(int moduleIndex)
     {
         if (_animating) return;
+
         if (moduleIndex == TopModuleIndex) StepCounterClockwise();
         else if (moduleIndex == BottomModuleIndex) StepClockwise();
-        else { /* Center clicked -> Start/Confirm */ }
+        else
+        {
+            // Center clicked -> Start/Confirm
+        }
     }
 
-    // anchor会动：这里“记录下来”
-    public void SnapshotSlots()
+    // ===== resize refresh (NO RESET / NO REORDER) =====
+    void MarkLayoutDirty()
+    {
+        if (!isActiveAndEnabled) return;
+
+        if (_refreshCo != null) StopCoroutine(_refreshCo);
+        _refreshCo = StartCoroutine(CoRefreshAfterLayout_NoReset());
+    }
+
+    IEnumerator CoRefreshAfterLayout_NoReset()
+    {
+        if (resizeDebounceSeconds > 0f)
+            yield return new WaitForSeconds(resizeDebounceSeconds);
+
+        // Stop movement animation to avoid fighting with refresh (but we do NOT change offset/order)
+        if (_moveCo != null)
+        {
+            StopCoroutine(_moveCo);
+            _moveCo = null;
+            _animating = false;
+            _queuedSteps = 0;
+        }
+
+        // Let UI/layout settle
+        yield return null;
+        Canvas.ForceUpdateCanvases();
+        yield return new WaitForEndOfFrame();
+
+        // Recompute offsets (layout changes can move visuals within roots)
+        RecomputeAllVisualOffsets();
+
+        // IMPORTANT: do NOT snapshot from anchors on resize (anchors are moving).
+        // Instead, capture slots FROM CURRENT modules, preserving current order & positions.
+        SnapshotSlotsFromCurrentModules();
+
+        // Snap to those captured slots (this should produce ~no movement)
+        SnapAllToSlots();
+        RefreshTopCenterBottom();
+        ApplyVisibilityAndScaleImmediate();
+    }
+
+    // ===== slots snapshot =====
+    void SnapshotSlotsFromAnchors()
     {
         int n = anchors.Length;
         for (int i = 0; i < n; i++)
             _slotLocalPos[i] = space.InverseTransformPoint(anchors[i].position);
+    }
+
+    // Capture slots using CURRENT module visuals, keeping the current arrangement.
+    // Each slot index gets the visual position of the module currently assigned to that slot.
+    void SnapshotSlotsFromCurrentModules()
+    {
+        int n = moduleRoots.Length;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (!moduleVisuals[i])
+                moduleVisuals[i] = AutoPickVisual(moduleRoots[i]);
+
+            int slot = CurrentSlotForModule(i);
+            Vector3 vLocal = space.InverseTransformPoint(moduleVisuals[i].position);
+            _slotLocalPos[slot] = vLocal;
+        }
+    }
+
+    // ===== offsets =====
+    void RecomputeAllVisualOffsets()
+    {
+        for (int i = 0; i < moduleRoots.Length; i++)
+        {
+            if (!moduleVisuals[i])
+                moduleVisuals[i] = AutoPickVisual(moduleRoots[i]);
+            RecomputeVisualOffset(i);
+        }
+    }
+
+    void RecomputeVisualOffset(int i)
+    {
+        Vector3 rootLocal = space.InverseTransformPoint(moduleRoots[i].position);
+        Vector3 visLocal = space.InverseTransformPoint(moduleVisuals[i].position);
+        _visualOffsetLocal[i] = visLocal - rootLocal;
     }
 
     // ===== core move =====
@@ -191,7 +306,8 @@ public class MenuMenuScrollUI : MonoBehaviour
 
         int prevOffset = _offsetSteps;
         _offsetSteps = Mod(_offsetSteps + dirClockwise, _slotLocalPos.Length);
-        StartCoroutine(CoMoveAll(prevOffset, _offsetSteps));
+
+        _moveCo = StartCoroutine(CoMoveAll(prevOffset, _offsetSteps));
     }
 
     IEnumerator CoMoveAll(int prevOffset, int newOffset)
@@ -211,7 +327,6 @@ public class MenuMenuScrollUI : MonoBehaviour
 
         bool[] targetInteract = new bool[n];
 
-        // 先算目标（位置 + alpha + scaleMul），然后一起lerp，避免“闪一下/跳一下”
         for (int i = 0; i < n; i++)
         {
             startPos[i] = moduleRoots[i].position;
@@ -261,12 +376,13 @@ public class MenuMenuScrollUI : MonoBehaviour
             _cg[i].blocksRaycasts = targetInteract[i];
             _cg[i].interactable = targetInteract[i];
 
-            ApplyChildrenScaleMultiplier(i, targetMul[i]); // snap
+            ApplyChildrenScaleMultiplier(i, targetMul[i]);
         }
 
         RefreshTopCenterBottom();
 
         _animating = false;
+        _moveCo = null;
 
         if (_queuedSteps != 0)
         {
@@ -355,8 +471,7 @@ public class MenuMenuScrollUI : MonoBehaviour
             int slot = CurrentSlotForModule(i);
             int dist = CircularDistance(slot, centerSlotIndex, n);
 
-            float a = ComputeAlpha(dist);
-            _cg[i].alpha = a;
+            _cg[i].alpha = ComputeAlpha(dist);
 
             bool interact = !onlyTopCenterBottomInteractable
                 ? (dist <= fullyVisibleRadius)
@@ -376,14 +491,15 @@ public class MenuMenuScrollUI : MonoBehaviour
         Transform root = moduleRoots[moduleIndex];
         int c = root.childCount;
 
-        // 直接child（不会出现层级重复乘）
         var children = new Transform[c];
         var scales = new Vector3[c];
+
         for (int i = 0; i < c; i++)
         {
             children[i] = root.GetChild(i);
             scales[i] = children[i].localScale;
         }
+
         _scaleChildren[moduleIndex] = children;
         _childOrigScales[moduleIndex] = scales;
     }
