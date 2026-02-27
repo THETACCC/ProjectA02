@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SKCell;
@@ -17,9 +17,22 @@ public class MenuController : MonoBehaviour
     private int uiLayerMask;
     private bool gamePaused = false;
 
+    [Header("Start Game Animations")]
+    private float Circle_PosY_start;
+
+    [SerializeField] private RectTransform circle;
+    [SerializeField] private float Circle_PosY_end = 542f;
+
+    [SerializeField] private float circleLerpDuration = 0.35f;
+    [SerializeField] private AnimationCurve ease = null;
+
+    private Coroutine _circleCo;
+
 
     private void Start()
     {
+        Circle_PosY_start = circle.anchoredPosition.y;
+
         flowmanager = GameObject.Find("FlowManager");
         if (flowmanager != null)
         {
@@ -156,6 +169,47 @@ public class MenuController : MonoBehaviour
     {
         if (LevelTimer.Instance != null) return LevelTimer.Instance;
         return FindObjectOfType<LevelTimer>();
+    }
+
+    public void CircleLerpToEnd()
+    {
+        StartCircleMove(Circle_PosY_end);
+    }
+  
+    public void CircleLerpToStart()
+    {
+        StartCircleMove(Circle_PosY_start);
+    }
+
+    private void StartCircleMove(float targetY)
+    {
+        if (circle == null) return;
+
+        if (_circleCo != null) StopCoroutine(_circleCo);
+        _circleCo = StartCoroutine(CoMoveCircleY(targetY));
+    }
+
+    private IEnumerator CoMoveCircleY(float targetY)
+    {
+        Vector2 from = circle.anchoredPosition;
+        Vector2 to = new Vector2(from.x, targetY);
+
+        float dur = Mathf.Max(0.0001f, circleLerpDuration);
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            float dt = Time.deltaTime;
+            t += dt / dur;
+
+            float k = (ease != null && ease.length > 0) ? ease.Evaluate(Mathf.Clamp01(t)) : Mathf.Clamp01(t);
+            circle.anchoredPosition = Vector2.LerpUnclamped(from, to, k);
+
+            yield return null;
+        }
+
+        circle.anchoredPosition = to;
+        _circleCo = null;
     }
 
 }
