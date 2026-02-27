@@ -62,6 +62,8 @@ public class MainMenuButton : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData e)
     {
+        //Debug.Log($"[ENTER] handler={name}, hit={e.pointerCurrentRaycast.gameObject?.name}");
+
         AudioPlayer.instance.playUIHoverSound();
 
         switch (buttonType)
