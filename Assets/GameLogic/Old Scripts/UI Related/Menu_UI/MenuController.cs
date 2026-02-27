@@ -6,7 +6,7 @@ using SKCell;
 public class MenuController : MonoBehaviour
 {
     [Header("Levels To Load - Chapter 0 World")]
-    [SerializeField] private SceneTitle sceneToLoad_Chp1_World;  // Pick from available SceneTitles
+    [SerializeField] private SceneTitle sceneToLoad_Chp1_World;
     private bool startLoading = false;
     private FlowManager flowManager;
     private GameObject flowmanager;
@@ -20,16 +20,21 @@ public class MenuController : MonoBehaviour
     [SerializeField] private RectTransform circle;
     [SerializeField] private float Circle_PosY_end = 542f;
 
+    [SerializeField] private RectTransform circleBig;
+    [SerializeField] private float CircleBig_PosX_end = 995f;
+    [SerializeField] private float CircleBig_PosY_end = -6.103516e-05f;
+
     [SerializeField] private RectTransform Title;
     [SerializeField] private float Title_PosX_end = -937f;
     [SerializeField] private float Title_PosY_end = 113f;
-    [SerializeField] private float Title_scale_end = 0.8f;   // end scale (start scale will be recorded)
+    [SerializeField] private float Title_scale_end = 0.8f;
 
     [SerializeField] private float uiLerpDuration = 0.35f;
     [SerializeField] private AnimationCurve ease = null;
     [SerializeField] private bool useUnscaledTime = true;
 
     private Vector2 _circleStart;
+    private Vector2 _circleBigStart;
     private Vector2 _titleStart;
     private Vector3 _titleScaleStart;
 
@@ -38,6 +43,11 @@ public class MenuController : MonoBehaviour
     private void Start()
     {
         if (circle != null) _circleStart = circle.anchoredPosition;
+
+        if (circleBig != null)
+        {
+            _circleBigStart = circleBig.anchoredPosition; // ✅ 修正：记录 circleBig 自己的起点
+        }
 
         if (Title != null)
         {
@@ -164,34 +174,36 @@ public class MenuController : MonoBehaviour
 
     // ---------------- UI Animation API ----------------
 
-    // Call ONE function: circle + title move to end, and title scales to end
+    // ONE call: circle + circleBig + title to end, and title scales to end
     public void MoveUIToEnd()
     {
-        if (circle == null || Title == null) return;
+        if (circle == null || circleBig == null || Title == null) return;
 
         Vector2 circleEnd = new Vector2(_circleStart.x, Circle_PosY_end);
+        Vector2 circleBigEnd = new Vector2(CircleBig_PosX_end, CircleBig_PosY_end);
         Vector2 titleEnd = new Vector2(Title_PosX_end, Title_PosY_end);
         Vector3 titleScaleEnd = new Vector3(Title_scale_end, Title_scale_end, _titleScaleStart.z);
 
-        StartUIMove(circleEnd, titleEnd, titleScaleEnd);
+        StartUIMove(circleEnd, circleBigEnd, titleEnd, titleScaleEnd);
     }
 
-    // Call ONE function: circle + title move back to start, and title scales back to start
+    // ONE call: circle + circleBig + title back to start, and title scales back to start
     public void MoveUIToStart()
     {
-        if (circle == null || Title == null) return;
-        StartUIMove(_circleStart, _titleStart, _titleScaleStart);
+        if (circle == null || circleBig == null || Title == null) return;
+        StartUIMove(_circleStart, _circleBigStart, _titleStart, _titleScaleStart);
     }
 
-    private void StartUIMove(Vector2 circleTarget, Vector2 titleTarget, Vector3 titleScaleTarget)
+    private void StartUIMove(Vector2 circleTarget, Vector2 circleBigTarget, Vector2 titleTarget, Vector3 titleScaleTarget)
     {
         if (_uiCo != null) StopCoroutine(_uiCo);
-        _uiCo = StartCoroutine(CoMoveUI(circleTarget, titleTarget, titleScaleTarget));
+        _uiCo = StartCoroutine(CoMoveUI(circleTarget, circleBigTarget, titleTarget, titleScaleTarget));
     }
 
-    private IEnumerator CoMoveUI(Vector2 circleTarget, Vector2 titleTarget, Vector3 titleScaleTarget)
+    private IEnumerator CoMoveUI(Vector2 circleTarget, Vector2 circleBigTarget, Vector2 titleTarget, Vector3 titleScaleTarget)
     {
         Vector2 circleFrom = circle.anchoredPosition;
+        Vector2 circleBigFrom = circleBig.anchoredPosition;
         Vector2 titleFrom = Title.anchoredPosition;
         Vector3 titleScaleFrom = Title.localScale;
 
@@ -207,6 +219,7 @@ public class MenuController : MonoBehaviour
             float k = (ease != null && ease.length > 0) ? ease.Evaluate(u) : u;
 
             circle.anchoredPosition = Vector2.LerpUnclamped(circleFrom, circleTarget, k);
+            circleBig.anchoredPosition = Vector2.LerpUnclamped(circleBigFrom, circleBigTarget, k);
             Title.anchoredPosition = Vector2.LerpUnclamped(titleFrom, titleTarget, k);
             Title.localScale = Vector3.LerpUnclamped(titleScaleFrom, titleScaleTarget, k);
 
@@ -214,6 +227,7 @@ public class MenuController : MonoBehaviour
         }
 
         circle.anchoredPosition = circleTarget;
+        circleBig.anchoredPosition = circleBigTarget;
         Title.anchoredPosition = titleTarget;
         Title.localScale = titleScaleTarget;
 
