@@ -28,7 +28,6 @@ public class LevelPass : MonoBehaviour
     private bool startLoading = false;
     private bool isPlayed = false;
 
-    public LevelSuccessUIManager myUImanager;
     void Awake()
     {
         string sceneName = SceneManager.GetActiveScene().name;
@@ -105,12 +104,7 @@ public class LevelPass : MonoBehaviour
             if (SaveManager.Instance)
                 SaveManager.Instance.MarkLevelCompleted(chapterIndex, levelIndex, collected, total);
 
-
-            //Passed Level
-
-
             FinishUI.SetActive(true);
-            myUImanager.isLevelPass = true;
         }
     }
 
