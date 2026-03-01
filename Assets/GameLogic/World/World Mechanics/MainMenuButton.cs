@@ -38,12 +38,24 @@ public class MainMenuButton : MonoBehaviour,
     Vector3 originalScale;
     Vector3 sideLeftOriginalScale;
 
+    // --- fixes ---
+    private bool _isHovered;
+    private RectTransform _rt;
+    private Canvas _canvas;
+    private Camera _uiCam;
+
     void Awake()
     {
+        _rt = transform as RectTransform;
+        _canvas = GetComponentInParent<Canvas>();
+        _uiCam = (_canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? _canvas.worldCamera : null;
+
         originalScale = transform.localScale;
 
         if (sideLeft != null)
             sideLeftOriginalScale = sideLeft.localScale;
+
+        EnsureRaycastHitbox();
 
         // zero-out ONLY highlight images (SideLeft is NOT in this array)
         if (highlightImages != null)
@@ -57,12 +69,28 @@ public class MainMenuButton : MonoBehaviour,
             }
         }
 
-        label.color = defaultColor;
+        if (label != null) label.color = defaultColor;
+        _isHovered = false;
+    }
+
+    void Update()
+    {
+        // 兜底：有些情况下不会收到 OnPointerExit（盖面板/切 canvas/禁用等）
+        if (_isHovered && !IsPointerOverThis())
+        {
+            ForceExitVisual();
+        }
+    }
+
+    void OnDisable()
+    {
+        // 防止切二级界面/禁用对象后卡在 hover 状态
+        ResetVisualImmediate();
     }
 
     public void OnPointerEnter(PointerEventData e)
     {
-        //Debug.Log($"[ENTER] handler={name}, hit={e.pointerCurrentRaycast.gameObject?.name}");
+        _isHovered = true;
 
         AudioPlayer.instance.playUIHoverSound();
 
@@ -76,7 +104,7 @@ public class MainMenuButton : MonoBehaviour,
 
         StopAllCoroutines();
         StartCoroutine(ScaleTo(transform, originalScale * hoverScale, hoverSpeed));
-        StartCoroutine(ColorTo(label, defaultColor, hoverColor, hoverSpeed));
+        if (label != null) StartCoroutine(ColorTo(label, defaultColor, hoverColor, hoverSpeed));
         StartCoroutine(FadeImages(0f, 1f, hoverSpeed));
 
         if (sideLeft != null)
@@ -85,9 +113,11 @@ public class MainMenuButton : MonoBehaviour,
 
     public void OnPointerExit(PointerEventData e)
     {
+        _isHovered = false;
+
         StopAllCoroutines();
         StartCoroutine(ScaleTo(transform, originalScale, hoverSpeed));
-        StartCoroutine(ColorTo(label, hoverColor, defaultColor, hoverSpeed));
+        if (label != null) StartCoroutine(ColorTo(label, hoverColor, defaultColor, hoverSpeed));
         StartCoroutine(FadeImages(1f, 0f, hoverSpeed));
 
         if (sideLeft != null)
@@ -159,10 +189,76 @@ public class MainMenuButton : MonoBehaviour,
     {
         yield return ScaleTo(transform, originalScale * clickScale, clickSpeed);
 
-        // If you want "still hovered" logic to be accurate per-button, track a bool instead.
-        bool stillHovered = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        // 关键修复：用“是否还 hover 在本按钮”判断，而不是 IsPointerOverGameObject()
+        bool stillHovered = _isHovered && IsPointerOverThis();
         Vector3 target = stillHovered ? originalScale * hoverScale : originalScale;
 
         yield return ScaleTo(transform, target, clickSpeed);
+
+        // 再兜底一次：如果 click 后 UI 改了导致状态不一致，立刻纠正
+        if (!IsPointerOverThis() && _isHovered)
+        {
+            ForceExitVisual();
+        }
+    }
+
+    // ---------- helpers ----------
+
+    private bool IsPointerOverThis()
+    {
+        if (_rt == null) return false;
+        return RectTransformUtility.RectangleContainsScreenPoint(_rt, Input.mousePosition, _uiCam);
+    }
+
+    private void ForceExitVisual()
+    {
+        _isHovered = false;
+        StopAllCoroutines();
+
+        StartCoroutine(ScaleTo(transform, originalScale, hoverSpeed));
+        if (label != null) StartCoroutine(ColorTo(label, hoverColor, defaultColor, hoverSpeed));
+        StartCoroutine(FadeImages(1f, 0f, hoverSpeed));
+
+        if (sideLeft != null)
+            StartCoroutine(ScaleTo(sideLeft, sideLeftOriginalScale, sideLeftScaleSpeed));
+    }
+
+    private void ResetVisualImmediate()
+    {
+        _isHovered = false;
+        StopAllCoroutines();
+
+        transform.localScale = originalScale;
+        if (label != null) label.color = defaultColor;
+
+        // highlights alpha=0
+        if (highlightImages != null)
+        {
+            for (int i = 0; i < highlightImages.Length; i++)
+            {
+                if (highlightImages[i] == null) continue;
+                var c = highlightImages[i].color;
+                c.a = 0f;
+                highlightImages[i].color = c;
+            }
+        }
+
+        if (sideLeft != null) sideLeft.localScale = sideLeftOriginalScale;
+    }
+
+    private void EnsureRaycastHitbox()
+    {
+        // 解决“只有文字能 hover/点击”的手感问题：保证本物体上有一个可 raycast 的 Graphic
+        var g = GetComponent<Graphic>();
+        if (g == null)
+        {
+            var img = gameObject.AddComponent<Image>();
+            img.color = new Color(1f, 1f, 1f, 0f); // 透明，不影响视觉
+            img.raycastTarget = true;
+        }
+        else
+        {
+            g.raycastTarget = true;
+        }
     }
 }
