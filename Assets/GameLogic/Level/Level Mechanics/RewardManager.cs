@@ -43,18 +43,24 @@ public class RewardManager : MonoBehaviour
 
     void Update()
     {
-        if (levelController != null
-            && levelController.phase == LevelPhase.Running
-            && !isRewardSetup)
+        if (!isRewardSetup)
+        {
+            // 如果场景里 Reward 一开始就存在，这里会立刻拿到 total
+            SearchRewardObjects();
+
+            if (totalRewardsInLevel > 0)
+                isRewardSetup = true;
+        }
+
+        if (!isRewardSetup && levelController != null && levelController.phase == LevelPhase.Running)
         {
             SearchRewardObjects();
-            isRewardSetup = true;
+            if (totalRewardsInLevel > 0)
+                isRewardSetup = true;
         }
 
         if (isRewardSetup)
-        {
             UpdateRewardCount();
-        }
     }
 
     void SearchRewardObjects()
@@ -92,8 +98,7 @@ public class RewardManager : MonoBehaviour
             }
         }
 
-        // ✅ 把 total 写进存档：这样你以后改 reward 数量，World UI 就能显示正确的 “0/5”
-        if (SaveManager.Instance != null)
+        if (totalRewardsInLevel > 0 && SaveManager.Instance != null)
             SaveManager.Instance.SetLevelRewardTotal(chapterIndex, levelIndex, totalRewardsInLevel);
 
         Debug.Log("[RewardManager] Found " + count + " reward object(s) in the scene.");

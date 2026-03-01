@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class LevelSuccessUIManager : MonoBehaviour
 {
@@ -7,26 +9,37 @@ public class LevelSuccessUIManager : MonoBehaviour
     public RewardManager rewardManager;
 
     [Header("Child name to enable when collected")]
-    [SerializeField] private string rewardGetChildName = "Reward_Get"; // 兼容 reward_Get：下面会忽略大小写匹配
+    [SerializeField] private string rewardGetChildName = "Reward_Get"; // 兼容 reward_Get：忽略大小写匹配
+
+    [Header("Sequence Animation")]
+    [Tooltip("每个 Reward_Get 之间的间隔（如果不使用动画时长，就用这个）")]
+    [SerializeField] private float revealInterval = 0.25f;
+
+    [Tooltip("尽量用 Animator/Animation 的 clip 时长当作等待时间（拿不到就回退到 revealInterval）")]
+    [SerializeField] private bool waitByClipLength = true;
+
+    [Tooltip("如果用 clip 时长，额外再加一点间隔（更像一个接一个）")]
+    [SerializeField] private float extraGap = 0.05f;
 
     private GameObject[] _rewardGetChild; // 缓存每个槽位的 Reward_Get child（GameObject）
-    private int lastCount = -1;
-    private int lastTotal = -1;
 
     public bool isLevelPass = false;
 
     private MenuController _menuController;
+
+    private bool _sequenceStarted = false;
+    private Coroutine _sequenceCo;
 
     void Start()
     {
         TryFindRewardManager();
         CacheRewardGetChildren();
 
-        // 先全隐藏，等 total > 0 & isLevelPass 再显示
-        SetAllSlotsActive(false);
+        // ✅ 不要在 Start 把父槽位全关掉（容易影响你原 UI 动画/入场）
+        // 只先把 Reward_Get 关掉，等结算时再依次打开播放
         SetAllRewardGetActive(false);
 
-        // 你原来的 MenuController 缓存逻辑保留
+        // MenuController 缓存（保留你的逻辑）
         _menuController = FindObjectOfType<MenuController>();
         if (_menuController == null)
         {
@@ -44,7 +57,17 @@ public class LevelSuccessUIManager : MonoBehaviour
 
     void Update()
     {
-        if (!isLevelPass) return;
+        if (!isLevelPass)
+        {
+            // 如果你会把 isLevelPass 关回 false（比如退出/重进），允许下次再播
+            if (_sequenceStarted)
+            {
+                _sequenceStarted = false;
+                if (_sequenceCo != null) StopCoroutine(_sequenceCo);
+                _sequenceCo = null;
+            }
+            return;
+        }
 
         if (rewardManager == null)
         {
@@ -53,27 +76,19 @@ public class LevelSuccessUIManager : MonoBehaviour
         }
 
         int total = GetTotalRewardsInLevel();
-        if (total <= 0)
-        {
-            // total 还没初始化出来：先不要显示，避免闪
-            SetAllSlotsActive(false);
-            SetAllRewardGetActive(false);
-            lastCount = -1;
-            lastTotal = -1;
-            return;
-        }
+        if (total <= 0) return;
 
         int count = Mathf.Clamp(rewardManager.rewardsReachedCount, 0, total);
 
-        if (count != lastCount || total != lastTotal)
+        // ✅ 只启动一次序列播放
+        if (!_sequenceStarted)
         {
-            UpdateRewardUI_SuccessCentered(count, total);
-            lastCount = count;
-            lastTotal = total;
+            _sequenceStarted = true;
+            _sequenceCo = StartCoroutine(CoPlayRewardsLeftToRight(total, count));
         }
     }
 
-    private void UpdateRewardUI_SuccessCentered(int count, int total)
+    private IEnumerator CoPlayRewardsLeftToRight(int total, int count)
     {
         int slots = rewardGetOBJ.Length;
         total = Mathf.Clamp(total, 0, slots);
@@ -82,29 +97,89 @@ public class LevelSuccessUIManager : MonoBehaviour
         int start = Mathf.FloorToInt((slots - total) * 0.5f);
         start = Mathf.Clamp(start, 0, slots - total);
 
-        // 1) 先决定哪些槽位父物体显示/隐藏（头尾消失）
+        // 1) 决定哪些槽位父物体显示/隐藏（头尾消失）
         for (int i = 0; i < slots; i++)
         {
             bool slotActive = (i >= start && i < start + total);
             if (rewardGetOBJ[i] != null) rewardGetOBJ[i].SetActive(slotActive);
         }
 
-        // 2) 在可见槽位内：点亮前 count 个 Reward_Get child
-        // （注意：count 是“捡到多少个”，不是具体哪个 reward，所以就是从左到右点亮）
-        for (int i = 0; i < slots; i++)
+        // 2) 可见槽位内：先全部关掉 Reward_Get（防止之前残留）
+        for (int i = start; i < start + total; i++)
         {
-            if (_rewardGetChild[i] == null) continue;
+            if (_rewardGetChild[i] != null) _rewardGetChild[i].SetActive(false);
+        }
 
-            bool slotActive = (i >= start && i < start + total);
-            if (!slotActive)
+        // （可选）等一帧，让 UI 入场动画先落地
+        yield return null;
+
+        // 3) 从左到右依次播放：只播 count 个
+        for (int local = 0; local < count; local++)
+        {
+            int idx = start + local; // 左到右
+            var go = _rewardGetChild[idx];
+            if (go == null) continue;
+
+            // 打开 + 重播动画
+            PlayGetAnim(go);
+
+            // 等待：优先用 clip 时长，否则 revealInterval
+            float wait = revealInterval;
+            if (waitByClipLength)
             {
-                _rewardGetChild[i].SetActive(false);
-                continue;
+                float len = GetAnimLength(go);
+                if (len > 0.01f) wait = len;
             }
 
-            int localIndex = i - start; // 0..total-1
-            _rewardGetChild[i].SetActive(localIndex < count);
+            yield return new WaitForSeconds(wait + extraGap);
         }
+    }
+
+    private void PlayGetAnim(GameObject go)
+    {
+        if (!go) return;
+
+        // 先确保激活
+        if (!go.activeSelf) go.SetActive(true);
+
+        // Animator（常见）
+        var anim = go.GetComponent<Animator>();
+        if (anim != null)
+        {
+            anim.Rebind();
+            anim.Update(0f);
+            anim.Play(0, 0, 0f);
+            anim.Update(0f);
+            return;
+        }
+
+        // Legacy Animation（如果你用的是 Animation 组件）
+        var legacy = go.GetComponent<Animation>();
+        if (legacy != null)
+        {
+            legacy.Stop();
+            legacy.Play();
+        }
+    }
+
+    private float GetAnimLength(GameObject go)
+    {
+        // Animator clip length（尽量拿当前 state 的 length）
+        var anim = go.GetComponent<Animator>();
+        if (anim != null)
+        {
+            var st = anim.GetCurrentAnimatorStateInfo(0);
+            if (st.length > 0.01f) return st.length;
+        }
+
+        // Legacy Animation clip length
+        var legacy = go.GetComponent<Animation>();
+        if (legacy != null && legacy.clip != null)
+        {
+            return legacy.clip.length;
+        }
+
+        return 0f;
     }
 
     // ✅ Replay 按钮
@@ -157,7 +232,6 @@ public class LevelSuccessUIManager : MonoBehaviour
             if (slot == null) continue;
 
             var child = FindChildRecursiveIgnoreCase(slot.transform, rewardGetChildName);
-            // 兼容你说的 reward_Get / Reward_Get：忽略大小写即可
             if (child == null)
                 child = FindChildRecursiveIgnoreCase(slot.transform, "reward_Get");
 
@@ -175,7 +249,7 @@ public class LevelSuccessUIManager : MonoBehaviour
     {
         if (root == null || string.IsNullOrEmpty(targetName)) return null;
 
-        var stack = new System.Collections.Generic.Stack<Transform>();
+        var stack = new Stack<Transform>();
         stack.Push(root);
 
         while (stack.Count > 0)
@@ -189,12 +263,6 @@ public class LevelSuccessUIManager : MonoBehaviour
         }
 
         return null;
-    }
-
-    private void SetAllSlotsActive(bool on)
-    {
-        for (int i = 0; i < rewardGetOBJ.Length; i++)
-            if (rewardGetOBJ[i] != null) rewardGetOBJ[i].SetActive(on);
     }
 
     private void SetAllRewardGetActive(bool on)
