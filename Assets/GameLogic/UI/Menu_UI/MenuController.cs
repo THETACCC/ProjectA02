@@ -172,6 +172,14 @@ public class MenuController : MonoBehaviour
         return FindObjectOfType<LevelTimer>();
     }
 
+    public void StartChapterWorld(SceneTitle chapterWorldScene)
+    {
+        if (startLoading) return;
+
+        LoadNextLevel(chapterWorldScene);
+    }
+
+
     // ---------------- UI Animation API ----------------
 
     // ONE call: circle + circleBig + title to end, and title scales to end
