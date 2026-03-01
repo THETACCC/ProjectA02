@@ -45,6 +45,8 @@ public class WorldLevelUI : MonoBehaviour
     //[SerializeField] private Image imgComplete;       // Img_Complete
     [SerializeField] private Button btnStart;         // Btn_Start
 
+    [SerializeField] private GameObject[] rewardSlots = new GameObject[5];
+    [SerializeField] private string rewardGetChildName = "Reward_Get";
 
     private readonly List<LevelTrigger> insideOrder = new List<LevelTrigger>(8);
     private LevelTrigger current;
@@ -150,10 +152,7 @@ public class WorldLevelUI : MonoBehaviour
 
         if (txtRewards)
         {
-            if (SaveManager.Instance != null)
-                txtRewards.text = SaveManager.Instance.GetLevelRewardProgressText(chap0, lvl0);
-            else
-                txtRewards.text = "0/0";
+            UpdateRewardIcons(chap0, lvl0);
         }
     }
 
@@ -391,5 +390,66 @@ public class WorldLevelUI : MonoBehaviour
             int chap = int.Parse(m.Groups[1].Value); // keep 0-based as in name
             txtChapter.text = $"Chapter {chap}";
         }
+    }
+
+    private void UpdateRewardIcons(int chap0, int lvl0)
+    {
+        int got = 0;
+        int total = 0;
+
+        if (SaveManager.Instance != null)
+        {
+            // 你现在只有这个接口：返回类似 "2/3"
+            string progress = SaveManager.Instance.GetLevelRewardProgressText(chap0, lvl0);
+            ParseRewardProgress(progress, out got, out total);
+        }
+
+        int slotCount = (rewardSlots != null) ? rewardSlots.Length : 0;
+        total = Mathf.Clamp(total, 0, slotCount);
+        got = Mathf.Clamp(got, 0, total);
+
+        // 如果你还留着 txtRewards，但不想“只显示数字”，也可以让它辅助显示
+        if (txtRewards) txtRewards.text = $"{got}/{total}";
+
+        for (int i = 0; i < slotCount; i++)
+        {
+            var slot = rewardSlots[i];
+            if (!slot) continue;
+
+            bool showSlot = i < total;
+            slot.SetActive(showSlot);
+
+            // 找子物体 Reward_Get（即使它默认 inactive 也能找到）
+            Transform getTr = FindChildByName(slot.transform, rewardGetChildName);
+            if (getTr != null)
+            {
+                bool hasGot = showSlot && (i < got);
+                getTr.gameObject.SetActive(hasGot);
+            }
+        }
+    }
+
+    // 支持 "2/3", "2 / 3" 这种格式
+    private void ParseRewardProgress(string s, out int got, out int total)
+    {
+        got = 0;
+        total = 0;
+        if (string.IsNullOrEmpty(s)) return;
+
+        var m = Regex.Match(s, @"(\d+)\s*/\s*(\d+)");
+        if (!m.Success) return;
+
+        int.TryParse(m.Groups[1].Value, out got);
+        int.TryParse(m.Groups[2].Value, out total);
+    }
+
+    private Transform FindChildByName(Transform root, string childName)
+    {
+        if (!root || string.IsNullOrEmpty(childName)) return null;
+
+        foreach (var t in root.GetComponentsInChildren<Transform>(true))
+            if (t.name == childName) return t;
+
+        return null;
     }
 }
