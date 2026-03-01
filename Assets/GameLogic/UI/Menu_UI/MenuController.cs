@@ -40,6 +40,34 @@ public class MenuController : MonoBehaviour
 
     private Coroutine _uiCo;
 
+    //Settings icon animation
+    [Header("Bouncy Toggle Object")]
+    [SerializeField] private Transform bouncyObject;                
+    [SerializeField] private float bouncyHiddenOffsetX = -350f;
+    [SerializeField] private float bouncyMoveDuration = 0.35f;
+    [SerializeField] private AnimationCurve bouncyEase = null;
+    [SerializeField] private bool bouncyUseUnscaledTime = true;
+
+    private bool _bouncyInitialized = false;
+    private bool _bouncyShown = false;
+    private Coroutine _bouncyCo;
+
+    private Vector3 _bouncyFinalWorldPos;
+    private Vector2 _bouncyFinalAnchoredPos;
+    private bool _bouncyIsUI = false;
+
+    //Button rotate animation
+    [Header("Button Rotate")]
+    [SerializeField] private RectTransform rotateButtonTarget;
+    [SerializeField] private float rotateDuration = 0.25f;
+    [SerializeField] private AnimationCurve rotateEase = null;
+    [SerializeField] private bool rotateUseUnscaledTime = true;
+
+    private float _rotateStartZ;
+    private bool _rotateInitialized = false;
+    private Coroutine _rotateCo;
+
+
     private void Start()
     {
         if (circle != null) _circleStart = circle.anchoredPosition;
@@ -240,5 +268,187 @@ public class MenuController : MonoBehaviour
         Title.localScale = titleScaleTarget;
 
         _uiCo = null;
+    }
+
+    // ---------------- Settings icon animation ----------------
+    private void InitBouncyObjectIfNeeded()
+    {
+        if (_bouncyInitialized) return;
+        if (bouncyObject == null) return;
+
+        // 自动判断是不是 UI
+        var rt = bouncyObject as RectTransform;
+        _bouncyIsUI = (rt != null);
+
+        if (_bouncyIsUI)
+        {
+            _bouncyFinalAnchoredPos = rt.anchoredPosition;
+        }
+        else
+        {
+            _bouncyFinalWorldPos = bouncyObject.position; 
+        }
+
+        // 初始默认：隐藏状态
+        SetBouncyToHiddenInstant();
+        bouncyObject.gameObject.SetActive(false);
+        _bouncyShown = false;
+
+        _bouncyInitialized = true;
+    }
+
+    private void SetBouncyToHiddenInstant()
+    {
+        if (bouncyObject == null) return;
+
+        if (_bouncyIsUI)
+        {
+            var rt = (RectTransform)bouncyObject;
+            rt.anchoredPosition = _bouncyFinalAnchoredPos + Vector2.right * bouncyHiddenOffsetX;
+        }
+        else
+        {
+            bouncyObject.position = _bouncyFinalWorldPos + Vector3.right * bouncyHiddenOffsetX;
+        }
+    }
+
+    /// <summary>
+    /// 第一次点击：从左边弹出到最终位置并显示
+    /// 再次点击：弹回左边并隐藏（disable）
+    /// </summary>
+    public void ToggleBouncyObject()
+    {
+        if (bouncyObject == null) return;
+
+        InitBouncyObjectIfNeeded();
+
+        if (_bouncyCo != null) StopCoroutine(_bouncyCo);
+
+        if (!_bouncyShown)
+        {
+            // 显示：先瞬间放到隐藏位，再 enable，再弹到最终位
+            SetBouncyToHiddenInstant();
+            bouncyObject.gameObject.SetActive(true);
+
+            _bouncyCo = StartCoroutine(CoBouncyMove(show: true));
+            ToggleRotateButton(open: true);   // 逆时针转90
+            _bouncyShown = true;
+        }
+        else
+        {
+            // 隐藏：从当前位置弹回隐藏位，结束后 disable
+            _bouncyCo = StartCoroutine(CoBouncyMove(show: false));
+            ToggleRotateButton(open: false);  // 顺时针90
+            _bouncyShown = false;
+        }
+    }
+
+    private IEnumerator CoBouncyMove(bool show)
+    {
+        float dur = Mathf.Max(0.0001f, bouncyMoveDuration);
+        float t = 0f;
+
+        if (_bouncyIsUI)
+        {
+            var rt = (RectTransform)bouncyObject;
+            Vector2 from = rt.anchoredPosition;
+            Vector2 to = show
+                ? _bouncyFinalAnchoredPos
+                : _bouncyFinalAnchoredPos + Vector2.right * bouncyHiddenOffsetX;
+
+            while (t < 1f)
+            {
+                float dt = bouncyUseUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                t += dt / dur;
+
+                float u = Mathf.Clamp01(t);
+                float k = (bouncyEase != null && bouncyEase.length > 0) ? bouncyEase.Evaluate(u) : u;
+
+                rt.anchoredPosition = Vector2.LerpUnclamped(from, to, k);
+                yield return null;
+            }
+
+            rt.anchoredPosition = to;
+        }
+        else
+        {
+            Vector3 from = bouncyObject.position;
+            Vector3 to = show
+                ? _bouncyFinalWorldPos
+                : _bouncyFinalWorldPos + Vector3.right * bouncyHiddenOffsetX;
+
+            while (t < 1f)
+            {
+                float dt = bouncyUseUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+                t += dt / dur;
+
+                float u = Mathf.Clamp01(t);
+                float k = (bouncyEase != null && bouncyEase.length > 0) ? bouncyEase.Evaluate(u) : u;
+
+                bouncyObject.position = Vector3.LerpUnclamped(from, to, k);
+                yield return null;
+            }
+
+            bouncyObject.position = to;
+        }
+
+        // 隐藏结束：disable
+        if (!show)
+            bouncyObject.gameObject.SetActive(false);
+
+        _bouncyCo = null;
+    }
+
+    // ---------------- Button rotate animation ----------------
+
+    private void InitRotateIfNeeded()
+    {
+        if (_rotateInitialized) return;
+        if (rotateButtonTarget == null) return;
+
+        // 记录“关闭时”的初始角度（你摆好的角度）
+        _rotateStartZ = rotateButtonTarget.localEulerAngles.z;
+        _rotateInitialized = true;
+    }
+
+    public void ToggleRotateButton(bool open)
+    {
+        if (rotateButtonTarget == null) return;
+
+        InitRotateIfNeeded();
+
+        if (_rotateCo != null) StopCoroutine(_rotateCo);
+
+        float targetZ = open ? _rotateStartZ + 90f : _rotateStartZ; // open 逆时针 +90；close 回到初始角度
+        _rotateCo = StartCoroutine(CoRotateZ(targetZ));
+    }
+
+    private IEnumerator CoRotateZ(float targetZ)
+    {
+        float dur = Mathf.Max(0.0001f, rotateDuration);
+        float t = 0f;
+
+        float fromZ = rotateButtonTarget.localEulerAngles.z;
+
+        // 处理 0/360 跳变，确保走最短路径
+        float from = Mathf.DeltaAngle(0f, fromZ);
+        float to = Mathf.DeltaAngle(0f, targetZ);
+
+        while (t < 1f)
+        {
+            float dt = rotateUseUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+            t += dt / dur;
+
+            float u = Mathf.Clamp01(t);
+            float k = (rotateEase != null && rotateEase.length > 0) ? rotateEase.Evaluate(u) : u;
+
+            float z = Mathf.LerpUnclamped(from, to, k);
+            rotateButtonTarget.localEulerAngles = new Vector3(0f, 0f, z);
+
+            yield return null;
+        }
+
+        rotateButtonTarget.localEulerAngles = new Vector3(0f, 0f, to);
+        _rotateCo = null;
     }
 }

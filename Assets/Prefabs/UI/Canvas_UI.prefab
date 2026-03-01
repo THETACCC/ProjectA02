@@ -134,6 +134,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 2339898703605861747}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: PauseGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 7923951382446840851}
+        m_TargetAssemblyTypeName: LevelUIAudio, Assembly-CSharp
+        m_MethodName: playUIAudio
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!1 &176639521320262256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1564,6 +1588,30 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 2339898703605861747}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: PauseGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 7923951382446840851}
+        m_TargetAssemblyTypeName: LevelUIAudio, Assembly-CSharp
+        m_MethodName: playUIAudio
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8695,6 +8743,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2339898703605861747}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: ResumeGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4729066041248327769
 GameObject:
   m_ObjectHideFlags: 0
@@ -9684,6 +9744,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2339898703605861747}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: ResumeGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6072382323376818747
 GameObject:
   m_ObjectHideFlags: 0
@@ -9985,6 +10057,18 @@ MonoBehaviour:
       - m_Target: {fileID: 7923951382446840851}
         m_TargetAssemblyTypeName: LevelUIAudio, Assembly-CSharp
         m_MethodName: closeUIAudio
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2339898703605861747}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: ResumeGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10515,6 +10599,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2339898703605861747}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: ResumeGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7144064853028554690
 GameObject:
   m_ObjectHideFlags: 0
@@ -10606,7 +10702,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3436250457414102086
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10627,7 +10723,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1124, y: 467.2}
+  m_AnchoredPosition: {x: 687.6, y: 467.2}
   m_SizeDelta: {x: 283.53516, y: 74.93518}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7570738543556781719
@@ -12504,6 +12600,30 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 2339898703605861747}
+        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+        m_MethodName: PauseGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 7923951382446840851}
+        m_TargetAssemblyTypeName: LevelUIAudio, Assembly-CSharp
+        m_MethodName: playUIAudio
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -14398,21 +14518,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7364826845103148202}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
       - m_Target: {fileID: 2339898703605861747}
         m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
-        m_MethodName: PauseGame
+        m_MethodName: ToggleBouncyObject
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15727,8 +15835,92 @@ PrefabInstance:
       value: MenuController
       objectReference: {fileID: 0}
     - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyLeftX
+      value: 688.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyObject
+      value: 
+      objectReference: {fileID: 3436250457414102086}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyRightX
+      value: 688.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyMoveDistance
+      value: -436
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: rotateButtonTarget
+      value: 
+      objectReference: {fileID: 9115396670022210477}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyHiddenOffsetX
+      value: 436
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
       propertyPath: sceneToLoad_Chp1_World
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: rotateEase.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: rotateEase.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: rotateEase.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[1].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: rotateEase.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[0].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[1].inWeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[1].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: rotateEase.m_Curve.Array.data[0].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[0].tangentMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6843388411984376130, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
+      propertyPath: bouncyEase.m_Curve.Array.data[1].tangentMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6843388411984376131, guid: 69deecc08c6d58c43a0fefb1214b06c3, type: 3}
       propertyPath: m_RootOrder
