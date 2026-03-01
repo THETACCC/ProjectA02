@@ -38,8 +38,6 @@ public class MenuMenuScrollUI : MonoBehaviour
     public int fullyVisibleRadius = 2;     // recommended 2 (5 visible)
     [Tooltip("Pre-render radius: usually fullyVisibleRadius+1 to prevent flicker (e.g. 3 => 7 items)")]
     public int preRenderRadius = 3;        // recommended 3 (7 pre-render)
-    [Range(0f, 1f)]
-    public float preRenderMinAlpha = 0.12f;
 
     [Header("Interaction")]
     [Tooltip("Only Top/Center/Bottom are interactable; others (even if visible) won't block raycasts.")]
@@ -57,6 +55,9 @@ public class MenuMenuScrollUI : MonoBehaviour
     [Tooltip("On resize we DO NOT rebuild slot order and DO NOT reset positions. We re-capture slots from current module visuals.")]
     public bool autoRefreshOnResize = true;
     public float resizeDebounceSeconds = 0.05f;
+
+    [Header("Chapter Enter (optional)")]
+    public MenuController menuController;
 
     public int TopModuleIndex { get; private set; } = -1;
     public int CenterModuleIndex { get; private set; } = -1;
@@ -136,6 +137,7 @@ public class MenuMenuScrollUI : MonoBehaviour
             var cg = root.GetComponent<CanvasGroup>();
             if (!cg) cg = root.gameObject.AddComponent<CanvasGroup>();
             _cg[i] = cg;
+            _cg[i].alpha = 1f;
 
             CacheChildrenScales(i);
 
@@ -203,11 +205,15 @@ public class MenuMenuScrollUI : MonoBehaviour
     {
         if (_animating) return;
 
-        if (moduleIndex == TopModuleIndex) StepCounterClockwise();
-        else if (moduleIndex == BottomModuleIndex) StepClockwise();
+        if (moduleIndex == TopModuleIndex) StepClockwise();
+        else if (moduleIndex == BottomModuleIndex) StepCounterClockwise();
         else
         {
-            // Center clicked -> Start/Confirm
+            // Center clicked -> Try enter chapter
+            if (!menuController) menuController = FindObjectOfType<MenuController>(true);
+
+            var chapterBtn = moduleRoots[moduleIndex].GetComponentInChildren<StartUIChapterButton>(true);
+            if (chapterBtn) chapterBtn.TryEnter(menuController);
         }
     }
 
@@ -319,13 +325,13 @@ public class MenuMenuScrollUI : MonoBehaviour
         Vector3[] startPos = new Vector3[n];
         Vector3[] targetPos = new Vector3[n];
 
-        float[] startA = new float[n];
-        float[] targetA = new float[n];
-
         float[] startMul = new float[n];
         float[] targetMul = new float[n];
 
         bool[] targetInteract = new bool[n];
+
+        bool[] startVisible = new bool[n];
+        bool[] targetVisible = new bool[n];
 
         for (int i = 0; i < n; i++)
         {
@@ -337,13 +343,15 @@ public class MenuMenuScrollUI : MonoBehaviour
             Vector3 rootTargetLocal = slotLocal - _visualOffsetLocal[i];
             targetPos[i] = space.TransformPoint(rootTargetLocal);
 
-            startA[i] = _cg[i].alpha;
-            int distNew = CircularDistance(slotNew, centerSlotIndex, n);
-            targetA[i] = ComputeAlpha(distNew);
-
             int slotPrev = SlotForModuleWithOffset(i, prevOffset);
             startMul[i] = (slotPrev == centerSlotIndex) ? centerChildrenScaleMultiplier : 1f;
             targetMul[i] = (slotNew == centerSlotIndex) ? centerChildrenScaleMultiplier : 1f;
+
+            int distPrev = CircularDistance(slotPrev, centerSlotIndex, n);
+            int distNew = CircularDistance(slotNew, centerSlotIndex, n);
+
+            startVisible[i] = ComputeVisible(distPrev);
+            targetVisible[i] = ComputeVisible(distNew);
 
             targetInteract[i] = !onlyTopCenterBottomInteractable
                 ? (distNew <= fullyVisibleRadius)
@@ -358,8 +366,9 @@ public class MenuMenuScrollUI : MonoBehaviour
 
             for (int i = 0; i < n; i++)
             {
+                if (!moduleRoots[i].gameObject.activeSelf) continue;
+
                 moduleRoots[i].position = Vector3.Lerp(startPos[i], targetPos[i], e);
-                _cg[i].alpha = Mathf.Lerp(startA[i], targetA[i], e);
 
                 float mul = Mathf.Lerp(startMul[i], targetMul[i], e);
                 ApplyChildrenScaleMultiplier(i, mul);
@@ -370,8 +379,8 @@ public class MenuMenuScrollUI : MonoBehaviour
 
         for (int i = 0; i < n; i++)
         {
-            moduleRoots[i].position = targetPos[i];
-            _cg[i].alpha = targetA[i];
+            if (moduleRoots[i].gameObject.activeSelf)
+                moduleRoots[i].position = targetPos[i];
 
             _cg[i].blocksRaycasts = targetInteract[i];
             _cg[i].interactable = targetInteract[i];
@@ -391,16 +400,7 @@ public class MenuMenuScrollUI : MonoBehaviour
             RequestStep(next);
         }
     }
-
-    float ComputeAlpha(int dist)
-    {
-        if (dist <= fullyVisibleRadius) return 1f;
-        if (dist > preRenderRadius) return 0f;
-
-        int span = Mathf.Max(1, preRenderRadius - fullyVisibleRadius);
-        float u = (dist - fullyVisibleRadius) / (float)span;
-        return Mathf.Lerp(1f, preRenderMinAlpha, u);
-    }
+    bool ComputeVisible(int dist) => true;
 
     // ===== mapping =====
     int CurrentSlotForModule(int moduleIndex)
@@ -471,7 +471,7 @@ public class MenuMenuScrollUI : MonoBehaviour
             int slot = CurrentSlotForModule(i);
             int dist = CircularDistance(slot, centerSlotIndex, n);
 
-            _cg[i].alpha = ComputeAlpha(dist);
+            bool visible = ComputeVisible(dist);
 
             bool interact = !onlyTopCenterBottomInteractable
                 ? (dist <= fullyVisibleRadius)
@@ -484,7 +484,6 @@ public class MenuMenuScrollUI : MonoBehaviour
             ApplyChildrenScaleMultiplier(i, mul);
         }
     }
-
     // ===== child scaling cache/apply =====
     void CacheChildrenScales(int moduleIndex)
     {
