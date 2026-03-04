@@ -132,7 +132,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private void Update()
     {
-        Debug.Log(phase);
+        //Debug.Log(phase);
 
         if(!isPlayerFound)
         {

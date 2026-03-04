@@ -21,23 +21,23 @@ public class LevelTrigger : MonoBehaviour
     private FlowManager flowManager;
     private bool startloading = false;
 
-    // Parsed indices (chapter is 0-based, level is 0-based)
     private int chapterIndex0 = 0;
     private int levelIndex0 = 0;
 
-    // Soft-hide caches (keep scripts alive while waiting for SaveManager)
     private Collider[] _colliders;
     private Renderer[] _renderers;
 
+    // ✅ NEW: registry key
+    private const string PP_SceneRegistry = "JZ_SavedPosScenes";
+
     private void Awake()
     {
-        // Parse scenetitle string: "Chapter0_Level1"
         var s = scenetitle.ToString();
         var m = Regex.Match(s, @"Chapter\s*(\d+)\s*[_\-\s]\s*Level\s*(\d+)", RegexOptions.IgnoreCase);
         if (m.Success)
         {
-            int chap = int.Parse(m.Groups[1].Value); // already 0-based
-            int lvl1 = int.Parse(m.Groups[2].Value); // 1-based
+            int chap = int.Parse(m.Groups[1].Value);
+            int lvl1 = int.Parse(m.Groups[2].Value);
             chapterIndex0 = Mathf.Max(0, chap);
             levelIndex0 = Mathf.Max(0, lvl1 - 1);
         }
@@ -51,7 +51,6 @@ public class LevelTrigger : MonoBehaviour
         _colliders = GetComponentsInChildren<Collider>(true);
         _renderers = GetComponentsInChildren<Renderer>(true);
 
-        // Hide until SaveManager confirms unlocked
         SetSoftHidden(true);
 
         if (spaceIndicator) spaceIndicator.SetActive(false);
@@ -90,10 +89,7 @@ public class LevelTrigger : MonoBehaviour
             yield break;
         }
 
-        // Unlocked: enable visuals + collider and start listening to triggers
         SetSoftHidden(false);
-
-        // If player already standing inside when scene loads
         CheckInitialPlayerOverlap();
     }
 
@@ -164,17 +160,22 @@ public class LevelTrigger : MonoBehaviour
         startloading = true;
 
         string currentSceneName = SceneManager.GetActiveScene().name;
+        string targetSceneName = scenetitle.ToString();
+
+        // ✅ NEW: register both scenes as “has saved pos”
+        RegisterSceneForSavedPos(currentSceneName);
+        RegisterSceneForSavedPos(targetSceneName);
 
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerZ", transform.position.z);
 
-        string targetSceneName = scenetitle.ToString();
-
         PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerZ", transform.position.z);
+
         PlayerPrefs.SetString("LastTriggerScene", targetSceneName);
+        PlayerPrefs.Save();
 
         SKUtils.InvokeAction(0.2f, () =>
         {
@@ -183,5 +184,20 @@ public class LevelTrigger : MonoBehaviour
             else
                 SceneManager.LoadScene(targetSceneName);
         });
+    }
+
+    // -------------------- NEW helper --------------------
+    private void RegisterSceneForSavedPos(string sceneName)
+    {
+        if (string.IsNullOrEmpty(sceneName)) return;
+
+        // simple ; separated unique set
+        string raw = PlayerPrefs.GetString(PP_SceneRegistry, "");
+        string token = sceneName + ";";
+        if (!raw.Contains(token))
+        {
+            raw += token;
+            PlayerPrefs.SetString(PP_SceneRegistry, raw);
+        }
     }
 }

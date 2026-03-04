@@ -1,7 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [Serializable]
 public class ChapterData
@@ -33,6 +34,10 @@ public class SaveManager : MonoBehaviour
     [Tooltip("New/empty save 初始化每关 rewardTotals 的默认值（现在=3；以后想改就改这个）")]
     public int defaultRewardTotalPerLevel = 3;
 
+    // PlayerPrefs keys
+    private const string PP_LastTriggerScene = "LastTriggerScene";
+    private const string PP_SceneRegistry = "JZ_SavedPosScenes"; // ✅ LevelTrigger 写位置时会把 sceneName 注册到这里
+
     // ========== Playtest Unlock ==========
     public enum UnlockPolicy
     {
@@ -46,8 +51,15 @@ public class SaveManager : MonoBehaviour
     public UnlockPolicy unlockPolicy = UnlockPolicy.Normal;
 
     [Header("Dev / Debug")]
-    [Tooltip("勾上后：启动时清空所有记录（rewards/cleared/bestTimes），并写入存档。执行一次后会自动取消勾选。")]
+    [Tooltip("勾上后：启动时清空所有记录（rewards/cleared/bestTimes/rewardTotals），并写入存档。执行一次后会自动取消勾选。")]
     public bool resetAllProgressOnNextLaunch = false;
+
+    [Header("Tutorial / Start Behavior")]
+    [Tooltip("如果存档是全新/清零，Start 将直接进入 tutorial 场景")]
+    public bool startToTutorialWhenFresh = true;
+
+    [Tooltip("Tutorial 关卡的 Scene 名字（Build Settings 里要存在；名字要和真实 scene 完全一致）")]
+    public string tutorialSceneName = "Chapter0Level0";
 
     private SaveData data;
     private string savePath;
@@ -151,7 +163,6 @@ public class SaveManager : MonoBehaviour
             if (ch.rewardTotals.Count != count)
             {
                 var newList = new List<int>(new int[count]);
-                // 默认全部填 defaultRewardTotalPerLevel
                 for (int i = 0; i < count; i++) newList[i] = Mathf.Max(0, defaultRewardTotalPerLevel);
 
                 int copy = Mathf.Min(ch.rewardTotals.Count, count);
@@ -191,7 +202,7 @@ public class SaveManager : MonoBehaviour
                 ch.bestTimes = newList;
             }
 
-            // 额外防御：保证 collected 不超过 total（如果你之后改了 total 更小）
+            // 防御：保证 collected 不超过 total
             for (int i = 0; i < count; i++)
             {
                 int total = Mathf.Max(0, ch.rewardTotals[i]);
@@ -200,7 +211,9 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    // ===== Reset API =====
+    // =========================
+    // Reset API
+    // =========================
     public void ResetAllProgress()
     {
         if (data?.chapters == null) return;
@@ -219,14 +232,19 @@ public class SaveManager : MonoBehaviour
             if (ch.bestTimes != null)
                 for (int i = 0; i < ch.bestTimes.Count; i++) ch.bestTimes[i] = -1f;
 
-            // totals 重置回默认（避免你以后改默认值但旧存档还卡在旧 total）
             if (ch.rewardTotals != null)
                 for (int i = 0; i < ch.rewardTotals.Count; i++)
                     ch.rewardTotals[i] = Mathf.Max(0, defaultRewardTotalPerLevel);
         }
+
+        ClearAllSavedPlayerWorldPositions(); // 你原来的（可留可不留）
+        ClearWorldScenePositionsHard();      // ✅ 新增这一刀
+        Debug.Log($"[SaveManager] After reset, Has Chapter1World keys? X={PlayerPrefs.HasKey("Chapter1World_LastTriggerX")} Y={PlayerPrefs.HasKey("Chapter1World_LastTriggerY")} Z={PlayerPrefs.HasKey("Chapter1World_LastTriggerZ")}");
     }
 
-    // ===== Rewards (Collected) =====
+    // =========================
+    // Rewards (Collected)
+    // =========================
     public void SetLevelRewards(int chapterIndex, int levelIndex, int rewards)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return;
@@ -236,13 +254,16 @@ public class SaveManager : MonoBehaviour
         Save();
     }
 
+    // ✅ 兼容你工程里可能用的旧名字：GetLevelRewards / GetLevelReward
     public int GetLevelRewards(int chapterIndex, int levelIndex)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return 0;
         return Mathf.Max(0, data.chapters[chapterIndex].rewards[levelIndex]);
     }
 
-    // ===== Rewards (Total) =====
+    // =========================
+    // Rewards (Total)
+    // =========================
     public void SetLevelRewardTotal(int chapterIndex, int levelIndex, int total)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return;
@@ -259,7 +280,9 @@ public class SaveManager : MonoBehaviour
 
     public int GetLevelRewardTotal(int chapterIndex, int levelIndex)
     {
-        if (!ValidateLevelIndex(chapterIndex, levelIndex)) return Mathf.Max(0, defaultRewardTotalPerLevel);
+        if (!ValidateLevelIndex(chapterIndex, levelIndex))
+            return Mathf.Max(0, defaultRewardTotalPerLevel);
+
         return Mathf.Max(0, data.chapters[chapterIndex].rewardTotals[levelIndex]);
     }
 
@@ -270,15 +293,22 @@ public class SaveManager : MonoBehaviour
         return $"{collected}/{total}";
     }
 
+    // =========================
+    // Chapter total
+    // =========================
     public int GetChapterTotal(int chapterIndex)
     {
         if (data?.chapters == null || chapterIndex < 0 || chapterIndex >= data.chapters.Count) return 0;
         int sum = 0;
-        foreach (var r in data.chapters[chapterIndex].rewards) sum += Mathf.Max(0, r);
+        var ch = data.chapters[chapterIndex];
+        if (ch?.rewards == null) return 0;
+        foreach (var r in ch.rewards) sum += Mathf.Max(0, r);
         return sum;
     }
 
-    // ✅ 这里改成：同时记录 collected 和 total（total 可选）
+    // =========================
+    // Completion / Unlock
+    // =========================
     public void MarkLevelCompleted(int chapterIndex, int levelIndex, int rewardsCollected, int rewardTotal = -1)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return;
@@ -311,13 +341,15 @@ public class SaveManager : MonoBehaviour
         return IsLevelCleared(chapterIndex, levelIndex - 1);
     }
 
+    // =========================
+    // Best time
+    // =========================
     public float GetBestTime(int chapterIndex, int levelIndex)
     {
         if (!ValidateLevelIndex(chapterIndex, levelIndex)) return -1f;
 
         var ch = data.chapters[chapterIndex];
         if (ch.bestTimes == null || levelIndex < 0 || levelIndex >= ch.bestTimes.Count) return -1f;
-
         return ch.bestTimes[levelIndex];
     }
 
@@ -327,12 +359,6 @@ public class SaveManager : MonoBehaviour
         if (newTimeSeconds < 0f) return false;
 
         var ch = data.chapters[chapterIndex];
-
-        if (ch.bestTimes == null)
-        {
-            ch.bestTimes = new List<float>();
-            for (int i = 0; i < levelsPerChapter[chapterIndex]; i++) ch.bestTimes.Add(-1f);
-        }
 
         float oldBest = ch.bestTimes[levelIndex];
 
@@ -346,7 +372,44 @@ public class SaveManager : MonoBehaviour
         return false;
     }
 
-    // ========= Playtest 辅助 =========
+    // =========================
+    // Tutorial / Start behavior
+    // =========================
+    public bool IsFreshSave()
+    {
+        if (data?.chapters == null) return true;
+
+        for (int c = 0; c < data.chapters.Count; c++)
+        {
+            var ch = data.chapters[c];
+            if (ch == null) continue;
+
+            int levelCount = (levelsPerChapter != null && c >= 0 && c < levelsPerChapter.Length)
+                ? levelsPerChapter[c]
+                : 0;
+
+            for (int i = 0; i < levelCount; i++)
+            {
+                if (ch.cleared != null && i < ch.cleared.Count && ch.cleared[i]) return false;
+                if (ch.rewards != null && i < ch.rewards.Count && ch.rewards[i] > 0) return false;
+                if (ch.bestTimes != null && i < ch.bestTimes.Count && ch.bestTimes[i] >= 0f) return false;
+            }
+        }
+        return true;
+    }
+
+    public bool TryLoadTutorialIfFresh()
+    {
+        if (!startToTutorialWhenFresh) return false;
+        if (!IsFreshSave()) return false;
+
+        SceneManager.LoadScene(tutorialSceneName);
+        return true;
+    }
+
+    // =========================
+    // Playtest helpers
+    // =========================
     public void SetUnlockPolicy(UnlockPolicy policy, bool persistNow = false)
     {
         unlockPolicy = policy;
@@ -371,7 +434,9 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    // ========= 校验 =========
+    // =========================
+    // Validation
+    // =========================
     private bool ValidateChapterIndex(int ci)
     {
         if (data?.chapters == null) return false;
@@ -393,5 +458,88 @@ public class SaveManager : MonoBehaviour
                li < ch.rewardTotals.Count &&
                li < ch.cleared.Count &&
                li < ch.bestTimes.Count;
+    }
+
+    // =========================
+    // ✅ Clear ALL saved player positions (registry + fallback)
+    // =========================
+    private void ClearAllSavedPlayerWorldPositions()
+    {
+        // 1) LastTriggerScene
+        if (PlayerPrefs.HasKey(PP_LastTriggerScene))
+            PlayerPrefs.DeleteKey(PP_LastTriggerScene);
+
+        // 2) registry 里记过的全部 scene（最可靠）
+        string raw = PlayerPrefs.GetString(PP_SceneRegistry, "");
+        if (!string.IsNullOrEmpty(raw))
+        {
+            string[] scenes = raw.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < scenes.Length; i++)
+            {
+                string s = scenes[i];
+                PlayerPrefs.DeleteKey(s + "_LastTriggerX");
+                PlayerPrefs.DeleteKey(s + "_LastTriggerY");
+                PlayerPrefs.DeleteKey(s + "_LastTriggerZ");
+            }
+        }
+
+        // 3) 兜底：按“存档 chapters 数量”来删 world（不要用 levelsPerChapter.Length）
+        int chapterCountFromData = (data != null && data.chapters != null) ? data.chapters.Count : 0;
+        int chapterCount = Mathf.Max(chapterCountFromData, (levelsPerChapter != null ? levelsPerChapter.Length : 0), 2);
+        // ↑ 最少按 2 章处理，确保 Chapter1World 一定会被清
+
+        for (int c = 0; c < chapterCount; c++)
+        {
+            // 清 world scene：Chapter0World / Chapter1World / ...
+            string worldScene = $"Chapter{c}World";
+            PlayerPrefs.DeleteKey(worldScene + "_LastTriggerX");
+            PlayerPrefs.DeleteKey(worldScene + "_LastTriggerY");
+            PlayerPrefs.DeleteKey(worldScene + "_LastTriggerZ");
+
+            // 如果你关卡场景是 Chapter{c}_Level{n}，也可继续兜底清掉
+            if (levelsPerChapter != null && c >= 0 && c < levelsPerChapter.Length)
+            {
+                int count = levelsPerChapter[c];
+                for (int l0 = 0; l0 < count; l0++)
+                {
+                    string levelScene = $"Chapter{c}_Level{l0 + 1}";
+                    PlayerPrefs.DeleteKey(levelScene + "_LastTriggerX");
+                    PlayerPrefs.DeleteKey(levelScene + "_LastTriggerY");
+                    PlayerPrefs.DeleteKey(levelScene + "_LastTriggerZ");
+                }
+            }
+        }
+
+        // 4) 清 registry 本身
+        PlayerPrefs.DeleteKey(PP_SceneRegistry);
+
+        // 5) 再兜底：当前场景
+        string cur = SceneManager.GetActiveScene().name;
+        PlayerPrefs.DeleteKey(cur + "_LastTriggerX");
+        PlayerPrefs.DeleteKey(cur + "_LastTriggerY");
+        PlayerPrefs.DeleteKey(cur + "_LastTriggerZ");
+
+        PlayerPrefs.Save();
+        Debug.Log("[SaveManager] ✅ Cleared all saved player positions (registry + ChapterWorld).");
+    }
+
+    // ✅ 强制清 world 场景位置（不依赖 registry，不依赖 levelsPerChapter）
+    // 你现在至少有 Chapter0World / Chapter1World
+    private void ClearWorldScenePositionsHard()
+    {
+        // 如果你以后有更多 chapter，想扩展就加名字
+        string[] worlds = new[] { "Chapter0World", "Chapter1World" };
+
+        foreach (var s in worlds)
+        {
+            PlayerPrefs.DeleteKey(s + "_LastTriggerX");
+            PlayerPrefs.DeleteKey(s + "_LastTriggerY");
+            PlayerPrefs.DeleteKey(s + "_LastTriggerZ");
+        }
+
+        PlayerPrefs.DeleteKey("LastTriggerScene");
+        PlayerPrefs.Save();
+
+        Debug.Log("[SaveManager] ✅ Hard-cleared world scene saved positions (Chapter0World/Chapter1World).");
     }
 }
