@@ -162,19 +162,14 @@ public class LevelTrigger : MonoBehaviour
         string currentSceneName = SceneManager.GetActiveScene().name;
         string targetSceneName = scenetitle.ToString();
 
-        // ✅ NEW: register both scenes as “has saved pos”
         RegisterSceneForSavedPos(currentSceneName);
-        RegisterSceneForSavedPos(targetSceneName);
 
+        // 只保存当前场景（通常是 World）的返回位置
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerZ", transform.position.z);
 
-        PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerX", transform.position.x);
-        PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerY", transform.position.y);
-        PlayerPrefs.SetFloat(targetSceneName + "_LastTriggerZ", transform.position.z);
-
-        PlayerPrefs.SetString("LastTriggerScene", targetSceneName);
+        PlayerPrefs.SetString("LastTriggerScene", currentSceneName);
         PlayerPrefs.Save();
 
         SKUtils.InvokeAction(0.2f, () =>
