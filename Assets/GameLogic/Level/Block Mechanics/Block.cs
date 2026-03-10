@@ -265,8 +265,8 @@ public class Block : MonoBehaviour
             Debug.Log(offset);
             //THis is for build use
 
-            //offset += 18f;
-            //offsetz -= 18f;
+            offset += 18f;
+            offsetz -= 18f;
         }
     }
     private void Update()
