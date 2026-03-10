@@ -9,7 +9,7 @@ public class LevelFail : MonoBehaviour
     [SerializeField] private AudioClip[] loseClip;
 
     // 全局锁：防止 Player1/Player2 同时死，导致重复 Load
-    private static bool s_IsFailing = false;
+    public static bool s_IsFailing = false;
 
     private Collider _triggerCol;
 
@@ -29,6 +29,7 @@ public class LevelFail : MonoBehaviour
             other.CompareTag("Player1Tutorial") ||
             other.CompareTag("Player2Tutorial"))
         {
+            Debug.Log("Enter Death Trigger!");
             TriggerFailOnce();
         }
     }
@@ -41,6 +42,9 @@ public class LevelFail : MonoBehaviour
 
     private void TriggerFailOnce()
     {
+        Debug.Log("Failed!");
+
+
         s_IsFailing = true;
 
         // 立刻关掉触发器，避免同一帧/后续 collider 再触发
@@ -57,5 +61,8 @@ public class LevelFail : MonoBehaviour
         {
             Scenecontroller.instance.LoadSceneAsset(sceneInfo);
         }
+
+        s_IsFailing = false;
+
     }
 }
