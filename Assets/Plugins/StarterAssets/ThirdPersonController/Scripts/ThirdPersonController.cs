@@ -154,11 +154,11 @@ namespace StarterAssets
             string keyY = sceneName + "_LastTriggerY";
             string keyZ = sceneName + "_LastTriggerZ";
 
-            bool isWorldScene = neverUseSavedPosInWorldScenes && sceneName.EndsWith("World");
-            bool hasSaved = !isWorldScene &&
-                            PlayerPrefs.HasKey(keyX) && PlayerPrefs.HasKey(keyY) && PlayerPrefs.HasKey(keyZ);
+            bool hasSaved = PlayerPrefs.HasKey(keyX) &&
+                PlayerPrefs.HasKey(keyY) &&
+                PlayerPrefs.HasKey(keyZ);
 
-            Debug.Log($"[TPC] DefaultSpawn resolved pos={_resolvedSceneDefaultPos} (scene='{sceneName}', isWorld={isWorldScene})");
+            Debug.Log($"[TPC] DefaultSpawn resolved pos={_resolvedSceneDefaultPos} (scene='{sceneName}'");
             Debug.Log($"[TPC] Keys exist? {keyX}={PlayerPrefs.HasKey(keyX)} {keyY}={PlayerPrefs.HasKey(keyY)} {keyZ}={PlayerPrefs.HasKey(keyZ)} (willUseSaved={hasSaved})");
             Debug.Log($"[TPC] beforePos={transform.position}");
 
