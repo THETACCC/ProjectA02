@@ -243,13 +243,11 @@ namespace MoreMountains.Tools
 			}
 			if (UseMobileControls)
 			{
-				//Cursor.lockState = CursorLockMode.None;
-				//Cursor.visible = true;
+
 			}
 			else if (Active)
 			{
-				//Cursor.lockState = CursorLockMode.Locked;
-				//Cursor.visible = false;
+
 			}
 			if (LeftStickContainer != null)
 			{
@@ -357,8 +355,7 @@ namespace MoreMountains.Tools
 			Active = !Active;
 			//
 			//
-			//Cursor.lockState = Active ? CursorLockMode.Locked : CursorLockMode.None;
-			//Cursor.visible = !Active;
+
 		}
 	}
 }
