@@ -28,7 +28,7 @@ public class LightReciever : MonoBehaviour
 
     void Start()
     {
-        myRenderer = GetComponent<MeshRenderer>();
+        //myRenderer = GetComponent<MeshRenderer>();
 
         if (transform.childCount >= 2)
         {

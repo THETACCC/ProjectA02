@@ -263,10 +263,12 @@ public class Block : MonoBehaviour
             //offset = Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) - 24.7521f;
             //offsetz = -Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) + 24.7521f;
             Debug.Log(offset);
+
+
             //THis is for build use
 
-            offset += 18f;
-            offsetz -= 18f;
+            //offset += 18f;
+            //offsetz -= 18f;
         }
     }
     private void Update()
