@@ -17,13 +17,15 @@ public class LevelFail : MonoBehaviour
     {
         _triggerCol = GetComponent<Collider>();
         if (_triggerCol != null) _triggerCol.isTrigger = true;
+
+        // 新场景里的 LevelFail 初始化时，重置锁
+        s_IsFailing = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (s_IsFailing) return;
 
-        // ✅ 用 CompareTag 更安全更快
         if (other.CompareTag("Player1") ||
             other.CompareTag("Player2") ||
             other.CompareTag("Player1Tutorial") ||
@@ -42,13 +44,14 @@ public class LevelFail : MonoBehaviour
 
     private void TriggerFailOnce()
     {
+        if (s_IsFailing) return;
+
         Debug.Log("Failed!");
-
-
         s_IsFailing = true;
 
-        // 立刻关掉触发器，避免同一帧/后续 collider 再触发
-        if (_triggerCol != null) _triggerCol.enabled = false;
+        // 立刻关掉触发器，避免继续触发
+        if (_triggerCol != null)
+            _triggerCol.enabled = false;
 
         // Audio（只播一次）
         if (loseClip != null && loseClip.Length > 0 && SoundFXManager.instance != null)
@@ -61,8 +64,5 @@ public class LevelFail : MonoBehaviour
         {
             Scenecontroller.instance.LoadSceneAsset(sceneInfo);
         }
-
-        s_IsFailing = false;
-
     }
 }
