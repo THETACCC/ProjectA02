@@ -138,6 +138,9 @@ public class Block : MonoBehaviour
     public SpawnBlock SpawnBlockScript2;
     public SpawnBlock SpawnBlockScript3;
 
+    private PlayerController player1Controller;
+    private PlayerController player2Controller;
+
     private void Awake()
     {
         // Robust outline assignment (works for originals & clones; Editor & Player)
@@ -155,6 +158,13 @@ public class Block : MonoBehaviour
     private void Start()
     {
         StartCoroutine(ExecuteAfterDelay(0.1f));
+
+        GameObject p1 = GameObject.FindGameObjectWithTag("Player1");
+        GameObject p2 = GameObject.FindGameObjectWithTag("Player2");
+
+        if (p1 != null) player1Controller = p1.GetComponent<PlayerController>();
+        if (p2 != null) player2Controller = p2.GetComponent<PlayerController>();
+
         myLocalScale = this.gameObject.transform.localScale;
         cld_0 = transform.Find("Base")?.gameObject;
         cld_1 = transform.Find("Lower")?.gameObject;
@@ -465,6 +475,13 @@ public class Block : MonoBehaviour
 
     private void UpdateMouseBehavior()
     {
+        if (player1Controller != null && player2Controller != null)
+        {
+            if (!player1Controller.hasLanded || !player2Controller.hasLanded)
+            {
+                return;
+            }
+        }
 
         Ray ray = CommonReference.mainCam.ScreenPointToRay(Input.mousePosition);
 

@@ -44,6 +44,10 @@ public class MainMenuButton : MonoBehaviour,
     private Canvas _canvas;
     private Camera _uiCam;
 
+    public MenuController menuController;
+    public GameObject mainMenu;
+    public GameObject chapterMenu;
+
     void Awake()
     {
         _rt = transform as RectTransform;
@@ -126,11 +130,17 @@ public class MainMenuButton : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData e)
     {
-        //如果清零存档，直接进 tutorial（并且不要继续执行原 Start 逻辑）
         if (buttonType == MenuButtonType.StartGame && SaveManager.Instance != null)
         {
             if (SaveManager.Instance.TryLoadTutorialIfFresh())
                 return;
+        }
+
+        if (buttonType == MenuButtonType.StartGame)
+        {
+            if (mainMenu != null) mainMenu.SetActive(false);
+            if (chapterMenu != null) chapterMenu.SetActive(true);
+            if (menuController != null) menuController.MoveUIToEnd();
         }
 
         StopAllCoroutines();

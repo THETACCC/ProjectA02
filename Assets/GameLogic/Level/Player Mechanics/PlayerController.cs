@@ -73,10 +73,12 @@ public class PlayerController : MonoBehaviour
     private bool isRecordingSpace = false;
     private float recordInterval = 0.01f;
 
+    public bool hasLanded = false;
 
     //Audio Related
     [SerializeField] private AudioClip[] walkSoundClip;
     [SerializeField] private AudioClip[] rotateSoundClip;
+
     void Start()
     {
         GameObject Player1 = GameObject.FindGameObjectWithTag(Player1Tag);
@@ -99,6 +101,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (!hasLanded && Mathf.Abs(rb.velocity.y) < 0.05f)
+        {
+            hasLanded = true;
+        }
+
         //Chapter1 Movement
         if (whichChapter== 1)
         {
