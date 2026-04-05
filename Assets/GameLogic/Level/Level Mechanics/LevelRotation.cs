@@ -1,18 +1,21 @@
-using SKCell;
-using System.Collections;
-using System.Collections.Generic;
+﻿using SKCell;
 using UnityEngine;
 
 public class LevelRotation : MonoBehaviour
 {
-
     private Transform self;
 
-    //The Bool for the block to know whether the map is rotating or not.
     public bool isRotating = false;
     public bool finishedRotation = false;
 
+    private float smoothTime = 0.2f; // animation front and end smooth time
+    private float maxSpeed = 720f; // max rotation speed
+
+    private float targetYRotation;
+    private float rotationVelocity;
+
     private LevelController levelController;
+
     private void Start()
     {
         GameObject LevelControllOBJ = GameObject.FindGameObjectWithTag("LevelPhaseControll");
@@ -21,63 +24,52 @@ public class LevelRotation : MonoBehaviour
             levelController = LevelControllOBJ.GetComponent<LevelController>();
         }
 
-        self = gameObject.transform; 
+        self = transform;
+        targetYRotation = self.eulerAngles.y;
     }
 
     private void Update()
     {
-        if(levelController.phase != LevelPhase.Speaking)
+        if (levelController != null && levelController.phase == LevelPhase.Speaking)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                if (!isRotating)
-                {
-
-                    StartCoroutine(RotateLevel());
-                }
-
-            }
+            targetYRotation += 90f;
+            finishedRotation = false;
         }
 
-
+        RotateTowardsTarget();
     }
 
-
-    private void RotateTo(Vector3 rot)
+    private void RotateTowardsTarget()
     {
-        Vector3 orot = self.rotation.eulerAngles;
-        SKUtils.StartProcedure(SKCurve.QuadraticDoubleIn, 1f, (f) =>
+        float currentY = self.eulerAngles.y;
+
+        float newY = Mathf.SmoothDampAngle(
+            currentY,
+            targetYRotation,
+            ref rotationVelocity,
+            smoothTime,
+            maxSpeed,
+            Time.deltaTime
+        );
+
+        self.eulerAngles = new Vector3(0f, newY, 0f);
+
+        float diff = Mathf.Abs(Mathf.DeltaAngle(newY, targetYRotation));
+
+        if (diff > 0.05f || Mathf.Abs(rotationVelocity) > 0.05f)
         {
-            self.rotation = Quaternion.Euler(Vector3.Lerp(orot, rot, f));
-        });
-    }
-
-    IEnumerator RotateLevel()
-    {
-        isRotating = true;
-
-        float rotationSpeed = 2.5f;
-        float targetYRotation = transform.eulerAngles.y + 90;
-
-        // Normalize the target rotation to be within 0 to 360 degrees
-        targetYRotation = (targetYRotation + 360) % 360;
-
-
-        while (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, targetYRotation)) > 0.1f)
-        {
-            // Calculate the next rotation step
-            float step = Time.deltaTime * rotationSpeed;
-            float newYRotation = Mathf.LerpAngle(transform.eulerAngles.y, targetYRotation, step);
-
-            // Apply the rotation
-            transform.eulerAngles = new Vector3(0, newYRotation, 0);
-            yield return null;
+            isRotating = true;
+            finishedRotation = false;
         }
-
-        // Snap to the exact target rotation
-        transform.eulerAngles = new Vector3(0, targetYRotation, 0);
-        finishedRotation = true;
-        isRotating = false;
+        else
+        {
+            self.eulerAngles = new Vector3(0f, targetYRotation, 0f);
+            rotationVelocity = 0f;
+            isRotating = false;
+            finishedRotation = true;
+        }
     }
-
 }
