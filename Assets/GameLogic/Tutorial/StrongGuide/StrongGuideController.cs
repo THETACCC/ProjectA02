@@ -1,17 +1,43 @@
 using TMPro;
 using UnityEngine;
 
+[ExecuteAlways]
 public class StrongGuideController : MonoBehaviour
 {
+    public enum GuideTextAnchor
+    {
+        Right,
+        Left,
+        Up,
+        Down
+    }
+
     [Header("Auto References")]
     [SerializeField] private StrongGuideOverlay overlay;
     [SerializeField] private RectTransform textPanel;
     [SerializeField] private TMP_Text guideTMP;
 
-    [Header("Defaults")]
-    [SerializeField] private Vector2 defaultTextOffset = new Vector2(180f, 0f);
-    [SerializeField] private float defaultPadding = 24f;
-    [SerializeField] private bool hideOnRightMouseDown = true;
+    [Header("Default Tutorial Style")]
+    private StrongGuideOverlay.HoleShape defaultShape = StrongGuideOverlay.HoleShape.Circle;
+    private float defaultPadding = 24f;
+    private bool defaultUseManualHoleSize = false;
+    private Vector2 defaultManualHoleSize = new Vector2(220f, 220f);
+
+    [Header("Default Text Style")]
+    private GuideTextAnchor defaultTextAnchor = GuideTextAnchor.Right;
+    private Vector2 defaultTextOffset = Vector2.zero;
+    private bool hideOnRightMouseDown = true;
+
+    [Header("Editor Preview")]
+    [SerializeField] private bool previewInEditor = false;
+    [SerializeField] private RectTransform previewTarget;
+    [SerializeField] private string previewMessage = "Preview Text";
+    [SerializeField] private StrongGuideOverlay.HoleShape previewShape = StrongGuideOverlay.HoleShape.Circle;
+    [SerializeField] private float previewPadding = 24f;
+    [SerializeField] private bool previewUseManualHoleSize = false;
+    [SerializeField] private Vector2 previewManualHoleSize = new Vector2(220f, 220f);
+    [SerializeField] private GuideTextAnchor previewTextAnchor = GuideTextAnchor.Right;
+    [SerializeField] private Vector2 previewExtraTextOffset = Vector2.zero;
 
     private bool waitingForRightMouseDown = false;
     private bool isShowing = false;
@@ -23,14 +49,32 @@ public class StrongGuideController : MonoBehaviour
 
     private void Start()
     {
-        HideGuide();
+        if (Application.isPlaying)
+            HideGuide();
     }
 
     private void Update()
     {
+        if (!Application.isPlaying)
+            return;
+
         if (hideOnRightMouseDown && waitingForRightMouseDown && Input.GetMouseButtonDown(1))
         {
             HideGuide();
+        }
+    }
+
+    private void OnValidate()
+    {
+        AutoAssignIfNeeded();
+
+        if (!Application.isPlaying && previewInEditor)
+        {
+            ApplyPreview();
+        }
+        else if (!Application.isPlaying && !previewInEditor)
+        {
+            HideGuideInEditorOnly();
         }
     }
 
@@ -50,12 +94,57 @@ public class StrongGuideController : MonoBehaviour
             guideTMP = textPanel.GetComponentInChildren<TMP_Text>(true);
     }
 
+    private void ApplyPreview()
+    {
+        if (previewTarget == null || overlay == null)
+            return;
+
+        overlay.Show(
+            previewTarget,
+            previewShape,
+            previewPadding,
+            true,
+            previewUseManualHoleSize,
+            previewManualHoleSize
+        );
+
+        if (guideTMP != null)
+            guideTMP.text = previewMessage;
+
+        if (textPanel != null)
+        {
+            textPanel.gameObject.SetActive(true);
+
+            Vector2 finalOffset =
+                GetAnchorBaseOffset(previewTextAnchor) +
+                defaultTextOffset +
+                previewExtraTextOffset;
+
+            PositionTextPanelNearTarget(previewTarget, finalOffset);
+        }
+    }
+
+    private void HideGuideInEditorOnly()
+    {
+        if (Application.isPlaying)
+            return;
+
+        if (overlay != null)
+            overlay.Hide();
+
+        if (textPanel != null)
+            textPanel.gameObject.SetActive(false);
+    }
+
     public void ShowGuide(
         RectTransform target,
         string message,
-        StrongGuideOverlay.HoleShape shape = StrongGuideOverlay.HoleShape.Circle,
+        StrongGuideOverlay.HoleShape? shape = null,
         float padding = -1f,
-        Vector2? textOffset = null,
+        bool? useManualHoleSize = null,
+        Vector2? manualHoleSize = null,
+        GuideTextAnchor? anchor = null,
+        Vector2? extraTextOffset = null,
         bool hideOnRightClick = false)
     {
         AutoAssignIfNeeded();
@@ -66,10 +155,21 @@ public class StrongGuideController : MonoBehaviour
             return;
         }
 
+        StrongGuideOverlay.HoleShape finalShape = shape ?? defaultShape;
         float finalPadding = padding >= 0f ? padding : defaultPadding;
-        Vector2 finalOffset = textOffset ?? defaultTextOffset;
+        bool finalUseManualHoleSize = useManualHoleSize ?? defaultUseManualHoleSize;
+        Vector2 finalManualHoleSize = manualHoleSize ?? defaultManualHoleSize;
+        GuideTextAnchor finalAnchor = anchor ?? defaultTextAnchor;
+        Vector2 finalExtraOffset = extraTextOffset ?? Vector2.zero;
 
-        overlay.Show(target, shape, finalPadding, true);
+        overlay.Show(
+            target,
+            finalShape,
+            finalPadding,
+            true,
+            finalUseManualHoleSize,
+            finalManualHoleSize
+        );
 
         if (guideTMP != null)
             guideTMP.text = message;
@@ -77,6 +177,12 @@ public class StrongGuideController : MonoBehaviour
         if (textPanel != null)
         {
             textPanel.gameObject.SetActive(true);
+
+            Vector2 finalOffset =
+                GetAnchorBaseOffset(finalAnchor) +
+                defaultTextOffset +
+                finalExtraOffset;
+
             PositionTextPanelNearTarget(target, finalOffset);
         }
 
@@ -84,14 +190,25 @@ public class StrongGuideController : MonoBehaviour
         isShowing = true;
     }
 
-    public void ShowRightClickRotate(RectTransform target, string message = "Right mouse click to rotate the block.")
+    public void ShowRightClickRotate(
+        RectTransform target,
+        string message = "Right mouse click to rotate the block.",
+        StrongGuideOverlay.HoleShape? shape = null,
+        float padding = -1f,
+        bool? useManualHoleSize = null,
+        Vector2? manualHoleSize = null,
+        GuideTextAnchor? anchor = null,
+        Vector2? extraOffset = null)
     {
         ShowGuide(
             target,
             message,
-            StrongGuideOverlay.HoleShape.Circle,
-            defaultPadding,
-            defaultTextOffset,
+            shape,
+            padding,
+            useManualHoleSize,
+            manualHoleSize,
+            anchor,
+            extraOffset,
             true
         );
     }
@@ -113,6 +230,22 @@ public class StrongGuideController : MonoBehaviour
     public bool IsShowing()
     {
         return isShowing;
+    }
+
+    private Vector2 GetAnchorBaseOffset(GuideTextAnchor anchor)
+    {
+        switch (anchor)
+        {
+            case GuideTextAnchor.Left:
+                return new Vector2(-180f, 0f);
+            case GuideTextAnchor.Up:
+                return new Vector2(0f, 120f);
+            case GuideTextAnchor.Down:
+                return new Vector2(0f, -120f);
+            case GuideTextAnchor.Right:
+            default:
+                return new Vector2(180f, 0f);
+        }
     }
 
     private void PositionTextPanelNearTarget(RectTransform target, Vector2 offset)

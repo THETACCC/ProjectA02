@@ -572,7 +572,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-288130
+  m_Name: pb_Mesh-1871286
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -782,7 +782,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-1119882
+  m_Name: pb_Mesh-1865530
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -951,7 +951,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-270648
+  m_Name: pb_Mesh-1853514
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1799,7 +1799,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-1119942
+  m_Name: pb_Mesh-1865590
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3248,15 +3248,15 @@ RectTransform:
   m_GameObject: {fileID: 637755114}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.78, y: 1.78, z: 1.78}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 43601552}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -288, y: -56}
+  m_AnchoredPosition: {x: -299, y: -56}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &637755116
@@ -3303,7 +3303,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-270634
+  m_Name: pb_Mesh-1853500
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3685,7 +3685,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-270620
+  m_Name: pb_Mesh-1853486
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3843,6 +3843,40 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!21 &720187372
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Mat_StrongGuideOverlay
+  m_Shader: {fileID: 4800000, guid: 69452a7bc0fcb9343b6b2a4fa5d997d7, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _EdgeSoftness: 0.01
+    - _Hole1Shape: 1
+    - _Hole2Shape: 0
+    - _UseHole1: 0
+    - _UseHole2: 0
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 0.75}
+    - _Hole1Center: {r: 0.34427083, g: 0.44809023, b: 0, a: 0}
+    - _Hole1Size: {r: 0.15625, g: 0.26696467, b: 0, a: 0}
+    - _Hole2Center: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _Hole2Size: {r: 0.1, g: 0.1, b: 0, a: 0}
+  m_BuildTextureStacks: []
 --- !u!1001 &721660816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3853,6 +3887,10 @@ PrefabInstance:
     - target: {fileID: 8228239600807408264, guid: 245fa8a8aeb263b4ba51ffad6f0a585f, type: 3}
       propertyPath: m_Name
       value: MusicManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 8228239600807408264, guid: 245fa8a8aeb263b4ba51ffad6f0a585f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8228239600807408265, guid: 245fa8a8aeb263b4ba51ffad6f0a585f, type: 3}
       propertyPath: m_audioClip
@@ -3959,6 +3997,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RewardManager
       objectReference: {fileID: 0}
+    - target: {fileID: 3821702617830770390, guid: 25ca3148d698a6a48833425399080f2b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25ca3148d698a6a48833425399080f2b, type: 3}
 --- !u!1 &765442258
@@ -4004,7 +4046,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-288250
+  m_Name: pb_Mesh-1871406
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4382,7 +4424,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-288070
+  m_Name: pb_Mesh-1871226
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4546,7 +4588,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-1119766
+  m_Name: pb_Mesh-1865414
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4704,13 +4746,59 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!21 &916847619
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
+    m_Colors:
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!43 &919685595
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-288190
+  m_Name: pb_Mesh-1871346
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -4918,6 +5006,8 @@ GameObject:
   - component: {fileID: 1014866001}
   - component: {fileID: 1014866003}
   - component: {fileID: 1014866002}
+  - component: {fileID: 1014866005}
+  - component: {fileID: 1014866004}
   m_Layer: 5
   m_Name: Text Panel
   m_TagString: Untagged
@@ -4943,8 +5033,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -484.39996, y: -300}
+  m_AnchoredPosition: {x: 55.416656, y: -23.333328}
+  m_SizeDelta: {x: -719.89, y: -406.86765}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1014866002
 MonoBehaviour:
@@ -4984,6 +5074,46 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1014866000}
   m_CullTransparentMesh: 1
+--- !u!114 &1014866004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1014866000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 24
+    m_Right: 24
+    m_Top: 14
+    m_Bottom: 14
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &1014866005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1014866000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!1 &1017983790
 GameObject:
   m_ObjectHideFlags: 0
@@ -5437,7 +5567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 546dcd6bec436a549a4636d0611a5682, type: 2}
+  m_Material: {fileID: 720187372}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -5526,54 +5656,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myDragTutorial: {fileID: 925667584}
   myRotateTutorial: {fileID: 603520508}
-  strongGuideController: {fileID: 0}
+  strongGuideController: {fileID: 1418321322}
   rotateGuideTarget: {fileID: 637755115}
---- !u!21 &1283281064
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _GlowFalloff: 2.5
-    - _GlowFollowStripes: 0
-    - _GlowIntensity: 2.5
-    - _GlowOnlyWhenFilled: 1
-    - _GlowWidth: 0.18
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
+  overrideRotateStyle: 0
+  rotateGuideShape: 1
+  rotateGuidePadding: 20.44
+  rotateUseManualHoleSize: 1
+  rotateManualHoleSize: {x: 125, y: 120}
+  rotateTextAnchor: 0
+  rotateTextExtraOffset: {x: 0, y: 0}
 --- !u!1 &1309301972
 GameObject:
   m_ObjectHideFlags: 0
@@ -6152,10 +6243,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overlay: {fileID: 1262264755}
   textPanel: {fileID: 1014866001}
-  guideTMP: {fileID: 0}
-  defaultTextOffset: {x: 0, y: -120}
-  defaultPadding: 24
-  hideOnRightMouseDown: 1
+  guideTMP: {fileID: 2004004978}
+  previewInEditor: 0
+  previewTarget: {fileID: 637755115}
+  previewMessage: Heloo
+  previewShape: 1
+  previewPadding: 20.44
+  previewUseManualHoleSize: 1
+  previewManualHoleSize: {x: 125, y: 120}
+  previewTextAnchor: 0
+  previewExtraTextOffset: {x: 0, y: 0}
 --- !u!43 &1419437697
 Mesh:
   m_ObjectHideFlags: 0
@@ -6555,6 +6652,10 @@ PrefabInstance:
     - target: {fileID: 5393534620717892643, guid: c257a91ee3328d449955e59d8968d6e7, type: 3}
       propertyPath: m_Name
       value: LevelLogics
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393534620717892643, guid: c257a91ee3328d449955e59d8968d6e7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6885342021956464189, guid: c257a91ee3328d449955e59d8968d6e7, type: 3}
       propertyPath: m_RootOrder
@@ -7274,7 +7375,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-270662
+  m_Name: pb_Mesh-1853528
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7438,7 +7539,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-1119822
+  m_Name: pb_Mesh-1865470
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7824,7 +7925,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Guide text: CLICK HERE'
+  m_text: Heloo
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e38b714635b0c2542b51ab9a1c02eb70, type: 2}
   m_sharedMaterial: {fileID: -7431596261235814320, guid: e38b714635b0c2542b51ab9a1c02eb70, type: 2}
@@ -7916,10 +8017,10 @@ RectTransform:
   m_Father: {fileID: 1014866001}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 40.054993, y: -21.315002}
+  m_SizeDelta: {x: 32.109985, y: 14.63}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2012364370
 GameObject:

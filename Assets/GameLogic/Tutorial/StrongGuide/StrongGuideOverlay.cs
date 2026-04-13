@@ -31,6 +31,12 @@ public class StrongGuideOverlay : MonoBehaviour
     private float padding1;
     private float padding2;
 
+    private bool useManualHoleSize1 = false;
+    private bool useManualHoleSize2 = false;
+
+    private Vector2 manualHoleSize1 = Vector2.zero;
+    private Vector2 manualHoleSize2 = Vector2.zero;
+
     private bool useHole1 = false;
     private bool useHole2 = false;
 
@@ -63,6 +69,8 @@ public class StrongGuideOverlay : MonoBehaviour
             useHole1,
             target1,
             padding1,
+            useManualHoleSize1,
+            manualHoleSize1,
             ref currentCenter1,
             ref currentSize1,
             UseHole1ID,
@@ -76,6 +84,8 @@ public class StrongGuideOverlay : MonoBehaviour
             useHole2,
             target2,
             padding2,
+            useManualHoleSize2,
+            manualHoleSize2,
             ref currentCenter2,
             ref currentSize2,
             UseHole2ID,
@@ -105,6 +115,8 @@ public class StrongGuideOverlay : MonoBehaviour
         bool useHole,
         RectTransform target,
         float padding,
+        bool useManualHoleSize,
+        Vector2 manualHoleSize,
         ref Vector2 currentCenter,
         ref Vector2 currentSize,
         int useID,
@@ -125,7 +137,14 @@ public class StrongGuideOverlay : MonoBehaviour
 
         Vector2 targetCenterUV;
         Vector2 targetSizeUV;
-        GetTargetUVRect(target, padding, out targetCenterUV, out targetSizeUV);
+        GetTargetUVRect(
+            target,
+            padding,
+            useManualHoleSize,
+            manualHoleSize,
+            out targetCenterUV,
+            out targetSizeUV
+        );
 
         currentCenter = Vector2.Lerp(currentCenter, targetCenterUV, Time.deltaTime * followSpeed);
         currentSize = Vector2.Lerp(currentSize, targetSizeUV, Time.deltaTime * followSpeed);
@@ -134,7 +153,13 @@ public class StrongGuideOverlay : MonoBehaviour
         runtimeMat.SetVector(sizeID, new Vector4(currentSize.x, currentSize.y, 0f, 0f));
     }
 
-    public void Show(RectTransform target, HoleShape shape, float padding = -1f, bool snap = true)
+    public void Show(
+        RectTransform target,
+        HoleShape shape,
+        float padding = -1f,
+        bool snap = true,
+        bool useManualHoleSize = false,
+        Vector2? manualHoleSize = null)
     {
         EnsureInitialized();
 
@@ -147,6 +172,12 @@ public class StrongGuideOverlay : MonoBehaviour
         padding1 = padding >= 0f ? padding : defaultPadding;
         padding2 = defaultPadding;
 
+        useManualHoleSize1 = useManualHoleSize;
+        useManualHoleSize2 = false;
+
+        manualHoleSize1 = manualHoleSize ?? Vector2.zero;
+        manualHoleSize2 = Vector2.zero;
+
         useHole1 = target != null;
         useHole2 = false;
 
@@ -154,7 +185,15 @@ public class StrongGuideOverlay : MonoBehaviour
         {
             if (snap && target1 != null)
             {
-                GetTargetUVRect(target1, padding1, out currentCenter1, out currentSize1);
+                GetTargetUVRect(
+                    target1,
+                    padding1,
+                    useManualHoleSize1,
+                    manualHoleSize1,
+                    out currentCenter1,
+                    out currentSize1
+                );
+
                 runtimeMat.SetVector(Hole1CenterID, new Vector4(currentCenter1.x, currentCenter1.y, 0f, 0f));
                 runtimeMat.SetVector(Hole1SizeID, new Vector4(currentSize1.x, currentSize1.y, 0f, 0f));
             }
@@ -162,58 +201,6 @@ public class StrongGuideOverlay : MonoBehaviour
             runtimeMat.SetFloat(UseHole1ID, useHole1 ? 1f : 0f);
             runtimeMat.SetFloat(UseHole2ID, 0f);
             runtimeMat.SetFloat(Hole1ShapeID, (float)hole1Shape);
-        }
-
-        if (overlayImage != null)
-            overlayImage.enabled = true;
-    }
-
-    public void ShowTwo(
-        RectTransform firstTarget,
-        HoleShape firstShape,
-        RectTransform secondTarget,
-        HoleShape secondShape,
-        float firstPadding = -1f,
-        float secondPadding = -1f,
-        bool snap = true)
-    {
-        EnsureInitialized();
-
-        target1 = firstTarget;
-        target2 = secondTarget;
-
-        hole1Shape = firstShape;
-        hole2Shape = secondShape;
-
-        padding1 = firstPadding >= 0f ? firstPadding : defaultPadding;
-        padding2 = secondPadding >= 0f ? secondPadding : defaultPadding;
-
-        useHole1 = target1 != null;
-        useHole2 = target2 != null;
-
-        if (runtimeMat != null)
-        {
-            if (snap)
-            {
-                if (target1 != null)
-                {
-                    GetTargetUVRect(target1, padding1, out currentCenter1, out currentSize1);
-                    runtimeMat.SetVector(Hole1CenterID, new Vector4(currentCenter1.x, currentCenter1.y, 0f, 0f));
-                    runtimeMat.SetVector(Hole1SizeID, new Vector4(currentSize1.x, currentSize1.y, 0f, 0f));
-                }
-
-                if (target2 != null)
-                {
-                    GetTargetUVRect(target2, padding2, out currentCenter2, out currentSize2);
-                    runtimeMat.SetVector(Hole2CenterID, new Vector4(currentCenter2.x, currentCenter2.y, 0f, 0f));
-                    runtimeMat.SetVector(Hole2SizeID, new Vector4(currentSize2.x, currentSize2.y, 0f, 0f));
-                }
-            }
-
-            runtimeMat.SetFloat(UseHole1ID, useHole1 ? 1f : 0f);
-            runtimeMat.SetFloat(UseHole2ID, useHole2 ? 1f : 0f);
-            runtimeMat.SetFloat(Hole1ShapeID, (float)hole1Shape);
-            runtimeMat.SetFloat(Hole2ShapeID, (float)hole2Shape);
         }
 
         if (overlayImage != null)
@@ -239,7 +226,13 @@ public class StrongGuideOverlay : MonoBehaviour
             overlayImage.enabled = false;
     }
 
-    private void GetTargetUVRect(RectTransform target, float padding, out Vector2 centerUV, out Vector2 sizeUV)
+    private void GetTargetUVRect(
+        RectTransform target,
+        float padding,
+        bool useManualHoleSize,
+        Vector2 manualHoleSize,
+        out Vector2 centerUV,
+        out Vector2 sizeUV)
     {
         Vector3[] corners = new Vector3[4];
         target.GetWorldCorners(corners);
@@ -255,10 +248,22 @@ public class StrongGuideOverlay : MonoBehaviour
         float v = Mathf.InverseLerp(overlayLocalRect.yMin, overlayLocalRect.yMax, localCenter.y);
         centerUV = new Vector2(u, v);
 
-        Vector2 localBL = overlayRect.InverseTransformPoint(worldBL);
-        Vector2 localTR = overlayRect.InverseTransformPoint(worldTR);
-        Vector2 localSize = localTR - localBL;
-        localSize += Vector2.one * padding * 2f;
+        Vector2 localSize;
+
+        if (useManualHoleSize)
+        {
+            localSize = manualHoleSize;
+        }
+        else
+        {
+            Vector2 localBL = overlayRect.InverseTransformPoint(worldBL);
+            Vector2 localTR = overlayRect.InverseTransformPoint(worldTR);
+            localSize = localTR - localBL;
+            localSize += Vector2.one * padding * 2f;
+        }
+
+        localSize.x = Mathf.Max(1f, localSize.x);
+        localSize.y = Mathf.Max(1f, localSize.y);
 
         sizeUV = new Vector2(
             localSize.x / overlayLocalRect.width,
