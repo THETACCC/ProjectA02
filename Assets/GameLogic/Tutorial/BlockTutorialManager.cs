@@ -8,7 +8,14 @@ public class BlockTutorialManager : MonoBehaviour
 
     [Header("Strong Guide")]
     public StrongGuideController strongGuideController;
-    public RectTransform rotateGuideTarget;
+
+    [Header("Rotate Guide Targets")]
+    public RectTransform rotateGuideTarget1;
+    public RectTransform rotateGuideTarget2;
+
+    [Header("Rotate Guide Message")]
+    [TextArea]
+    public string rotateGuideMessage = "Right mouse click to rotate the block.";
 
     [Header("Optional Overrides")]
     public bool overrideRotateStyle = false;
@@ -44,25 +51,82 @@ public class BlockTutorialManager : MonoBehaviour
         //     myRotateTutorial.SetActive(true);
         // ========================================
 
-        if (strongGuideController == null || rotateGuideTarget == null)
+        if (strongGuideController == null)
+            return;
+
+        bool hasTarget1 = rotateGuideTarget1 != null;
+        bool hasTarget2 = rotateGuideTarget2 != null;
+
+        if (!hasTarget1 && !hasTarget2)
             return;
 
         if (!overrideRotateStyle)
         {
-            strongGuideController.ShowRightClickRotate(rotateGuideTarget);
+            if (hasTarget1 && hasTarget2)
+            {
+                strongGuideController.ShowGuideTwo(
+                    rotateGuideTarget1,
+                    rotateGuideTarget2,
+                    rotateGuideMessage,
+                    null,
+                    -1f,
+                    null,
+                    null,
+                    null,
+                    -1f,
+                    null,
+                    null,
+                    null,
+                    null,
+                    true
+                );
+            }
+            else
+            {
+                RectTransform singleTarget = hasTarget1 ? rotateGuideTarget1 : rotateGuideTarget2;
+
+                strongGuideController.ShowRightClickRotate(
+                    singleTarget,
+                    rotateGuideMessage
+                );
+            }
         }
         else
         {
-            strongGuideController.ShowRightClickRotate(
-                rotateGuideTarget,
-                "Right mouse click to rotate the block.",
-                rotateGuideShape,
-                rotateGuidePadding,
-                rotateUseManualHoleSize,
-                rotateManualHoleSize,
-                rotateTextAnchor,
-                rotateTextExtraOffset
-            );
+            if (hasTarget1 && hasTarget2)
+            {
+                strongGuideController.ShowGuideTwo(
+                    rotateGuideTarget1,
+                    rotateGuideTarget2,
+                    rotateGuideMessage,
+                    rotateGuideShape,
+                    rotateGuidePadding,
+                    rotateUseManualHoleSize,
+                    rotateManualHoleSize,
+                    rotateGuideShape,
+                    rotateGuidePadding,
+                    rotateUseManualHoleSize,
+                    rotateManualHoleSize,
+                    rotateTextAnchor,
+                    rotateTextExtraOffset,
+                    true
+                );
+            }
+            else
+            {
+                RectTransform singleTarget = hasTarget1 ? rotateGuideTarget1 : rotateGuideTarget2;
+
+                strongGuideController.ShowRightClickRotate(
+                    singleTarget,
+                    rotateGuideMessage,
+                    rotateGuideShape,
+                    rotateGuidePadding,
+                    rotateUseManualHoleSize,
+                    rotateManualHoleSize,
+                    rotateTextAnchor,
+                    rotateTextExtraOffset
+                );
+            }
         }
     }
 
