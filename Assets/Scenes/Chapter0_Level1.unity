@@ -249,52 +249,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isRotating: 0
   finishedRotation: 0
---- !u!21 &67821058
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _GlowFalloff: 2.5
-    - _GlowFollowStripes: 0
-    - _GlowIntensity: 2.5
-    - _GlowOnlyWhenFilled: 1
-    - _GlowWidth: 0.18
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
 --- !u!1 &105379157
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,11 +821,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 717515815907942875, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -407.7152
+      value: -407.40598
       objectReference: {fileID: 0}
     - target: {fileID: 717515815907942875, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 344.31665
+      value: -0.056671143
       objectReference: {fileID: 0}
     - target: {fileID: 717515815907942875, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -884,7 +838,7 @@ PrefabInstance:
     - target: {fileID: 717515816054808635, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 734649960}
+      objectReference: {fileID: 796354877}
     - target: {fileID: 717515816297208864, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: previewShape
       value: 1
@@ -892,7 +846,7 @@ PrefabInstance:
     - target: {fileID: 717515816297208864, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: previewTarget
       value: 
-      objectReference: {fileID: 1272062160}
+      objectReference: {fileID: 1463549051}
     - target: {fileID: 717515816297208864, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: previewMessage
       value: Use the mouse to reposition the players before starting.
@@ -915,7 +869,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 717515816297208864, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: previewExtraTextOffset.x
-      value: -6.6
+      value: -10.89
       objectReference: {fileID: 0}
     - target: {fileID: 717515816297208864, guid: 515e0cf195bc3e34e8b9dc26d6254ed9, type: 3}
       propertyPath: previewExtraTextOffset.y
@@ -3038,15 +2992,15 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
---- !u!21 &734649960
+--- !u!21 &728592353
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_StrongGuideOverlay
-  m_Shader: {fileID: 4800000, guid: 69452a7bc0fcb9343b6b2a4fa5d997d7, type: 3}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -3057,20 +3011,32 @@ Material:
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _EdgeSoftness: 0.01
-    - _Hole1Shape: 1
-    - _Hole2Shape: 0
-    - _UseHole1: 0
-    - _UseHole2: 0
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
     m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 0.75}
-    - _Hole1Center: {r: 0.7136458, g: 0.3869386, b: 0, a: 0}
-    - _Hole1Size: {r: 0.1125, g: 0.19984668, b: 0, a: 0}
-    - _Hole2Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _Hole2Size: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
   m_BuildTextureStacks: []
 --- !u!43 &756248526
 Mesh:
@@ -3548,6 +3514,40 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!21 &796354877
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Mat_StrongGuideOverlay
+  m_Shader: {fileID: 4800000, guid: 69452a7bc0fcb9343b6b2a4fa5d997d7, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _EdgeSoftness: 0.01
+    - _Hole1Shape: 1
+    - _Hole2Shape: 0
+    - _UseHole1: 0
+    - _UseHole2: 0
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 0.75}
+    - _Hole1Center: {r: 0.28854167, g: 0.3868609, b: 0, a: 0}
+    - _Hole1Size: {r: 0.1125, g: 0.19998401, b: 0, a: 0}
+    - _Hole2Center: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _Hole2Size: {r: 0.1, g: 0.1, b: 0, a: 0}
+  m_BuildTextureStacks: []
 --- !u!43 &801141665
 Mesh:
   m_ObjectHideFlags: 0
@@ -4353,7 +4353,7 @@ MonoBehaviour:
   positionUseManualHoleSize: 1
   positionManualHoleSize: {x: 90, y: 90}
   positionTextAnchor: 0
-  positionTextExtraOffset: {x: -6.6, y: -65.6}
+  positionTextExtraOffset: {x: -10, y: -65.6}
   rewardGuideTarget1: {fileID: 447937022}
   rewardGuideTarget2: {fileID: 131764951}
   rewardGuideMessage: Collect the rewards to unlock more levels!

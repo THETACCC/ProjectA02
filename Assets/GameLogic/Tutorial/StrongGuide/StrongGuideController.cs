@@ -178,20 +178,20 @@ public class StrongGuideController : MonoBehaviour
     }
 
     public void ShowGuideTwo(
-        RectTransform targetA,
-        RectTransform targetB,
-        string message,
-        StrongGuideOverlay.HoleShape? shapeA = null,
-        float paddingA = -1f,
-        bool? useManualHoleSizeA = null,
-        Vector2? manualHoleSizeA = null,
-        StrongGuideOverlay.HoleShape? shapeB = null,
-        float paddingB = -1f,
-        bool? useManualHoleSizeB = null,
-        Vector2? manualHoleSizeB = null,
-        GuideTextAnchor? anchor = null,
-        Vector2? extraTextOffset = null,
-        bool hideOnRightClick = false)
+    RectTransform targetA,
+    RectTransform targetB,
+    string message,
+    StrongGuideOverlay.HoleShape? shapeA = null,
+    float paddingA = -1f,
+    bool? useManualHoleSizeA = null,
+    Vector2? manualHoleSizeA = null,
+    StrongGuideOverlay.HoleShape? shapeB = null,
+    float paddingB = -1f,
+    bool? useManualHoleSizeB = null,
+    Vector2? manualHoleSizeB = null,
+    GuideTextAnchor? anchor = null,
+    Vector2? extraTextOffset = null,
+    bool hideOnRightClick = false)
     {
         AutoAssignIfNeeded();
 
@@ -234,22 +234,22 @@ public class StrongGuideController : MonoBehaviour
         }
         else
         {
-            RectTransform existingTarget = targetA != null ? targetA : targetB;
-            StrongGuideOverlay.HoleShape existingShape = targetA != null ? finalShapeA : finalShapeB;
-            float existingPadding = targetA != null ? finalPaddingA : finalPaddingB;
-            bool existingUseManual = targetA != null ? finalUseManualA : finalUseManualB;
-            Vector2 existingManual = targetA != null ? finalManualA : finalManualB;
+            RectTransform singleTarget = targetA != null ? targetA : targetB;
+            StrongGuideOverlay.HoleShape singleShape = targetA != null ? finalShapeA : finalShapeB;
+            float singlePadding = targetA != null ? finalPaddingA : finalPaddingB;
+            bool singleUseManual = targetA != null ? finalUseManualA : finalUseManualB;
+            Vector2 singleManual = targetA != null ? finalManualA : finalManualB;
 
             overlay.Show(
-                existingTarget,
-                existingShape,
-                existingPadding,
+                singleTarget,
+                singleShape,
+                singlePadding,
                 true,
-                existingUseManual,
-                existingManual
+                singleUseManual,
+                singleManual
             );
 
-            ApplyText(existingTarget, message, finalAnchor, finalExtraOffset);
+            ApplyText(singleTarget, message, finalAnchor, finalExtraOffset);
         }
 
         waitingForRightMouseDown = hideOnRightClick;
