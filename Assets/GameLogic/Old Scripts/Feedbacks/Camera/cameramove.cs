@@ -29,6 +29,10 @@ public class cameramove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (controller == null)
+        {
+            return;
+        }
 
          if (controller.phase == LevelPhase.Running)
             {
