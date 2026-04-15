@@ -207,6 +207,81 @@ public class StrongGuideOverlay : MonoBehaviour
             overlayImage.enabled = true;
     }
 
+    public void ShowTwo(
+        RectTransform targetA,
+        HoleShape shapeA,
+        float paddingA,
+        bool useManualHoleSizeA,
+        Vector2 manualHoleSizeA,
+        RectTransform targetB,
+        HoleShape shapeB,
+        float paddingB,
+        bool useManualHoleSizeB,
+        Vector2 manualHoleSizeB,
+        bool snap = true)
+    {
+        EnsureInitialized();
+
+        target1 = targetA;
+        target2 = targetB;
+
+        hole1Shape = shapeA;
+        hole2Shape = shapeB;
+
+        padding1 = paddingA >= 0f ? paddingA : defaultPadding;
+        padding2 = paddingB >= 0f ? paddingB : defaultPadding;
+
+        useManualHoleSize1 = useManualHoleSizeA;
+        useManualHoleSize2 = useManualHoleSizeB;
+
+        manualHoleSize1 = manualHoleSizeA;
+        manualHoleSize2 = manualHoleSizeB;
+
+        useHole1 = target1 != null;
+        useHole2 = target2 != null;
+
+        if (runtimeMat != null)
+        {
+            if (snap && target1 != null)
+            {
+                GetTargetUVRect(
+                    target1,
+                    padding1,
+                    useManualHoleSize1,
+                    manualHoleSize1,
+                    out currentCenter1,
+                    out currentSize1
+                );
+
+                runtimeMat.SetVector(Hole1CenterID, new Vector4(currentCenter1.x, currentCenter1.y, 0f, 0f));
+                runtimeMat.SetVector(Hole1SizeID, new Vector4(currentSize1.x, currentSize1.y, 0f, 0f));
+            }
+
+            if (snap && target2 != null)
+            {
+                GetTargetUVRect(
+                    target2,
+                    padding2,
+                    useManualHoleSize2,
+                    manualHoleSize2,
+                    out currentCenter2,
+                    out currentSize2
+                );
+
+                runtimeMat.SetVector(Hole2CenterID, new Vector4(currentCenter2.x, currentCenter2.y, 0f, 0f));
+                runtimeMat.SetVector(Hole2SizeID, new Vector4(currentSize2.x, currentSize2.y, 0f, 0f));
+            }
+
+            runtimeMat.SetFloat(UseHole1ID, useHole1 ? 1f : 0f);
+            runtimeMat.SetFloat(UseHole2ID, useHole2 ? 1f : 0f);
+            runtimeMat.SetFloat(Hole1ShapeID, (float)hole1Shape);
+            runtimeMat.SetFloat(Hole2ShapeID, (float)hole2Shape);
+        }
+
+        if (overlayImage != null)
+            overlayImage.enabled = true;
+    }
+
     public void Hide()
     {
         EnsureInitialized();
