@@ -861,7 +861,7 @@ public class Block : MonoBehaviour
 
                 // Determine if the block is on the left side of the screen
                 //bool isLeft = this.transform.position.x < LevelLoader.center.x;
-                bool isLeft = IsBlockOnLeftSideOfScreen();
+                bool isLeft = transform.position.x < LevelLoader.center.x;
                 // Convert the block's position to screen space
                 Vector3 screenPos = CommonReference.mainCam.WorldToScreenPoint(mpos);
                 Vector3 npos = transform.position;
@@ -901,7 +901,8 @@ public class Block : MonoBehaviour
                             Vector3 targetPosition = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
 
                             // Smoothly interpolate the current position to the target position
-                            blockb.transform.position = Vector3.Lerp(blockb.transform.position, targetPosition, Time.deltaTime * lerpSpeed);
+                            blockb.transform.position = targetPosition;
+                            //blockb.transform.position = Vector3.Lerp(blockb.transform.position, targetPosition, Time.deltaTime * lerpSpeed);
                         }
                     }
                     else if (this == B_blockb) // If this is the clone
@@ -918,7 +919,8 @@ public class Block : MonoBehaviour
                             Vector3 targetPosition = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
 
                             // Smoothly interpolate the current position to the target position
-                            blocka.transform.position = Vector3.Lerp(blocka.transform.position, targetPosition, Time.deltaTime * lerpSpeed);
+                            blocka.transform.position = targetPosition;
+                            //blocka.transform.position = Vector3.Lerp(blocka.transform.position, targetPosition, Time.deltaTime * lerpSpeed);
                         }
                     }
                 }
@@ -1063,8 +1065,11 @@ public class Block : MonoBehaviour
                             {
                                 float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
                                 BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+                                RegularBlockPlacement regularBlockPlacement = levelBrick.GetComponent<RegularBlockPlacement>();
+
+
                                 // Check if this block is closer than the previously found ones and within the threshold
-                                if (distance < nearestDistance && (!alignment.isBlocked) && distance <= 7.5f)
+                                if (distance < nearestDistance && (!alignment.isBlocked) && (regularBlockPlacement.isRegularCanPlace) && distance <= 7.5f)
                                 {
                                     nearestDistance = distance;
                                     nearestBlock = levelBrick;
@@ -1415,8 +1420,9 @@ public class Block : MonoBehaviour
                     {
                         float distance = Vector3.Distance(transform.position, levelBrick.transform.position);
                         BlockAlignment alignment = levelBrick.GetComponent<BlockAlignment>();
+                        RegularBlockPlacement regularBlockPlacement = levelBrick.GetComponent<RegularBlockPlacement>();
                         // Check if this block is closer than the previously found ones and within the threshold
-                        if (distance < nearestDistance && (!alignment.isBlocked))
+                        if (distance < nearestDistance && (!alignment.isBlocked) && (regularBlockPlacement.isRegularCanPlace))
                         {
                             nearestDistance = distance;
                             nearestBlock = levelBrick;
@@ -1427,7 +1433,9 @@ public class Block : MonoBehaviour
                     if (nearestBlock != null)
                     {
                         BlockAlignment alignment = nearestBlock.GetComponent<BlockAlignment>();
-                        if (!alignment.isBlocked)
+                        RegularBlockPlacement regularBlockPlacement = nearestBlock.GetComponent<RegularBlockPlacement>();
+
+                        if (!alignment.isBlocked && (regularBlockPlacement.isRegularCanPlace))
                         {
 
 
@@ -1533,7 +1541,7 @@ public void instantiateBlocks()
     bool isLeft = transform.position.x < LevelLoader.center.x;
     Vector3 targetPosition = new Vector3(transform.position.x + (isLeft ? offset : -offset), transform.position.y, transform.position.z + (isLeft ? offsetz : -offsetz));
     //this moves the clone to its position.
-    b.transform.position = new Vector3(transform.position.x + (isLeft ? offset : -offset), 0, transform.position.z + (isLeft ? offsetz : -offsetz));
+    b.transform.position = new Vector3(transform.position.x + (isLeft ? offset : -offset), transform.position.y, transform.position.z + (isLeft ? offsetz : -offsetz));
 
     blocka = a.gameObject;
     blockb = b.gameObject;
@@ -1732,8 +1740,9 @@ public void instantiateBlocks()
             float distanceA = DistanceXZ(blocka.transform.position, levelBrickA.transform.position);
 
             BlockAlignment alignmentA = levelBrickA.GetComponent<BlockAlignment>();
+            RegularBlockPlacement regularBlockPlacementA = levelBrickA.GetComponent<RegularBlockPlacement>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceA < nearestDistanceA && !alignmentA.isBlocked && distanceA <= 15f)
+            if (distanceA < nearestDistanceA && !alignmentA.isBlocked && distanceA <= 7.5f && (regularBlockPlacementA.isRegularCanPlace))
             {
                 nearestDistanceA = distanceA;
                 nearestBlockA = levelBrickA;
@@ -1746,8 +1755,9 @@ public void instantiateBlocks()
             float distanceB = DistanceXZ(blockb.transform.position, levelBrickB.transform.position);
 
             BlockAlignment alignmentB = levelBrickB.GetComponent<BlockAlignment>();
+            RegularBlockPlacement regularBlockPlacementB = levelBrickB.GetComponent<RegularBlockPlacement>();
             // Check if this block is closer than the previously found ones and within the threshold
-            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 15f)
+            if (distanceB < nearestDistanceB && (!alignmentB.isBlocked) && distanceB <= 7.5f && (regularBlockPlacementB.isRegularCanPlace))
             {
                 nearestDistanceB = distanceB;
                 nearestBlockB = levelBrickB;
@@ -2169,8 +2179,20 @@ private void HideMirrorGhost()
     _mirrorLabel = null;
 }
 
-// Let you toggle in builds with a key (optional)
-private void LateUpdate()
+
+    private Vector3 GetMirrorPosition(Vector3 sourcePos)
+    {
+        bool isLeft = sourcePos.x < LevelLoader.center.x;
+
+        return new Vector3(
+            sourcePos.x + (isLeft ? offset : -offset),
+            sourcePos.y,
+            sourcePos.z + (isLeft ? offsetz : -offsetz)
+        );
+    }
+
+    // Let you toggle in builds with a key (optional)
+    private void LateUpdate()
 {
         /*
     if (Input.GetKeyDown(toggleMirrorGhostKey))
