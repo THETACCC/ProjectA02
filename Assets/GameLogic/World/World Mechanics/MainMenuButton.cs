@@ -278,4 +278,15 @@ public class MainMenuButton : MonoBehaviour,
             g.raycastTarget = true;
         }
     }
+
+    public void ExitGame()
+    {
+        Debug.Log("Exit Game");
+
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
 }
