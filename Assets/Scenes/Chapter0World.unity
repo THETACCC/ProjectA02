@@ -1055,52 +1055,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 20253845857ef6740b878e6d6e510397, type: 3}
   m_PrefabInstance: {fileID: 219816908}
   m_PrefabAsset: {fileID: 0}
---- !u!21 &263892557
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _GlowFalloff: 2.5
-    - _GlowFollowStripes: 0
-    - _GlowIntensity: 2.5
-    - _GlowOnlyWhenFilled: 1
-    - _GlowWidth: 0.18
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
 --- !u!4 &270832098 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3691690040980630024, guid: 8b7e91a962dfc124ebd8a42ad78665e0, type: 3}
@@ -4679,6 +4633,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 20253845857ef6740b878e6d6e510397, type: 3}
   m_PrefabInstance: {fileID: 938248525}
   m_PrefabAsset: {fileID: 0}
+--- !u!21 &959601265
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
+    m_Colors:
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!64 &973018515
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6522,10 +6522,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 352952596028631961, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 961569373931055709, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -6534,8 +6530,32 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2200923846604773030, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_IsActive
+    - target: {fileID: 1671700354817728861, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1671700354817728861, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1671700354817728861, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2070476388894359637, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2070476388894359637, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292153878217509156, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2292153878217509156, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2339898703605861747, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
@@ -6550,10 +6570,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3437678693892374135, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4729066041248327769, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -6561,7 +6577,7 @@ PrefabInstance:
     - target: {fileID: 4907938006607296869, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 263892557}
+      objectReference: {fileID: 959601265}
     - target: {fileID: 5155177481442800778, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -6570,12 +6586,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5799739711201074248, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_IsActive
+    - target: {fileID: 5887718235934297932, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5810767095804423169, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_IsActive
+    - target: {fileID: 5887718235934297932, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5887718235934297932, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6072382323376818747, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
@@ -6586,12 +6606,28 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7570738543556781719, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_IsActive
+    - target: {fileID: 7834142497079310779, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7834142497079310779, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8066020239330903420, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8335318206424190707, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8335318206424190707, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8335318206424190707, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8916470165350977382, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
@@ -6686,10 +6722,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9115396670022210479, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 885782627edbbb74593fcc504c41cc55, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
 --- !u!1001 &1429940137
@@ -9827,6 +9859,52 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8630118746085575171, guid: d74789f4bfdb148bfab0603f69609e1d, type: 3}
+--- !u!21 &2004838800
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
+    m_Colors:
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!1 &2010096237
 GameObject:
   m_ObjectHideFlags: 0
