@@ -487,4 +487,22 @@ public class MenuController : MonoBehaviour
             notebookPages[i].SetActive(false);
         }
     }
+
+    public void OpenBouncyObject()
+    {
+        if (bouncyObject == null) return;
+
+        InitBouncyObjectIfNeeded();
+
+        if (_bouncyShown) return; // already open, do nothing
+
+        if (_bouncyCo != null) StopCoroutine(_bouncyCo);
+
+        SetBouncyToHiddenInstant();
+        bouncyObject.gameObject.SetActive(true);
+
+        _bouncyCo = StartCoroutine(CoBouncyMove(show: true));
+        ToggleRotateButton(open: true);
+        _bouncyShown = true;
+    }
 }
