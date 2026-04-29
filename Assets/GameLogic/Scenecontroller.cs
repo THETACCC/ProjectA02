@@ -126,7 +126,8 @@ public enum SceneTitle
     Chapter2_3 = 206,
     Chapter2_4 = 207,
     Chapter2_5 = 208,
-
+    Chapter2_6 = 209,
+    Chapter2_7 = 210,
 
     //Common Scenes
     Main_Menu = 13
