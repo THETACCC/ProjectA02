@@ -877,7 +877,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524495930036964
@@ -1182,7 +1181,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496005078575
@@ -1759,7 +1757,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496079154027
@@ -2064,7 +2061,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496109741110
@@ -2913,7 +2909,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496325832076
@@ -3218,7 +3213,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496406646295
@@ -3523,7 +3517,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496461197527
@@ -3828,7 +3821,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496527087032
@@ -4405,7 +4397,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496784156151
@@ -4710,7 +4701,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496923512895
@@ -5015,7 +5005,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496964024964
@@ -5320,7 +5309,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497003062294
@@ -5625,7 +5613,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497166642821
@@ -5930,7 +5917,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497230045390
@@ -6262,6 +6248,7 @@ Transform:
   - {fileID: 8718524496005078572}
   - {fileID: 4639895834006563969}
   - {fileID: 1843082654871022060}
+  - {fileID: 5497420973053762284}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -6567,7 +6554,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497342569066
@@ -6872,7 +6858,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497370318766
@@ -7177,7 +7162,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497602211710
@@ -7754,9 +7738,70 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!1001 &4342224288352865480
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 8718524497239374858}
+    m_Modifications:
+    - target: {fileID: 2694967536404942419, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_Name
+      value: CH2_PlacementUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_RootOrder
+      value: 29
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 12.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 24.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071067
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.000000030908616
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000030908623
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+--- !u!4 &5497420973053762284 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8072824121865426468, guid: bd2552f5541e4e74e8e0bf57a4b3e73b, type: 3}
+  m_PrefabInstance: {fileID: 4342224288352865480}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6988556662441935560
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7767,6 +7812,10 @@ PrefabInstance:
     - target: {fileID: 5117793201422477805, guid: 8890b9145d8a94c55b869dbf30cb55e2, type: 3}
       propertyPath: m_Name
       value: CH0_UI_Inventory
+      objectReference: {fileID: 0}
+    - target: {fileID: 5117793201422477805, guid: 8890b9145d8a94c55b869dbf30cb55e2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8750395846770551588, guid: 8890b9145d8a94c55b869dbf30cb55e2, type: 3}
       propertyPath: m_RootOrder
