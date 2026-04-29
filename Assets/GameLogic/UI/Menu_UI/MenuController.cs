@@ -42,7 +42,8 @@ public class MenuController : MonoBehaviour
 
     //Settings icon animation
     [Header("Bouncy Toggle Object")]
-    [SerializeField] private Transform bouncyObject;                
+    [SerializeField] private Transform bouncyObject;
+    [SerializeField] private GameObject[] bouncySubPagesToClose;
     [SerializeField] private float bouncyHiddenOffsetX = -350f;
     [SerializeField] private float bouncyMoveDuration = 0.35f;
     [SerializeField] private AnimationCurve bouncyEase = null;
@@ -67,7 +68,7 @@ public class MenuController : MonoBehaviour
     private bool _rotateInitialized = false;
     private Coroutine _rotateCo;
 
-
+    [SerializeField] private SceneTitle mainMenuScene;
     private void Start()
     {
         if (circle != null) _circleStart = circle.anchoredPosition;
@@ -336,9 +337,12 @@ public class MenuController : MonoBehaviour
         }
         else
         {
+            // 关闭界面时，先关闭所有打开的子界面
+            CloseAllBouncySubPages();
+
             // 隐藏：从当前位置弹回隐藏位，结束后 disable
             _bouncyCo = StartCoroutine(CoBouncyMove(show: false));
-            ToggleRotateButton(open: false);  // 顺时针90
+            ToggleRotateButton(open: false);
             _bouncyShown = false;
         }
     }
@@ -450,5 +454,26 @@ public class MenuController : MonoBehaviour
 
         rotateButtonTarget.localEulerAngles = new Vector3(0f, 0f, to);
         _rotateCo = null;
+    }
+
+    public void CloseAllBouncySubPages()
+    {
+        if (bouncySubPagesToClose == null) return;
+
+        foreach (GameObject page in bouncySubPagesToClose)
+        {
+            if (page != null)
+                page.SetActive(false);
+        }
+    }
+
+    public void BackToMainMenu()
+    {
+        if (startLoading) return;
+
+        ResumeGame();
+        CloseAllBouncySubPages();
+
+        LoadNextLevel(mainMenuScene);
     }
 }
