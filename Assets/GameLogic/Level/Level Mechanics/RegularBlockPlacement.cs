@@ -13,7 +13,14 @@ public class RegularBlockPlacement : MonoBehaviour
     void Start()
     {
         myAlignmentRight = GetComponent<BlockAlignment>();
-        PlaceIndicator = transform.GetChild(0).gameObject;
+        if (transform.childCount > 0)
+        {
+            PlaceIndicator = transform.GetChild(0).gameObject;
+        }
+        else
+        {
+            Debug.LogWarning(gameObject.name + " has no child at index 0");
+        }
     }
 
     // Update is called once per frame
