@@ -68,7 +68,7 @@ public class MenuController : MonoBehaviour
     private bool _rotateInitialized = false;
     private Coroutine _rotateCo;
 
-
+    [SerializeField] private SceneTitle mainMenuScene;
     private void Start()
     {
         if (circle != null) _circleStart = circle.anchoredPosition;
@@ -456,7 +456,7 @@ public class MenuController : MonoBehaviour
         _rotateCo = null;
     }
 
-    private void CloseAllBouncySubPages()
+    public void CloseAllBouncySubPages()
     {
         if (bouncySubPagesToClose == null) return;
 
@@ -465,5 +465,15 @@ public class MenuController : MonoBehaviour
             if (page != null)
                 page.SetActive(false);
         }
+    }
+
+    public void BackToMainMenu()
+    {
+        if (startLoading) return;
+
+        ResumeGame();
+        CloseAllBouncySubPages();
+
+        LoadNextLevel(mainMenuScene);
     }
 }
