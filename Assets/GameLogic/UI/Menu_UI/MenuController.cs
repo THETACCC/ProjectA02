@@ -69,6 +69,9 @@ public class MenuController : MonoBehaviour
     private Coroutine _rotateCo;
 
     [SerializeField] private SceneTitle mainMenuScene;
+
+    [SerializeField] private GameObject[] notebookPages;
+
     private void Start()
     {
         if (circle != null) _circleStart = circle.anchoredPosition;
@@ -475,5 +478,13 @@ public class MenuController : MonoBehaviour
         CloseAllBouncySubPages();
 
         LoadNextLevel(mainMenuScene);
+    }
+
+    public void NotebookAllDeactivate()
+    {
+        for (int i = 0; i < notebookPages.Length; i++)
+        {
+            notebookPages[i].SetActive(false);
+        }
     }
 }
