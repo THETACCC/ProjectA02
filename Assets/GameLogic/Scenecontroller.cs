@@ -118,6 +118,7 @@ public enum SceneTitle
 
 
     //Chapter 2
+    Chapter2World = 200,
     Chapter2_Test = 201,
     Chapter2_4x4Test = 202,
     Chapter2_0 = 203,
