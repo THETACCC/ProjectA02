@@ -877,7 +877,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524495930036964
@@ -894,6 +893,7 @@ GameObject:
   - component: {fileID: 8718524495930036968}
   - component: {fileID: 8718524495930036971}
   - component: {fileID: 8718524495930036970}
+  - component: {fileID: 1924524446}
   m_Layer: 0
   m_Name: LevelBrick (29)
   m_TagString: LevelBrickInventory
@@ -1149,7 +1149,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 214
+  m_VersionIndex: 217
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1182,9 +1182,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &1924524446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524495930036964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524496005078575
 GameObject:
   m_ObjectHideFlags: 0
@@ -1471,6 +1485,7 @@ GameObject:
   - component: {fileID: 8718524496030942142}
   - component: {fileID: 8718524496030942137}
   - component: {fileID: 8718524496030942136}
+  - component: {fileID: 2106746658}
   m_Layer: 0
   m_Name: LevelBrick (26)
   m_TagString: LevelBrickInventory
@@ -1726,7 +1741,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 205
+  m_VersionIndex: 208
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -1759,9 +1774,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &2106746658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524496030942138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524496079154027
 GameObject:
   m_ObjectHideFlags: 0
@@ -1776,6 +1805,7 @@ GameObject:
   - component: {fileID: 8718524496079154031}
   - component: {fileID: 8718524496079154030}
   - component: {fileID: 8718524496079154025}
+  - component: {fileID: 2106746659}
   m_Layer: 0
   m_Name: LevelBrick (25)
   m_TagString: LevelBrickInventory
@@ -2031,7 +2061,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 205
+  m_VersionIndex: 208
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -2064,9 +2094,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &2106746659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524496079154027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524496109741110
 GameObject:
   m_ObjectHideFlags: 0
@@ -2913,7 +2957,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496325832076
@@ -3218,7 +3261,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496406646295
@@ -3235,6 +3277,7 @@ GameObject:
   - component: {fileID: 8718524496406646299}
   - component: {fileID: 8718524496406646298}
   - component: {fileID: 8718524496406646293}
+  - component: {fileID: 1831272533}
   m_Layer: 0
   m_Name: LevelBrick (31)
   m_TagString: LevelBrickInventory
@@ -3490,7 +3533,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 214
+  m_VersionIndex: 217
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3523,9 +3566,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &1831272533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524496406646295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524496461197527
 GameObject:
   m_ObjectHideFlags: 0
@@ -3540,6 +3597,7 @@ GameObject:
   - component: {fileID: 8718524496461197531}
   - component: {fileID: 8718524496461197530}
   - component: {fileID: 8718524496461197525}
+  - component: {fileID: 2106746660}
   m_Layer: 0
   m_Name: LevelBrick
   m_TagString: LevelBrickInventory
@@ -3795,7 +3853,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 202
+  m_VersionIndex: 205
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -3828,9 +3886,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &2106746660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524496461197527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524496527087032
 GameObject:
   m_ObjectHideFlags: 0
@@ -4405,7 +4477,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496784156151
@@ -4710,7 +4781,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524496923512895
@@ -4727,6 +4797,7 @@ GameObject:
   - component: {fileID: 8718524496923512835}
   - component: {fileID: 8718524496923512834}
   - component: {fileID: 8718524496923512893}
+  - component: {fileID: 2106746657}
   m_Layer: 0
   m_Name: LevelBrick (27)
   m_TagString: LevelBrickInventory
@@ -4982,7 +5053,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 208
+  m_VersionIndex: 211
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -5015,9 +5086,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &2106746657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524496923512895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524496964024964
 GameObject:
   m_ObjectHideFlags: 0
@@ -5320,7 +5405,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497003062294
@@ -5625,7 +5709,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497166642821
@@ -5930,7 +6013,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497230045390
@@ -6566,7 +6648,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1 &8718524497342569066
@@ -6583,6 +6664,7 @@ GameObject:
   - component: {fileID: 8718524497342569070}
   - component: {fileID: 8718524497342569065}
   - component: {fileID: 8718524497342569064}
+  - component: {fileID: 1840853229}
   m_Layer: 0
   m_Name: LevelBrick (30)
   m_TagString: LevelBrickInventory
@@ -6838,7 +6920,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 211
+  m_VersionIndex: 214
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -6871,9 +6953,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &1840853229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524497342569066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524497370318766
 GameObject:
   m_ObjectHideFlags: 0
@@ -6888,6 +6984,7 @@ GameObject:
   - component: {fileID: 8718524497370318770}
   - component: {fileID: 8718524497370318765}
   - component: {fileID: 8718524497370318764}
+  - component: {fileID: 2106746656}
   m_Layer: 0
   m_Name: LevelBrick (28)
   m_TagString: LevelBrickInventory
@@ -7143,7 +7240,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 208
+  m_VersionIndex: 211
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -7176,9 +7273,23 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
+--- !u!114 &2106746656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8718524497370318766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1711dbb6f66c9084a82a7c260047cebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myAlignmentLeft: {fileID: 0}
+  isRegularCanPlace: 1
+  PlaceIndicator: {fileID: 0}
 --- !u!1 &8718524497602211710
 GameObject:
   m_ObjectHideFlags: 0
@@ -7753,7 +7864,6 @@ MonoBehaviour:
   isInventoryBrick: 1
   isBlocked: 0
   PlaceIndicator: {fileID: 0}
-  proximityThreshold: 5
   targetTag: Block
   levelController: {fileID: 0}
 --- !u!1001 &8943907009763468904
