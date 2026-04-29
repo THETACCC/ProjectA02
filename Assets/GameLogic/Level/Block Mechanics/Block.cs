@@ -538,15 +538,15 @@ public class Block : MonoBehaviour
                 B_blocka.rotated = true;
                 B_blockb.rotate += new Vector3(0, 90, 0);
                 B_blockb.rotated = true;
-                B_blocka.transform.localScale = new Vector3(.5f, .5f, .5f);
-                B_blockb.transform.localScale = new Vector3(.5f, .5f, .5f);
+                B_blocka.transform.localScale = new Vector3(.25f, .25f, .25f);
+                B_blockb.transform.localScale = new Vector3(.25f, .25f, .25f);
             }
             else if (type == BlockType.Free)
             {
 
                 rotate += new Vector3(0, 90, 0);
                 rotated = true;
-                transform.localScale = new Vector3(.5f, .5f, .5f);
+                transform.localScale = new Vector3(.25f, .25f, .25f);
 
 
             }
