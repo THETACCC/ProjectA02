@@ -1489,52 +1489,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!21 &335482606
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _GlowFalloff: 2.5
-    - _GlowFollowStripes: 0
-    - _GlowIntensity: 2.5
-    - _GlowOnlyWhenFilled: 1
-    - _GlowWidth: 0.18
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
 --- !u!1001 &352562645
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3673,94 +3627,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 231048891}
     m_Modifications:
-    - target: {fileID: 467548478276332074, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 467548478276332074, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671700354817728861, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671700354817728861, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671700354817728861, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2070476388894359637, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2070476388894359637, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2292153878217509156, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2292153878217509156, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4779718538062843516, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4779718538062843516, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
+    - target: {fileID: 4721691768788139799, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
+      propertyPath: rewardManager
+      value: 
+      objectReference: {fileID: 3821702616652944061}
     - target: {fileID: 4907938006607296869, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 335482606}
-    - target: {fileID: 5887718235934297932, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5887718235934297932, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5887718235934297932, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7834142497079310779, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7834142497079310779, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7997085237233403588, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7997085237233403588, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8335318206424190707, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8335318206424190707, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8335318206424190707, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1339203333}
     - target: {fileID: 9115396668817347740, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_Name
       value: Canvas_UI
@@ -3847,22 +3721,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9115396668817347744, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9115396668959194034, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9115396669371251028, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9115396670418804213, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9115396670668049039, guid: 8f0d6e396fa012f4fa9bc624468e0024, type: 3}
-      propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -5162,40 +5020,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!21 &1229816355
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_StrongGuideOverlay
-  m_Shader: {fileID: 4800000, guid: 69452a7bc0fcb9343b6b2a4fa5d997d7, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs: []
-    m_Ints: []
-    m_Floats:
-    - _EdgeSoftness: 0.01
-    - _Hole1Shape: 1
-    - _Hole2Shape: 0
-    - _UseHole1: 0
-    - _UseHole2: 0
-    m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 0.75}
-    - _Hole1Center: {r: 0.28854167, g: 0.3868609, b: 0, a: 0}
-    - _Hole1Size: {r: 0.1125, g: 0.19998401, b: 0, a: 0}
-    - _Hole2Center: {r: 0.5, g: 0.5, b: 0, a: 0}
-    - _Hole2Size: {r: 0.1, g: 0.1, b: 0, a: 0}
-  m_BuildTextureStacks: []
 --- !u!1 &1272062159
 GameObject:
   m_ObjectHideFlags: 0
@@ -5714,6 +5538,52 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8718524497239374858, guid: 8136f0f916d1441598b904507d6ecfcf, type: 3}
   m_PrefabInstance: {fileID: 1325897860}
   m_PrefabAsset: {fileID: 0}
+--- !u!21 &1339203333
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UI/DiamondProgressBar
+  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Aspect: 1
+    - _FlowSpeed: 0.01
+    - _GlowFalloff: 2.5
+    - _GlowFollowStripes: 0
+    - _GlowIntensity: 2.5
+    - _GlowOnlyWhenFilled: 1
+    - _GlowWidth: 0.18
+    - _Progress: 0
+    - _ShowFlow: 0
+    - _Softness: 0.002
+    - _StripeAlpha: 0.6
+    - _StripeDensity: 12
+    - _Thickness: 0.12
+    m_Colors:
+    - _Background: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
+    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
+    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!43 &1377023677
 Mesh:
   m_ObjectHideFlags: 0
@@ -7190,6 +7060,40 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!21 &1874905145
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Mat_StrongGuideOverlay
+  m_Shader: {fileID: 4800000, guid: 69452a7bc0fcb9343b6b2a4fa5d997d7, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _EdgeSoftness: 0.01
+    - _Hole1Shape: 1
+    - _Hole2Shape: 0
+    - _UseHole1: 0
+    - _UseHole2: 0
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 0.75}
+    - _Hole1Center: {r: 0.28854167, g: 0.3868609, b: 0, a: 0}
+    - _Hole1Size: {r: 0.1125, g: 0.19998401, b: 0, a: 0}
+    - _Hole2Center: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _Hole2Size: {r: 0.1, g: 0.1, b: 0, a: 0}
+  m_BuildTextureStacks: []
 --- !u!1001 &1879128177
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7548,52 +7452,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!21 &1961791594
-Material:
-  serializedVersion: 8
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: UI/DiamondProgressBar
-  m_Shader: {fileID: 4800000, guid: 8cbfac6f5f135d74db65cc1e1280a9ff, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Ints: []
-    m_Floats:
-    - _Aspect: 1
-    - _FlowSpeed: 0.01
-    - _GlowFalloff: 2.5
-    - _GlowFollowStripes: 0
-    - _GlowIntensity: 2.5
-    - _GlowOnlyWhenFilled: 1
-    - _GlowWidth: 0.18
-    - _Progress: 0
-    - _ShowFlow: 0
-    - _Softness: 0.002
-    - _StripeAlpha: 0.6
-    - _StripeDensity: 12
-    - _Thickness: 0.12
-    m_Colors:
-    - _Background: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmptyColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 0.85}
-    - _FillColor: {r: 1, g: 0.85, b: 0, a: 1}
-    - _GlowColor: {r: 1, g: 0.85, b: 0, a: 1}
-  m_BuildTextureStacks: []
 --- !u!1001 &1989542530
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9456,6 +9314,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25ca3148d698a6a48833425399080f2b, type: 3}
+--- !u!114 &3821702616652944061 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3821702617830770391, guid: 25ca3148d698a6a48833425399080f2b, type: 3}
+  m_PrefabInstance: {fileID: 3821702616652944060}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c111d7a27b0994da0426053a29c487, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4097714969347713198
 PrefabInstance:
   m_ObjectHideFlags: 0
