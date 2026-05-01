@@ -306,6 +306,38 @@ public class Block : MonoBehaviour
         return distToLeft <= distToRight;
     }
 
+    private Vector3 GetMirroredPositionFromPlacement(Vector3 sourcePos)
+    {
+        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+
+        GameObject nearest = null;
+        float nearestDistance = Mathf.Infinity;
+
+        foreach (GameObject brick in levelBricks)
+        {
+            float d = DistanceXZ(sourcePos, brick.transform.position);
+
+            if (d < nearestDistance)
+            {
+                nearestDistance = d;
+                nearest = brick;
+            }
+        }
+
+        if (nearest == null)
+            return GetMirroredPosition(sourcePos); // fallback
+
+        RegularBlockPlacement placement = nearest.GetComponent<RegularBlockPlacement>();
+
+        if (placement == null || placement.myAlignmentLeft == null)
+            return GetMirroredPosition(sourcePos); // fallback
+
+        Vector3 mirrorPos = placement.myAlignmentLeft.transform.position;
+        mirrorPos.y = sourcePos.y;
+
+        return mirrorPos;
+    }
+
     private Vector3 GetMirroredPosition(Vector3 sourcePos)
     {
         bool sourceIsLeft = IsPositionOnLeftMap(sourcePos);
@@ -941,7 +973,7 @@ public class Block : MonoBehaviour
                         {
                             // Position blockb with an offset, keeping in mind the isometric axis adjustments
                             //blockb.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
-                            Vector3 targetPosition = GetMirroredPosition(mpos);
+                            Vector3 targetPosition = GetSmoothMirroredDragPosition(mpos);
                             targetPosition.y = mpos.y;
 
                             // Smoothly interpolate the current position to the target position
@@ -960,7 +992,7 @@ public class Block : MonoBehaviour
                         {
                             // Position blocka with an offset, keeping in mind the isometric axis adjustments
                             //blocka.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
-                            Vector3 targetPosition = GetMirroredPosition(mpos);
+                            Vector3 targetPosition = GetSmoothMirroredDragPosition(mpos);
                             targetPosition.y = mpos.y;
 
                             // Smoothly interpolate the current position to the target position
@@ -1588,7 +1620,7 @@ public void StartMapRotation()
         B_blockb.cld_2 = b.transform.Find("Upper")?.gameObject;
 
         // Important: move clone to mirrored world position before alignment
-        Vector3 mirrorPos = GetMirroredPosition(blocka.transform.position);
+        Vector3 mirrorPos = GetMirroredPositionFromPlacement(blocka.transform.position);
         mirrorPos.y = blocka.transform.position.y;
         blockb.transform.position = mirrorPos;
 
@@ -1862,12 +1894,13 @@ public void StartMapRotation()
 
     public void BlockAlignmentMirrorInMap()
     {
-        // Find all the Level and Inventory Bricks
         GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
         GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
 
         List<GameObject> allBricks = new List<GameObject>(levelBricks);
         allBricks.AddRange(inventoryBricks);
+
+        UnblockPreviousAlignment();
 
         GameObject nearestBlockA = FindNearestBlock(blocka.transform.position, allBricks);
         GameObject nearestBlockB = FindNearestBlock(blockb.transform.position, allBricks);
@@ -1875,18 +1908,26 @@ public void StartMapRotation()
         BlockAlignment alignmentA = nearestBlockA != null ? nearestBlockA.GetComponent<BlockAlignment>() : null;
         BlockAlignment alignmentB = nearestBlockB != null ? nearestBlockB.GetComponent<BlockAlignment>() : null;
 
-
-
-
-        // If both blocks are found and unblocked, align them
-        if (alignmentA != null && alignmentB != null && !alignmentA.isBlocked && !alignmentB.isBlocked)
+        // Inventory has priority.
+        // If either regular block is dropped into inventory, keep that one and destroy the other.
+        if (alignmentA != null && alignmentA.gameObject.CompareTag("LevelBrickInventory"))
         {
-            // Unblock previously assigned bricks
-            UnblockPreviousAlignment();
+            MoveBlockBackToInventory(blocka, alignmentA);
+            return;
+        }
 
-            // Assign new alignment
+        if (alignmentB != null && alignmentB.gameObject.CompareTag("LevelBrickInventory"))
+        {
+            MoveBlockBackToInventory(blockb, alignmentB);
+            return;
+        }
+
+        if (alignmentA != null && alignmentB != null &&
+            !alignmentA.isBlocked && !alignmentB.isBlocked)
+        {
             B_blocka.myAlignedBrick = alignmentA;
             B_blockb.myAlignedBrick = alignmentB;
+
             alignmentA.isBlocked = true;
             alignmentB.isBlocked = true;
 
@@ -1895,16 +1936,20 @@ public void StartMapRotation()
 
             B_blocka.isInventory = false;
             B_blockb.isInventory = false;
-            RegularBlockMapAlign();
 
-            Debug.Log("Blocks aligned to the map");
+            RegularBlockMapAlign();
         }
         else
         {
-            HandleSingleOrNoAlignment(alignmentA, alignmentB);
+            MoveBlockToAlignment(blocka, B_blocka.myAlignedBrick.transform.position);
+            MoveBlockToAlignment(blockb, B_blockb.myAlignedBrick.transform.position);
+
+            if (B_blocka.myAlignedBrick != null)
+                B_blocka.myAlignedBrick.isBlocked = true;
+
+            if (B_blockb.myAlignedBrick != null)
+                B_blockb.myAlignedBrick.isBlocked = true;
         }
-
-
     }
 
     private GameObject FindNearestBlock(Vector3 position, List<GameObject> blocks)
@@ -2425,6 +2470,43 @@ private void HideMirrorGhost()
                 LevelController.instance.curOverBlock = null;
         }
     }
+
+    private Vector3 GetSmoothMirroredDragPosition(Vector3 sourcePos)
+    {
+        GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
+
+        GameObject nearest = null;
+        float nearestDistance = Mathf.Infinity;
+
+        foreach (GameObject brick in levelBricks)
+        {
+            float d = DistanceXZ(sourcePos, brick.transform.position);
+
+            if (d < nearestDistance)
+            {
+                nearestDistance = d;
+                nearest = brick;
+            }
+        }
+
+        if (nearest == null)
+            return GetMirroredPosition(sourcePos);
+
+        RegularBlockPlacement placement = nearest.GetComponent<RegularBlockPlacement>();
+
+        if (placement == null || placement.myAlignmentLeft == null)
+            return GetMirroredPosition(sourcePos);
+
+        // Keep the local offset from the source brick,
+        // so the mirrored block moves smoothly instead of snapping.
+        Vector3 localOffset = sourcePos - nearest.transform.position;
+
+        Vector3 result = placement.myAlignmentLeft.transform.position + localOffset;
+        result.y = sourcePos.y;
+
+        return result;
+    }
+
     // Let you toggle in builds with a key (optional)
     private void LateUpdate()
 {
