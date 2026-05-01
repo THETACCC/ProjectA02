@@ -8,6 +8,9 @@ using SKCell;
 
 public class LevelController : SKMonoSingleton<LevelController>
 {
+    [Header("Intro / Player Ready State")]
+    public bool playersReadyForInteraction = false;
+
     [Header("Chapter Settings")]
     public int chapterIndex = 0;
 
@@ -78,7 +81,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
     private void Start()
     {
-
+        playersReadyForInteraction = false;
         //Controlls the indicator material
         //GameObject IndicatorMat = GameObject.FindGameObjectWithTag("IndicatorMaterial");
         //myRenderer = IndicatorMat.GetComponent<MeshRenderer>();
@@ -389,7 +392,39 @@ public class LevelController : SKMonoSingleton<LevelController>
             }
         }
     }
+    public void RegisterPlayers(PlayerController left, PlayerController right)
+    {
+        playerLeft = left;
+        playerRight = right;
 
+        if (playerLeft != null)
+        {
+            playerLeftRB = playerLeft.GetComponent<Rigidbody>();
+            playerLeftCollider = playerLeft.GetComponent<Collider>();
+        }
+
+        if (playerRight != null)
+        {
+            playerRightRB = playerRight.GetComponent<Rigidbody>();
+            playerRightCollider = playerRight.GetComponent<Collider>();
+        }
+
+        isPlayerFound = playerLeft != null && playerRight != null;
+    }
+
+    public bool ArePlayersReadyForInteraction()
+    {
+        if (!playersReadyForInteraction)
+            return false;
+
+        if (playerLeft == null || playerRight == null)
+            FindPlayers();
+
+        if (playerLeft == null || playerRight == null)
+            return false;
+
+        return playerLeft.hasLanded && playerRight.hasLanded;
+    }
 }
 
 public enum LevelPhase

@@ -9,7 +9,6 @@ public class BlockIntro : MonoBehaviour
     public GameObject Player1;
     public GameObject Player2;
 
-
     public GameObject LevelSuccessOBJ_Left;
     public GameObject LevelSuccessOBJ_Right;
 
@@ -17,128 +16,146 @@ public class BlockIntro : MonoBehaviour
     public EnterFinishRight LevelSuccessRight;
 
     public LevelLoader LevelLoader;
-
     public LevelController controller;
 
-    public bool isBigMap = false;
+    [Header("Intro Timing")]
+    public float introStartDelay = 1.5f;
+    public float blockPopInterval = 0.1f;
+    public float playerEnableDelayAfterBlocks = 0.5f;
 
-    // Start is called before the first frame update
+    [Header("Landing Check")]
+    public float maxWaitForLanding = 5f;
 
-    //Audio
+    [Header("Audio")]
     [SerializeField] private AudioClip[] popSoundClip;
     [SerializeField] private AudioClip[] enablePlayerSoundClip;
+
+    private PlayerController player1Controller;
+    private PlayerController player2Controller;
+
     void Start()
     {
-        GameObject level_controller = GameObject.Find("LevelController");
-        controller = level_controller.GetComponent<LevelController>();
+        StartCoroutine(LevelIntroRoutine());
+    }
 
-        controller.phase = LevelPhase.Loading;
+    private IEnumerator LevelIntroRoutine()
+    {
+        yield return null;
+
+        GameObject level_controller = GameObject.Find("LevelController");
+        if (level_controller != null)
+            controller = level_controller.GetComponent<LevelController>();
+
+        if (controller != null)
+            controller.phase = LevelPhase.Loading;
 
         mblocks = GameObject.FindGameObjectsWithTag("Block");
 
-        //get player and disable player for visual effects
         Player1 = GameObject.FindGameObjectWithTag("Player1");
         Player2 = GameObject.FindGameObjectWithTag("Player2");
-        Player1.SetActive(false);
-        Player2.SetActive(false);
+
+        if (Player1 != null) Player1.SetActive(false);
+        if (Player2 != null) Player2.SetActive(false);
+
         LevelSuccessOBJ_Left = GameObject.FindGameObjectWithTag("FinishLeft");
         LevelSuccessOBJ_Right = GameObject.FindGameObjectWithTag("FinishRight");
-        LevelSuccessLeft = LevelSuccessOBJ_Left.GetComponent<Enterfinishleft>();
-        LevelSuccessRight = LevelSuccessOBJ_Right.GetComponent<EnterFinishRight>();
+
+        if (LevelSuccessOBJ_Left != null)
+            LevelSuccessLeft = LevelSuccessOBJ_Left.GetComponent<Enterfinishleft>();
+
+        if (LevelSuccessOBJ_Right != null)
+            LevelSuccessRight = LevelSuccessOBJ_Right.GetComponent<EnterFinishRight>();
 
         GameObject LevelLoaderOBJ = GameObject.FindGameObjectWithTag("LevelLoader");
-        if (LevelLoaderOBJ != null )
-        {
-            LevelLoader = LevelLoaderOBJ.GetComponent<LevelLoader>();   
-        }
+        if (LevelLoaderOBJ != null)
+            LevelLoader = LevelLoaderOBJ.GetComponent<LevelLoader>();
 
         foreach (GameObject block in mblocks)
         {
-            block.transform.localScale = Vector3.zero;
+            if (block != null)
+                block.transform.localScale = Vector3.zero;
         }
 
-        StartCoroutine(PlayEffectsSequentially());
+        yield return StartCoroutine(PlayEffectsSequentially());
 
-        if(!isBigMap)
-        {
-            StartCoroutine(EnablePlayer());
-        }
-        else if(isBigMap)
-        {
-            StartCoroutine(EnablePlayerBigMap());
-        }
+        yield return new WaitForSeconds(playerEnableDelayAfterBlocks);
 
-
+        yield return StartCoroutine(EnablePlayersAndWaitForLanding());
     }
 
-    IEnumerator PlayEffectsSequentially()
+    private IEnumerator PlayEffectsSequentially()
     {
-        yield return new WaitForSeconds(1.5f);
-        // Loop through each GameObject in mblocks
+        yield return new WaitForSeconds(introStartDelay);
+
         foreach (GameObject block in mblocks)
         {
-            // Trigger the visual effect for the current block.
-            // This assumes you have a method to play the effect. Replace "PlayVisualEffect" with your actual method.
+            if (block == null) continue;
+
             PlayVisualEffect(block);
-            SoundFXManager.instance.PlayRandomSoundFXClip(popSoundClip, transform, 1f);
-            // Wait for 0.2 seconds before continuing to the next iteration of the loop
-            yield return new WaitForSeconds(0.1f);
+
+            if (SoundFXManager.instance != null)
+                SoundFXManager.instance.PlayRandomSoundFXClip(popSoundClip, transform, 1f);
+
+            yield return new WaitForSeconds(blockPopInterval);
         }
     }
 
-
-    IEnumerator EnablePlayer()
+    private IEnumerator EnablePlayersAndWaitForLanding()
     {
-        yield return new WaitForSeconds(4f);
+        if (SoundFXManager.instance != null)
+            SoundFXManager.instance.PlayRandomSoundFXClip(enablePlayerSoundClip, transform, 1f);
 
+        if (Player1 != null)
+            Player1.SetActive(true);
 
-        //Audio
-        SoundFXManager.instance.PlayRandomSoundFXClip(enablePlayerSoundClip, transform, 1f);
+        if (Player2 != null)
+            Player2.SetActive(true);
 
+        yield return null;
 
-        Player1.SetActive(true);
+        if (Player1 != null)
+            player1Controller = Player1.GetComponent<PlayerController>();
 
-        Player2.SetActive(true);
-        LevelSuccessLeft.SerachPlayer();    
-        LevelSuccessRight.SerachPlayer();
-        LevelLoader.LoadCharacter();
-        yield return new WaitForSeconds(0.1f);
-        controller.phase = LevelPhase.Placing;
-    }
+        if (Player2 != null)
+            player2Controller = Player2.GetComponent<PlayerController>();
 
-    IEnumerator EnablePlayerBigMap()
-    {
-        yield return new WaitForSeconds(6f);
+        if (LevelSuccessLeft != null)
+            LevelSuccessLeft.SerachPlayer();
 
+        if (LevelSuccessRight != null)
+            LevelSuccessRight.SerachPlayer();
 
-        //Audio
-        SoundFXManager.instance.PlayRandomSoundFXClip(enablePlayerSoundClip, transform, 1f);
+        if (LevelLoader != null)
+            LevelLoader.LoadCharacter();
 
+        float timer = 0f;
 
-        Player1.SetActive(true);
-
-        Player2.SetActive(true);
-        LevelSuccessLeft.SerachPlayer();
-        LevelSuccessRight.SerachPlayer();
-        LevelLoader.LoadCharacter();
-        yield return new WaitForSeconds(0.1f);
-        controller.phase = LevelPhase.Placing;
-    }
-
-    void PlayVisualEffect(GameObject block)
-    {
-        // Assuming the visual effect is attached to the GameObject and can be enabled or triggered in some way.
-        // For example, if your effect is a particle system, you might call:
-        // block.GetComponent<ParticleSystem>().Play();
-
-        // Add your code here to play the effect on the given GameObject.
-        // This is just a placeholder function body.
-        Block blockCode = block.GetComponent<Block>();
-        if (blockCode != null)
+        while (timer < maxWaitForLanding)
         {
-            blockCode.PlayInit();
+            bool p1Landed = player1Controller != null && player1Controller.hasLanded;
+            bool p2Landed = player2Controller != null && player2Controller.hasLanded;
+
+            if (p1Landed && p2Landed)
+                break;
+
+            timer += Time.deltaTime;
+            yield return null;
         }
 
+        if (controller != null)
+        {
+            controller.RegisterPlayers(player1Controller, player2Controller);
+
+            controller.playersReadyForInteraction = true;
+            controller.phase = LevelPhase.Placing;
+        }
+    }
+
+    private void PlayVisualEffect(GameObject block)
+    {
+        Block blockCode = block.GetComponent<Block>();
+
+        if (blockCode != null)
+            blockCode.PlayInit();
     }
 }
-
