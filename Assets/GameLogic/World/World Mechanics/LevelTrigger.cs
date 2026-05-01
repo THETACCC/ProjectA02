@@ -8,7 +8,7 @@ using SKCell;
 public class LevelTrigger : MonoBehaviour
 {
     [Header("Scene binding")]
-    [Tooltip("Must be like Chapter0_Level1 / Chapter1_Level6 etc. We parse chapter/level from this.")]
+    [Tooltip("For levels: Chapter0_Level0 / Chapter1_Level6 etc. For worlds: Chapter0World / Chapter1World etc.")]
     public SceneTitle scenetitle;
 
     [Header("Per-trigger UI (local)")]
@@ -18,34 +18,66 @@ public class LevelTrigger : MonoBehaviour
     [Header("Optional")]
     public GameObject spaceIndicator;
 
+    [Header("Input")]
+    [Tooltip("Let this trigger detect Space directly. This keeps scene loading working even when WorldLevelUI is hidden.")]
+    [SerializeField] private bool listenSpaceDirectly = true;
+
     private FlowManager flowManager;
     private bool startloading = false;
+    private bool playerInside = false;
 
     private int chapterIndex0 = 0;
     private int levelIndex0 = 0;
 
+    private bool isWorldScene = false;
+
     private Collider[] _colliders;
     private Renderer[] _renderers;
 
-    // ✅ NEW: registry key
     private const string PP_SceneRegistry = "JZ_SavedPosScenes";
 
     private void Awake()
     {
-        var s = scenetitle.ToString();
-        var m = Regex.Match(s, @"Chapter\s*(\d+)\s*[_\-\s]\s*Level\s*(\d+)", RegexOptions.IgnoreCase);
-        if (m.Success)
+        string s = scenetitle.ToString();
+
+        // World scene example:
+        // Chapter0World / Chapter1World / Chapter2World
+        isWorldScene = Regex.IsMatch(
+            s,
+            @"^Chapter\s*\d+\s*World$",
+            RegexOptions.IgnoreCase
+        );
+
+        // Only normal level scenes need chapter/level parsing for SaveManager unlock.
+        // World scenes should not be forced into Chapter#_Level# format.
+        if (!isWorldScene)
         {
-            int chap = int.Parse(m.Groups[1].Value);
-            int lvl1 = int.Parse(m.Groups[2].Value);
-            chapterIndex0 = Mathf.Max(0, chap);
-            levelIndex0 = Mathf.Max(0, lvl1 - 1);
-        }
-        else
-        {
-            Debug.LogError($"[LevelTrigger:{name}] scenetitle '{s}' not in 'Chapter#_Level#' format. Fallback (0,0).", this);
-            chapterIndex0 = 0;
-            levelIndex0 = 0;
+            var m = Regex.Match(
+                s,
+                @"Chapter\s*(\d+)\s*[_\-\s]\s*Level\s*(\d+)",
+                RegexOptions.IgnoreCase
+            );
+
+            if (m.Success)
+            {
+                int chap = int.Parse(m.Groups[1].Value);
+                int lvl = int.Parse(m.Groups[2].Value);
+
+                // Scene names are already 0-based:
+                // Chapter0_Level0, Chapter0_Level1...
+                chapterIndex0 = Mathf.Max(0, chap);
+                levelIndex0 = Mathf.Max(0, lvl);
+            }
+            else
+            {
+                Debug.LogError(
+                    $"[LevelTrigger:{name}] scenetitle '{s}' is not a normal level or world scene name.",
+                    this
+                );
+
+                chapterIndex0 = 0;
+                levelIndex0 = 0;
+            }
         }
 
         _colliders = GetComponentsInChildren<Collider>(true);
@@ -56,7 +88,7 @@ public class LevelTrigger : MonoBehaviour
         if (spaceIndicator) spaceIndicator.SetActive(false);
         if (uiSelectLevel) uiSelectLevel.SetActive(false);
 
-        var fmObj = GameObject.Find("FlowManager");
+        GameObject fmObj = GameObject.Find("FlowManager");
         if (fmObj) flowManager = fmObj.GetComponent<FlowManager>();
     }
 
@@ -65,9 +97,22 @@ public class LevelTrigger : MonoBehaviour
         StartCoroutine(WaitAndDecideVisibility());
     }
 
+    private void Update()
+    {
+        if (!listenSpaceDirectly) return;
+        if (!playerInside) return;
+        if (startloading) return;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            LoadNextLevel();
+        }
+    }
+
     private IEnumerator WaitAndDecideVisibility()
     {
         int tries = 0;
+
         while (SaveManager.Instance == null && tries < 10)
         {
             tries++;
@@ -80,8 +125,20 @@ public class LevelTrigger : MonoBehaviour
             yield break;
         }
 
-        bool unlocked = SaveManager.Instance.IsLevelUnlocked(chapterIndex0, levelIndex0);
-        Debug.Log($"[LevelTrigger:{name}] Unlocked? {unlocked} (c={chapterIndex0}, l0={levelIndex0}, scenetitle={scenetitle})", this);
+        bool unlocked = true;
+
+        // World scene triggers should always be visible if the object exists.
+        // Normal level triggers still use SaveManager unlock.
+        if (!isWorldScene)
+        {
+            unlocked = SaveManager.Instance.IsLevelUnlocked(chapterIndex0, levelIndex0);
+        }
+
+        Debug.Log(
+            $"[LevelTrigger:{name}] Unlocked? {unlocked} " +
+            $"(world={isWorldScene}, c={chapterIndex0}, l0={levelIndex0}, scenetitle={scenetitle})",
+            this
+        );
 
         if (!unlocked)
         {
@@ -96,15 +153,25 @@ public class LevelTrigger : MonoBehaviour
     private void SetSoftHidden(bool hidden)
     {
         if (_colliders != null)
-            foreach (var c in _colliders) if (c) c.enabled = !hidden;
+        {
+            foreach (Collider c in _colliders)
+            {
+                if (c) c.enabled = !hidden;
+            }
+        }
 
         if (_renderers != null)
-            foreach (var r in _renderers) if (r) r.enabled = !hidden;
+        {
+            foreach (Renderer r in _renderers)
+            {
+                if (r) r.enabled = !hidden;
+            }
+        }
     }
 
     private void CheckInitialPlayerOverlap()
     {
-        var trigger = GetComponent<Collider>();
+        Collider trigger = GetComponent<Collider>();
         if (!trigger || !trigger.enabled) return;
 
         Collider[] hits = Physics.OverlapBox(
@@ -113,14 +180,22 @@ public class LevelTrigger : MonoBehaviour
             trigger.transform.rotation
         );
 
-        foreach (var h in hits)
+        foreach (Collider h in hits)
         {
             if (h.CompareTag("Player"))
             {
+                playerInside = true;
+
+                // Keep original UI behavior.
+                // Do not special-case world UI here.
                 if (spaceIndicator) spaceIndicator.SetActive(true);
                 if (uiSelectLevel) uiSelectLevel.SetActive(true);
 
-                if (WorldLevelUI.Instance) WorldLevelUI.Instance.EnterTrigger(this);
+                if (WorldLevelUI.Instance)
+                {
+                    WorldLevelUI.Instance.EnterTrigger(this);
+                }
+
                 break;
             }
         }
@@ -130,28 +205,46 @@ public class LevelTrigger : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
+        playerInside = true;
+
+        // Keep original UI behavior.
+        // Any per-trigger UI assigned in inspector should still appear.
         if (spaceIndicator) spaceIndicator.SetActive(true);
         if (uiSelectLevel) uiSelectLevel.SetActive(true);
 
-        if (WorldLevelUI.Instance) WorldLevelUI.Instance.EnterTrigger(this);
+        if (WorldLevelUI.Instance)
+        {
+            WorldLevelUI.Instance.EnterTrigger(this);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
+        playerInside = false;
+
+        // Keep original UI behavior.
         if (spaceIndicator) spaceIndicator.SetActive(false);
         if (uiSelectLevel) uiSelectLevel.SetActive(false);
 
-        if (WorldLevelUI.Instance) WorldLevelUI.Instance.ExitTrigger(this);
+        if (WorldLevelUI.Instance)
+        {
+            WorldLevelUI.Instance.ExitTrigger(this);
+        }
     }
 
     private void OnDisable()
     {
+        playerInside = false;
+
         if (spaceIndicator) spaceIndicator.SetActive(false);
         if (uiSelectLevel) uiSelectLevel.SetActive(false);
 
-        if (WorldLevelUI.Instance) WorldLevelUI.Instance.ExitTrigger(this);
+        if (WorldLevelUI.Instance)
+        {
+            WorldLevelUI.Instance.ExitTrigger(this);
+        }
     }
 
     public void LoadNextLevel()
@@ -164,7 +257,8 @@ public class LevelTrigger : MonoBehaviour
 
         RegisterSceneForSavedPos(currentSceneName);
 
-        // 只保存当前场景（通常是 World）的返回位置
+        // Save current scene return position.
+        // Usually this is the World scene position.
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerX", transform.position.x);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerY", transform.position.y);
         PlayerPrefs.SetFloat(currentSceneName + "_LastTriggerZ", transform.position.z);
@@ -175,20 +269,26 @@ public class LevelTrigger : MonoBehaviour
         SKUtils.InvokeAction(0.2f, () =>
         {
             if (flowManager)
-                flowManager.LoadScene(new SceneInfo() { index = scenetitle });
+            {
+                flowManager.LoadScene(new SceneInfo()
+                {
+                    index = scenetitle
+                });
+            }
             else
+            {
                 SceneManager.LoadScene(targetSceneName);
+            }
         });
     }
 
-    // -------------------- NEW helper --------------------
     private void RegisterSceneForSavedPos(string sceneName)
     {
         if (string.IsNullOrEmpty(sceneName)) return;
 
-        // simple ; separated unique set
         string raw = PlayerPrefs.GetString(PP_SceneRegistry, "");
         string token = sceneName + ";";
+
         if (!raw.Contains(token))
         {
             raw += token;

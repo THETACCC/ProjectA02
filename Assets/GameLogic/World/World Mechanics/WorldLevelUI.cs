@@ -96,6 +96,13 @@ public class WorldLevelUI : MonoBehaviour
     {
         if (t == null) return;
 
+        // 如果这个 trigger 指向的是 World scene，不显示 UI
+        if (IsWorldScene(t.scenetitle.ToString()))
+        {
+            HideInstant();
+            return;
+        }
+
         if (!insideOrder.Contains(t))
             insideOrder.Add(t);
 
@@ -135,7 +142,14 @@ public class WorldLevelUI : MonoBehaviour
 
         if (txtLevel)
         {
-            txtLevel.text = $"Level {lvl0 + 1}";
+            if (chap0 == 0 && lvl0 == 0)
+            {
+                txtLevel.text = "Tutorial";
+            }
+            else
+            {
+                txtLevel.text = $"Level {lvl0}";
+            }
         }
 
         bool cleared = false;
@@ -343,8 +357,10 @@ public class WorldLevelUI : MonoBehaviour
         if (!m.Success) return (0, 0);
 
         int chap = int.Parse(m.Groups[1].Value);
-        int lvl1 = int.Parse(m.Groups[2].Value);
-        return (Mathf.Max(0, chap), Mathf.Max(0, lvl1 - 1));
+        int lvl = int.Parse(m.Groups[2].Value);
+
+        // Scene names are already 0-based: Chapter0_Level0, Chapter0_Level1...
+        return (Mathf.Max(0, chap), Mathf.Max(0, lvl));
     }
 
     private string FormatSeconds(float sec)
@@ -373,6 +389,11 @@ public class WorldLevelUI : MonoBehaviour
     private void HandleActiveSceneChanged(Scene oldScene, Scene newScene)
     {
         RefreshChapterLabel(newScene.name);
+
+        if (IsWorldScene(newScene.name))
+        {
+            HideInstant();
+        }
     }
 
     private void RefreshChapterLabel(string sceneNameOverride = null)
@@ -451,5 +472,10 @@ public class WorldLevelUI : MonoBehaviour
             if (t.name == childName) return t;
 
         return null;
+    }
+
+    private bool IsWorldScene(string sceneName)
+    {
+        return Regex.IsMatch(sceneName, @"^Chapter\s*\d+\s*World$", RegexOptions.IgnoreCase);
     }
 }
