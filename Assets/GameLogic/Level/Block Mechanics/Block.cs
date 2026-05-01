@@ -142,6 +142,13 @@ public class Block : MonoBehaviour
     private PlayerController player2Controller;
 
     private LevelPhase phaseBeforeDrag;
+
+
+    [Header("Rotation Drag Lock")]
+    private float dragLockAfterRotation = 0.1f;
+
+    private bool wasLevelRotating = false;
+    private float lastRotationEndTime = -999f;
     private void Awake()
     {
         // Robust outline assignment (works for originals & clones; Editor & Player)
@@ -284,8 +291,10 @@ public class Block : MonoBehaviour
     }
     private void Update()
     {
+        DisableOutlineIfCannotInteract();
+
         //If speaking then the player cannot move the blocks
-        if(controller.phase != LevelPhase.Speaking && controller.phase != LevelPhase.Loading && controller.phase != LevelPhase.Sprinting)
+        if (controller.phase != LevelPhase.Speaking && controller.phase != LevelPhase.Loading && controller.phase != LevelPhase.Sprinting)
         {
             if (!rotationFound)
             {
@@ -476,18 +485,21 @@ public class Block : MonoBehaviour
 
     private void UpdateMouseBehavior()
     {
-        if (!CanStartOrContinueBlockDrag())
+        // Always allow drag to finish first.
+        // This prevents the level from getting stuck in Draging phase.
+        if (mouse_drag && Input.GetMouseButtonUp(0))
         {
-            if (mouse_drag)
-            {
-                mouse_drag = false;
-                isDragging = false;
-                LevelController.instance.curDraggedblock = null;
+            FinishBlockDrag();
+            return;
+        }
 
-                if (controller != null)
-                    controller.EnablePlayerColliders();
-            }
+        // Block interaction during level rotation
+        if (IsRotationDragLocked())
+            return;
 
+        // Block starting interaction if not allowed
+        if (!mouse_drag && !CanStartBlockDrag())
+        {
             mouse_over = false;
             prev_mouseOver = false;
 
@@ -497,94 +509,108 @@ public class Block : MonoBehaviour
             return;
         }
 
-
-
         if (player1Controller != null && player2Controller != null)
         {
             if (!player1Controller.hasLanded || !player2Controller.hasLanded)
-            {
                 return;
-            }
         }
 
         Ray ray = CommonReference.mainCam.ScreenPointToRay(Input.mousePosition);
 
-        Physics.Raycast(ray, out RaycastHit hit, 100000, 1 << CommonReference.LAYER_GROUND);
-        mouse_over = hit.collider == null ? false : hit.collider.gameObject == this.gameObject;
-        if (!prev_mouseOver && mouse_over)
-        {
-            if(draggable)
-            {
-                LevelController.instance.curOverBlock = this;
-                _OnMouseEnter();
-            }
+        Physics.Raycast(
+            ray,
+            out RaycastHit hit,
+            100000,
+            1 << CommonReference.LAYER_GROUND
+        );
 
-        }
-        if(mouse_over)
+        mouse_over = hit.collider != null && hit.collider.gameObject == this.gameObject;
+
+        if (!prev_mouseOver && mouse_over)
         {
             if (draggable)
             {
                 LevelController.instance.curOverBlock = this;
+                _OnMouseEnter();
             }
         }
 
+        if (mouse_over)
+        {
+            if (draggable)
+                LevelController.instance.curOverBlock = this;
+        }
 
         if (prev_mouseOver && !mouse_over)
         {
-            if(draggable)
+            if (draggable)
             {
-                LevelController.instance.curOverBlock = null;
+                if (LevelController.instance.curOverBlock == this)
+                    LevelController.instance.curOverBlock = null;
+
                 _OnMouseExit();
             }
-            isDragging = false;
+
+            if (!mouse_drag)
+                isDragging = false;
         }
-        if (CanStartOrContinueBlockDrag() &&
-                !mouse_drag &&
-                LevelController.instance.curDraggedblock == null &&
-                mouse_over &&
-                Input.GetMouseButtonDown(0))
+
+        // Left click: start dragging
+        if (CanStartBlockDrag() &&
+            !mouse_drag &&
+            LevelController.instance.curDraggedblock == null &&
+            mouse_over &&
+            Input.GetMouseButtonDown(0))
         {
-            //Audio
             AudioPlayer.instance.playBlockSelectSound();
+
             mouse_drag = true;
             isDragging = true;
 
-            phaseBeforeDrag = controller.phase; // save Placing or Running
+            phaseBeforeDrag = controller.phase;
 
             controller.phase = LevelPhase.Draging;
 
-            // Disable dangerous block colliders immediately
             SetBlockCollidersActive(false);
-
-            // Then disable players
             controller.DisablePlayerColliders();
 
             _OnStartDrag();
+
             LevelController.instance.curDraggedblock = this;
         }
-        if (!mouse_drag && LevelController.instance.curDraggedblock == null && mouse_over && Input.GetMouseButtonDown(1))
+
+        // Right click: rotate block
+        if (CanStartBlockDrag() &&
+            !mouse_drag &&
+            LevelController.instance.curDraggedblock == null &&
+            mouse_over &&
+            Input.GetMouseButtonDown(1))
         {
-            //Audio
             AudioPlayer.instance.playBlockRotateSound();
 
             if (type == BlockType.Regular)
             {
                 Debug.Log("Rotating");
-                B_blocka.rotate += new Vector3(0, 90, 0);
-                B_blocka.rotated = true;
-                B_blockb.rotate += new Vector3(0, 90, 0);
-                B_blockb.rotated = true;
-                B_blocka.transform.localScale = new Vector3(.25f, .25f, .25f);
-                B_blockb.transform.localScale = new Vector3(.25f, .25f, .25f);
+
+                if (B_blocka != null)
+                {
+                    B_blocka.rotate += new Vector3(0, 90, 0);
+                    B_blocka.rotated = true;
+                    B_blocka.transform.localScale = new Vector3(.25f, .25f, .25f);
+                }
+
+                if (B_blockb != null)
+                {
+                    B_blockb.rotate += new Vector3(0, 90, 0);
+                    B_blockb.rotated = true;
+                    B_blockb.transform.localScale = new Vector3(.25f, .25f, .25f);
+                }
             }
             else if (type == BlockType.Free)
             {
-
                 rotate += new Vector3(0, 90, 0);
                 rotated = true;
                 transform.localScale = new Vector3(.25f, .25f, .25f);
-
-
             }
         }
         else
@@ -592,30 +618,16 @@ public class Block : MonoBehaviour
             rotated = false;
         }
 
+        // Continue dragging
         if (mouse_drag)
         {
+            if (!CanContinueBlockDrag())
+                return;
+
             isDragging = true;
-
-
             _OnMouseDrag();
-            if (Input.GetMouseButtonUp(0))
-            {
-                mouse_drag = false;
-                isDragging = false;
-
-                controller.phase = LevelPhase.Draging;
-                SetBlockCollidersActive(false);
-
-                _OnEndDrag();
-
-                // Keep colliders off while failed placement returns to original position
-                SetBlockCollidersActive(false);
-
-                StartCoroutine(FinishDragAfterReturnDelay(0.25f));
-
-                LevelController.instance.curDraggedblock = null;
-            }
         }
+
         prev_mouseOver = mouse_over;
     }
 
@@ -659,63 +671,19 @@ public class Block : MonoBehaviour
     {
         //Audio
         AudioPlayer.instance.playBlockHoverSound();
-
-        if (!isInventory)
+        if (!draggable || !CanStartBlockDrag())
         {
-            if ((type == BlockType.Regular))
-            {
-                if (instantiated)
-                {
-
-                    B_blocka.outlineEffectOBJ.SetActive(true);
-                    B_blockb.outlineEffectOBJ.SetActive(true);
-
-                }
-            }
-            else
-            {
-
-                outlineEffectOBJ.SetActive(true);
-
-
-            }
-        }
-        else
-        {
-            outlineEffectOBJ.SetActive(true);
+            SetOutlineActiveSafe(false);
+            return;
         }
 
-        //FX_HOVER.SetActive(true);
+        AudioPlayer.instance.playBlockHoverSound();
+        SetOutlineActiveSafe(true);
     }
 
     private void _OnMouseExit()
     {
-        if (!isInventory)
-        {
-            if ((type == BlockType.Regular))
-            {
-                if (instantiated)
-                {
-
-                    B_blocka.outlineEffectOBJ.SetActive(false);
-                    B_blockb.outlineEffectOBJ.SetActive(false);
-                    //outlineEffect.enabled = false;
-
-
-                }
-            }
-            else
-            {
-
-                outlineEffectOBJ.SetActive(false);
-
-            }
-        }
-        else
-        {
-            outlineEffectOBJ.SetActive(false);
-        }
-        //FX_HOVER.SetActive(false);
+        SetOutlineActiveSafe(false);
     }
 
     public void _OnStartDrag()
@@ -2222,9 +2190,11 @@ private void HideMirrorGhost()
             sourcePos.z + (isLeft ? offsetz : -offsetz)
         );
     }
-
-    private bool CanStartOrContinueBlockDrag()
+    private bool CanStartBlockDrag()
     {
+        if (IsRotationDragLocked())
+            return false;
+
         if (controller == null) return false;
 
         if (controller.phase == LevelPhase.Sprinting)
@@ -2235,6 +2205,46 @@ private void HideMirrorGhost()
 
         if (player2Controller != null && player2Controller.is_sliding)
             return false;
+
+        if (IsAnyLinkedBlockUnderPlayer())
+            return false;
+
+        return true;
+    }
+
+    private bool CanContinueBlockDrag()
+    {
+        if (levelrotation != null && levelrotation.isRotating)
+            return false;
+
+        if (controller == null) return false;
+
+        if (controller.phase == LevelPhase.Sprinting)
+            return false;
+
+        return true;
+    }
+    private bool CanStartOrContinueBlockDrag()
+    {
+
+        if (levelrotation != null && levelrotation.isRotating)
+            return false;
+
+        if (controller == null) return false;
+
+        if (controller.phase == LevelPhase.Sprinting)
+            return false;
+
+        if (player1Controller != null && player1Controller.is_sliding)
+            return false;
+
+        if (player2Controller != null && player2Controller.is_sliding)
+            return false;
+
+        // Extra protection after level rotation
+        if (IsAnyLinkedBlockUnderPlayer())
+            return false;
+
 
         return true;
     }
@@ -2262,8 +2272,126 @@ private void HideMirrorGhost()
 
         Physics.SyncTransforms();
     }
+    private bool IsAnyLinkedBlockUnderPlayer()
+    {
+        if (type == BlockType.Regular && B_blocka != null && B_blockb != null)
+        {
+            return B_blocka.IsPlayerActuallyOnThisBlock() ||
+                   B_blockb.IsPlayerActuallyOnThisBlock();
+        }
 
+        return IsPlayerActuallyOnThisBlock();
+    }
+    private bool IsPlayerActuallyOnThisBlock()
+    {
+        Collider[] blockColliders = GetComponentsInChildren<Collider>(true);
 
+        GameObject p1 = GameObject.FindGameObjectWithTag("Player1");
+        GameObject p2 = GameObject.FindGameObjectWithTag("Player2");
+
+        foreach (Collider blockCol in blockColliders)
+        {
+            if (blockCol == null) continue;
+
+            if (p1 != null)
+            {
+                Collider playerCol = p1.GetComponentInChildren<Collider>();
+                if (playerCol != null && blockCol.bounds.Intersects(playerCol.bounds))
+                    return true;
+            }
+
+            if (p2 != null)
+            {
+                Collider playerCol = p2.GetComponentInChildren<Collider>();
+                if (playerCol != null && blockCol.bounds.Intersects(playerCol.bounds))
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void FinishBlockDrag()
+    {
+        mouse_drag = false;
+        isDragging = false;
+
+        controller.phase = LevelPhase.Draging;
+        SetBlockCollidersActive(false);
+
+        _OnEndDrag();
+
+        // Keep colliders off while failed placement returns to original position
+        SetBlockCollidersActive(false);
+
+        StartCoroutine(FinishDragAfterReturnDelay(0.25f));
+
+        LevelController.instance.curDraggedblock = null;
+    }
+
+    private bool IsRotationDragLocked()
+    {
+        if (levelrotation == null) return false;
+
+        if (levelrotation.isRotating)
+        {
+            wasLevelRotating = true;
+            lastRotationEndTime = Time.time;
+
+            mouse_over = false;
+            prev_mouseOver = false;
+
+            if (LevelController.instance.curOverBlock == this)
+                LevelController.instance.curOverBlock = null;
+
+            return true;
+        }
+
+        if (wasLevelRotating)
+        {
+            wasLevelRotating = false;
+            lastRotationEndTime = Time.time;
+        }
+
+        return Time.time - lastRotationEndTime < dragLockAfterRotation;
+    }
+    private void SetOutlineActiveSafe(bool active)
+    {
+        if (!allowOutline)
+            active = false;
+
+        if (type == BlockType.Regular && instantiated)
+        {
+            if (B_blocka != null && B_blocka.outlineEffectOBJ != null)
+                B_blocka.outlineEffectOBJ.SetActive(active);
+
+            if (B_blockb != null && B_blockb.outlineEffectOBJ != null)
+                B_blockb.outlineEffectOBJ.SetActive(active);
+        }
+        else
+        {
+            if (outlineEffectOBJ != null)
+                outlineEffectOBJ.SetActive(active);
+        }
+    }
+
+    private void DisableOutlineIfCannotInteract()
+    {
+        bool cannotInteract =
+            IsRotationDragLocked() ||
+            !draggable ||
+            !CanStartBlockDrag();
+
+        if (cannotInteract)
+        {
+            SetOutlineActiveSafe(false);
+            mouse_over = false;
+            prev_mouseOver = false;
+
+            if (LevelController.instance.curOverBlock == this)
+                LevelController.instance.curOverBlock = null;
+        }
+    }
     // Let you toggle in builds with a key (optional)
     private void LateUpdate()
 {
