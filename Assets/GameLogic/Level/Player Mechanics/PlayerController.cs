@@ -101,6 +101,20 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
+
+        if (isLevelDragging || controller.phase == LevelPhase.Draging)
+        {
+            axis_x = 0;
+            axis_z = 0;
+            is_sliding = false;
+
+            if (rb != null)
+                rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
+
+            return;
+        }
+
         if (!hasLanded && Mathf.Abs(rb.velocity.y) < 0.05f)
         {
             hasLanded = true;
@@ -183,6 +197,7 @@ public class PlayerController : MonoBehaviour
                     if(Input.GetKeyDown(KeyCode.Space))
                     {
                         SoundFXManager.instance.PlayRandomSoundFXClip(walkSoundClip, transform, 1f);
+                        controller.phase = LevelPhase.Sprinting;
                     }
 
 
@@ -232,17 +247,7 @@ public class PlayerController : MonoBehaviour
             CharacterManager.instance.isSliding[mapSide] = is_sliding;
             delta_pos = rb.position - prev_pos;
 
-            if (startMoving)
-            {
-                if (rb.velocity.magnitude > 0.05f)
-                {
-                    controller.phase = LevelPhase.Sprinting;
-                }
-                else
-                {
-                    controller.phase = LevelPhase.Running;
-                }
-            }
+            UpdateLevelPhaseByPlayerState();
 
 
 
@@ -342,17 +347,7 @@ public class PlayerController : MonoBehaviour
             CharacterManager.instance.isSliding[mapSide] = is_sliding;
             delta_pos = rb.position - prev_pos;
 
-            if (startMoving)
-            {
-                if (rb.velocity.magnitude > 0.05f)
-                {
-                    controller.phase = LevelPhase.Sprinting;
-                }
-                else
-                {
-                    controller.phase = LevelPhase.Running;
-                }
-            }
+            UpdateLevelPhaseByPlayerState();
 
 
             if (controller.phase == LevelPhase.Running || controller.phase == LevelPhase.Sprinting)
@@ -529,4 +524,32 @@ public class PlayerController : MonoBehaviour
         isRecordingSpace = false;
     }
 
+    private void UpdateLevelPhaseByPlayerState()
+    {
+        if (controller == null) return;
+
+        // Never override these states from player movement
+        if (controller.phase == LevelPhase.Loading ||
+            controller.phase == LevelPhase.Speaking ||
+            controller.phase == LevelPhase.Draging ||
+            isLevelDragging)
+        {
+            return;
+        }
+
+        bool playerIsActivelySprinting =
+            startMoving &&
+            canmove &&
+            is_sliding &&
+            axis_z != 0;
+
+        if (playerIsActivelySprinting)
+        {
+            controller.phase = LevelPhase.Sprinting;
+        }
+        else
+        {
+            controller.phase = LevelPhase.Running;
+        }
+    }
 }

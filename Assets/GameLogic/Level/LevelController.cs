@@ -300,7 +300,7 @@ public class LevelController : SKMonoSingleton<LevelController>
 
 
 
-        if ( (phase != LevelPhase.Speaking ) && (Input.GetKeyDown(KeyCode.Space)))
+        if ( (phase != LevelPhase.Speaking ) && (Input.GetKeyDown(KeyCode.Space) && (phase == LevelPhase.Placing)))
         {
             //levelLoader.AlignBlockSelection();
 

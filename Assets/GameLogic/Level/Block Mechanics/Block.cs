@@ -475,6 +475,29 @@ public class Block : MonoBehaviour
 
     private void UpdateMouseBehavior()
     {
+        if (!CanStartOrContinueBlockDrag())
+        {
+            if (mouse_drag)
+            {
+                mouse_drag = false;
+                isDragging = false;
+                LevelController.instance.curDraggedblock = null;
+
+                if (controller != null)
+                    controller.EnablePlayerColliders();
+            }
+
+            mouse_over = false;
+            prev_mouseOver = false;
+
+            if (LevelController.instance.curOverBlock == this)
+                LevelController.instance.curOverBlock = null;
+
+            return;
+        }
+
+
+
         if (player1Controller != null && player2Controller != null)
         {
             if (!player1Controller.hasLanded || !player2Controller.hasLanded)
@@ -514,7 +537,11 @@ public class Block : MonoBehaviour
             }
             isDragging = false;
         }
-        if (!mouse_drag && LevelController.instance.curDraggedblock == null && mouse_over && Input.GetMouseButtonDown(0))
+        if (CanStartOrContinueBlockDrag() &&
+                !mouse_drag &&
+                LevelController.instance.curDraggedblock == null &&
+                mouse_over &&
+                Input.GetMouseButtonDown(0))
         {
             //Audio
             AudioPlayer.instance.playBlockSelectSound();
@@ -522,7 +549,12 @@ public class Block : MonoBehaviour
 
 
             mouse_drag = true;
+
+
+
+
             controller.DisablePlayerColliders();
+
             _OnStartDrag();
             LevelController.instance.curDraggedblock = this;
         }
@@ -2190,6 +2222,23 @@ private void HideMirrorGhost()
             sourcePos.z + (isLeft ? offsetz : -offsetz)
         );
     }
+
+    private bool CanStartOrContinueBlockDrag()
+    {
+        if (controller == null) return false;
+
+        if (controller.phase == LevelPhase.Sprinting)
+            return false;
+
+        if (player1Controller != null && player1Controller.is_sliding)
+            return false;
+
+        if (player2Controller != null && player2Controller.is_sliding)
+            return false;
+
+        return true;
+    }
+
 
     // Let you toggle in builds with a key (optional)
     private void LateUpdate()
