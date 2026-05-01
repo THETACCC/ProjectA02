@@ -475,9 +475,44 @@ public class MenuController : MonoBehaviour
         if (startLoading) return;
 
         ResumeGame();
+
+        // Close the whole menu UI, not only sub pages
+        CloseBouncyObjectInstant();
+
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        // If we are already in a World scene, go back to the real Main Menu
+        if (currentSceneName.ToLower().Contains("world"))
+        {
+            LoadNextLevel(mainMenuScene);
+        }
+        // If we are inside a level scene, go back to the chapter world selected from title
+        else
+        {
+            LoadNextLevel(sceneToLoad_Chp1_World);
+        }
+    }
+
+    public void CloseBouncyObjectInstant()
+    {
         CloseAllBouncySubPages();
 
-        LoadNextLevel(mainMenuScene);
+        if (bouncyObject != null)
+        {
+            if (_bouncyCo != null)
+            {
+                StopCoroutine(_bouncyCo);
+                _bouncyCo = null;
+            }
+
+            InitBouncyObjectIfNeeded();
+            SetBouncyToHiddenInstant();
+
+            bouncyObject.gameObject.SetActive(false);
+            _bouncyShown = false;
+        }
+
+        ToggleRotateButton(open: false);
     }
 
     public void NotebookAllDeactivate()
