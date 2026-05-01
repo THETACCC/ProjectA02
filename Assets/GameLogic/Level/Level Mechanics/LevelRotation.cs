@@ -30,8 +30,12 @@ public class LevelRotation : MonoBehaviour
 
     private void Update()
     {
-        if (levelController != null && levelController.phase == LevelPhase.Speaking)
+        if (levelController != null &&
+        (levelController.phase == LevelPhase.Speaking ||
+        levelController.phase == LevelPhase.Draging))
+        {
             return;
+        }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
