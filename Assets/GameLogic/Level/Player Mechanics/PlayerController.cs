@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
+    [Header("Landing Detection")]
+    private LayerMask groundLayers;
+
+    public float groundCheckRadius = 0.35f;
+    public float groundCheckDistance = 1.25f;
+    public float landedVelocityThreshold = 0.2f;
+    public Transform groundCheckPoint;
     //Tutorial Related
     public string Player1Tag = "Player1";
     public string Player2Tag = "Player2";
@@ -81,6 +89,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        groundLayers = LayerMask.GetMask("Collision");
         GameObject Player1 = GameObject.FindGameObjectWithTag(Player1Tag);
         GameObject Player2 = GameObject.FindGameObjectWithTag(Player2Tag);
         Player1Controll= Player1.GetComponent<PlayerController>();
@@ -115,10 +124,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!hasLanded && Mathf.Abs(rb.velocity.y) < 0.05f)
-        {
-            hasLanded = true;
-        }
+        CheckLanding();
 
         //Chapter1 Movement
         if (whichChapter== 1)
@@ -524,7 +530,35 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    private void CheckLanding()
+    {
+        if (hasLanded) return;
 
+        Vector3 checkOrigin = groundCheckPoint != null
+            ? groundCheckPoint.position
+            : transform.position + Vector3.down * 0.5f;
+
+        bool touchingGround = Physics.CheckSphere(
+            checkOrigin,
+            groundCheckRadius,
+            groundLayers,
+            QueryTriggerInteraction.Ignore
+        );
+
+        bool closeToGround = Physics.Raycast(
+            transform.position,
+            Vector3.down,
+            groundCheckDistance,
+            groundLayers,
+            QueryTriggerInteraction.Ignore
+        );
+
+        if ((touchingGround || closeToGround) && Mathf.Abs(rb.velocity.y) <= landedVelocityThreshold)
+        {
+            hasLanded = true;
+            Debug.Log($"{gameObject.name} has landed.");
+        }
+    }
 
     private void UpdateLevelPhaseByPlayerState()
     {

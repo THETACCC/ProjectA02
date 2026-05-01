@@ -311,56 +311,53 @@ public class Block : MonoBehaviour
                 {
                     if(instantiated && !isDragging)
                     {
-                        if (B_blocka.isPlayerOnBlock == false && B_blockb.isPlayerOnBlock == false)
-                        {
-                            UpdateMouseBehavior();
-                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                        UpdateMouseBehavior();
 
-                            //Needs to be addressed in future updates as it is confliting with the intro
-                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
-                        }
-                        else if ((B_blocka.isPlayerOnBlock == true && B_blockb.isPlayerOnBlock == true) && (B_blocka.isDragging == true && B_blockb.isPlayerOnBlock == isDragging))
-                        {
-                            UpdateMouseBehavior();
-                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
-                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
-                        }
+                        transform.localRotation = Quaternion.Lerp(
+                            transform.localRotation,
+                            Quaternion.Euler(rotate),
+                            Time.deltaTime * rotatespeed
+                        );
+
+                        transform.localScale = Vector3.Lerp(
+                            transform.localScale,
+                            myLocalScale,
+                            Time.deltaTime * rotatespeed * 0.75f
+                        );
                     }
                     else
                     {
-                        if (!isPlayerOnBlock)
-                        {
-                            UpdateMouseBehavior();
-                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                        UpdateMouseBehavior();
 
-                            //Needs to be addressed in future updates as it is confliting with the intro
-                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
-                        }
-                        else if (isPlayerOnBlock && isDragging)
-                        {
-                            UpdateMouseBehavior();
-                            transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
-                            transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
-                        }
+                        transform.localRotation = Quaternion.Lerp(
+                            transform.localRotation,
+                            Quaternion.Euler(rotate),
+                            Time.deltaTime * rotatespeed
+                        );
+
+                        transform.localScale = Vector3.Lerp(
+                            transform.localScale,
+                            myLocalScale,
+                            Time.deltaTime * rotatespeed * 0.75f
+                        );
                     }
 
                 }
                 else if (type == BlockType.Free)
                 {
-                    if(!isPlayerOnBlock)
-                    {
-                        UpdateMouseBehavior();
-                        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
+                    UpdateMouseBehavior();
 
-                        //Needs to be addressed in future updates as it is confliting with the intro
-                        transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
-                    }
-                    else if (isPlayerOnBlock && isDragging)
-                    {
-                        UpdateMouseBehavior();
-                        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rotate), Time.deltaTime * rotatespeed);
-                        transform.localScale = Vector3.Lerp(transform.localScale, myLocalScale, Time.deltaTime * rotatespeed * 0.75f);
-                    }
+                    transform.localRotation = Quaternion.Lerp(
+                        transform.localRotation,
+                        Quaternion.Euler(rotate),
+                        Time.deltaTime * rotatespeed
+                    );
+
+                    transform.localScale = Vector3.Lerp(
+                        transform.localScale,
+                        myLocalScale,
+                        Time.deltaTime * rotatespeed * 0.75f
+                    );
                 }
 
 
@@ -507,12 +504,6 @@ public class Block : MonoBehaviour
                 LevelController.instance.curOverBlock = null;
 
             return;
-        }
-
-        if (player1Controller != null && player2Controller != null)
-        {
-            if (!player1Controller.hasLanded || !player2Controller.hasLanded)
-                return;
         }
 
         Ray ray = CommonReference.mainCam.ScreenPointToRay(Input.mousePosition);
@@ -2195,9 +2186,17 @@ private void HideMirrorGhost()
         if (IsRotationDragLocked())
             return false;
 
-        if (controller == null) return false;
+        if (controller == null)
+            return false;
 
-        if (controller.phase == LevelPhase.Sprinting)
+        if (!controller.ArePlayersReadyForInteraction())
+            return false;
+
+        if (controller.phase != LevelPhase.Placing &&
+            controller.phase != LevelPhase.Running)
+            return false;
+
+        if (controller.curDraggedblock != null)
             return false;
 
         if (player1Controller != null && player1Controller.is_sliding)
@@ -2206,10 +2205,11 @@ private void HideMirrorGhost()
         if (player2Controller != null && player2Controller.is_sliding)
             return false;
 
+        // Only prevent dragging if the player is standing on THIS block
         if (IsAnyLinkedBlockUnderPlayer())
             return false;
 
-        return true;
+        return draggable;
     }
 
     private bool CanContinueBlockDrag()
