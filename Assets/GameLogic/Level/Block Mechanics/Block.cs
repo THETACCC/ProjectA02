@@ -141,6 +141,7 @@ public class Block : MonoBehaviour
     private PlayerController player1Controller;
     private PlayerController player2Controller;
 
+    private LevelPhase phaseBeforeDrag;
     private void Awake()
     {
         // Robust outline assignment (works for originals & clones; Editor & Player)
@@ -545,14 +546,17 @@ public class Block : MonoBehaviour
         {
             //Audio
             AudioPlayer.instance.playBlockSelectSound();
-
-
-
             mouse_drag = true;
+            isDragging = true;
 
+            phaseBeforeDrag = controller.phase; // save Placing or Running
 
+            controller.phase = LevelPhase.Draging;
 
+            // Disable dangerous block colliders immediately
+            SetBlockCollidersActive(false);
 
+            // Then disable players
             controller.DisablePlayerColliders();
 
             _OnStartDrag();
@@ -597,13 +601,35 @@ public class Block : MonoBehaviour
             if (Input.GetMouseButtonUp(0))
             {
                 mouse_drag = false;
-                Debug.Log("On  End Draingg");
-                controller.EnablePlayerColliders();
+                isDragging = false;
+
+                controller.phase = LevelPhase.Draging;
+                SetBlockCollidersActive(false);
+
                 _OnEndDrag();
+
+                // Keep colliders off while failed placement returns to original position
+                SetBlockCollidersActive(false);
+
+                StartCoroutine(FinishDragAfterReturnDelay(0.25f));
+
                 LevelController.instance.curDraggedblock = null;
             }
         }
         prev_mouseOver = mouse_over;
+    }
+
+    private IEnumerator FinishDragAfterReturnDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        SetBlockCollidersActive(true);
+
+        controller.EnablePlayerColliders();
+        // Return to whatever phase we were in before dragging
+        controller.phase = phaseBeforeDrag;
+
+        Physics.SyncTransforms();
     }
 
     /// <summary>
@@ -1057,9 +1083,6 @@ public class Block : MonoBehaviour
                 if (blockb == null)
                 {
                     Debug.Log("initial place");
-                    cld_0.gameObject.SetActive(true);
-                    cld_1.gameObject.SetActive(true);
-                    cld_2.gameObject.SetActive(true);
                     cpos = LevelLoader.WorldToCellPos(this.transform.position);
                     npos = this.transform.position;
 
@@ -1067,13 +1090,6 @@ public class Block : MonoBehaviour
                 else
                 {
                     Debug.Log("run COde");
-                    //enable the collision box
-                    B_blocka.cld_0.gameObject.SetActive(true);
-                    B_blocka.cld_1.gameObject.SetActive(true);
-                    B_blocka.cld_2.gameObject.SetActive(true);
-                    B_blockb.cld_0.gameObject.SetActive(true);
-                    B_blockb.cld_1.gameObject.SetActive(true);
-                    B_blockb.cld_2.gameObject.SetActive(true);
 
                 }
 
@@ -1181,11 +1197,6 @@ public class Block : MonoBehaviour
             else if (type == BlockType.Free)
             {
                 //This is a new methodology for free blocks to align
-                //enable collision
-                cld_0.gameObject.SetActive(true);
-                cld_1.gameObject.SetActive(true);
-                cld_2.gameObject.SetActive(true);
-                Debug.Log("Dropped Free Block");
 
                 GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
                 GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
@@ -1308,12 +1319,6 @@ public class Block : MonoBehaviour
         {
             if (type == BlockType.Free)
             {
-                //This is a new methodology for free blocks to align
-                //enable collision
-                cld_0.gameObject.SetActive(true);
-                cld_1.gameObject.SetActive(true);
-                cld_2.gameObject.SetActive(true);
-                Debug.Log("Dropped Free Block");
 
                 GameObject[] levelBricks = GameObject.FindGameObjectsWithTag("LevelBrick");
                 GameObject[] inventoryBricks = GameObject.FindGameObjectsWithTag("LevelBrickInventory");
@@ -1431,11 +1436,6 @@ public class Block : MonoBehaviour
             }
             else if (type == BlockType.Regular)
             {
-                //enable collision
-                Debug.Log("dropped Regular Block");
-                cld_0.gameObject.SetActive(true);
-                cld_1.gameObject.SetActive(true);
-                cld_2.gameObject.SetActive(true);
 
                 if (canlink && !instantiated)
                 {
@@ -2237,6 +2237,30 @@ private void HideMirrorGhost()
             return false;
 
         return true;
+    }
+
+
+    private void SetBlockCollidersActive(bool active)
+    {
+        if (cld_0 != null) cld_0.SetActive(active);
+        if (cld_1 != null) cld_1.SetActive(active);
+        if (cld_2 != null) cld_2.SetActive(active);
+
+        if (B_blocka != null)
+        {
+            if (B_blocka.cld_0 != null) B_blocka.cld_0.SetActive(active);
+            if (B_blocka.cld_1 != null) B_blocka.cld_1.SetActive(active);
+            if (B_blocka.cld_2 != null) B_blocka.cld_2.SetActive(active);
+        }
+
+        if (B_blockb != null)
+        {
+            if (B_blockb.cld_0 != null) B_blockb.cld_0.SetActive(active);
+            if (B_blockb.cld_1 != null) B_blockb.cld_1.SetActive(active);
+            if (B_blockb.cld_2 != null) B_blockb.cld_2.SetActive(active);
+        }
+
+        Physics.SyncTransforms();
     }
 
 
