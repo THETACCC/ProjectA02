@@ -62,6 +62,10 @@ public class Block : MonoBehaviour
     [SerializeField] private Block B_blockb;
     //60f in editor
     //78.1 in Build
+
+    private Vector3 mirrorOffsetLeftToRight;
+    private Vector3 mirrorOffsetRightToLeft;
+
     private float offset = 60f;
     private float offsetz =  -60f;
     [SerializeField] private bool linked = false;
@@ -271,24 +275,46 @@ public class Block : MonoBehaviour
 
     private void CalculateOffset()
     {
-        if (type == BlockType.Regular)
+        if (type != BlockType.Regular) return;
+
+        gameLevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
+        gameLevelRight = GameObject.FindGameObjectWithTag("LevelRight");
+
+        if (gameLevelLeft == null || gameLevelRight == null)
+        {
+            Debug.LogError("LevelLeft or LevelRight not found. Mirror offset cannot be calculated.");
+            return;
+        }
+
+        mirrorOffsetLeftToRight = gameLevelRight.transform.position - gameLevelLeft.transform.position;
+        mirrorOffsetRightToLeft = gameLevelLeft.transform.position - gameLevelRight.transform.position;
+
+        Debug.Log($"Mirror Offset L->R: {mirrorOffsetLeftToRight}, R->L: {mirrorOffsetRightToLeft}");
+    }
+
+    private bool IsPositionOnLeftMap(Vector3 worldPos)
+    {
+        if (gameLevelLeft == null || gameLevelRight == null)
         {
             gameLevelLeft = GameObject.FindGameObjectWithTag("LevelLeft");
             gameLevelRight = GameObject.FindGameObjectWithTag("LevelRight");
-
-            offset = Mathf.Abs(gameLevelLeft.transform.position.x - gameLevelRight.transform.position.x);
-            offsetz = -Mathf.Abs(gameLevelLeft.transform.position.z - gameLevelRight.transform.position.z);
-            //offset = Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) - 24.7521f;
-            //offsetz = -Vector3.Distance(gameLevelLeft.transform.position, gameLevelRight.transform.position) + 24.7521f;
-            Debug.Log(offset);
-
-
-            //THis is for build use
-
-            //offset += 18f;
-            //offsetz -= 18f;
         }
+
+        float distToLeft = Vector3.Distance(worldPos, gameLevelLeft.transform.position);
+        float distToRight = Vector3.Distance(worldPos, gameLevelRight.transform.position);
+
+        return distToLeft <= distToRight;
     }
+
+    private Vector3 GetMirroredPosition(Vector3 sourcePos)
+    {
+        bool sourceIsLeft = IsPositionOnLeftMap(sourcePos);
+
+        return sourceIsLeft
+            ? sourcePos + mirrorOffsetLeftToRight
+            : sourcePos + mirrorOffsetRightToLeft;
+    }
+
     private void Update()
     {
         DisableOutlineIfCannotInteract();
@@ -915,7 +941,8 @@ public class Block : MonoBehaviour
                         {
                             // Position blockb with an offset, keeping in mind the isometric axis adjustments
                             //blockb.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
-                            Vector3 targetPosition = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
+                            Vector3 targetPosition = GetMirroredPosition(mpos);
+                            targetPosition.y = mpos.y;
 
                             // Smoothly interpolate the current position to the target position
                             blockb.transform.position = targetPosition;
@@ -933,7 +960,8 @@ public class Block : MonoBehaviour
                         {
                             // Position blocka with an offset, keeping in mind the isometric axis adjustments
                             //blocka.transform.position = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
-                            Vector3 targetPosition = new Vector3(mpos.x + (isLeft ? offset : -offset), mpos.y, mpos.z + (isLeft ? offsetz : -offsetz));
+                            Vector3 targetPosition = GetMirroredPosition(mpos);
+                            targetPosition.y = mpos.y;
 
                             // Smoothly interpolate the current position to the target position
                             blocka.transform.position = targetPosition;
@@ -1057,8 +1085,9 @@ public class Block : MonoBehaviour
 
                     if (blockb != null)
                     {
-                        B_blocka.BlockAlignmentMirrorInMap();
-                        B_blockb.BlockAlignmentMirrorInMap();
+                        Block rootBlock = B_blocka != null ? B_blocka : this;
+                        rootBlock.BlockAlignmentMirrorInMap();
+                    return;
                     }
                     else
                     {
@@ -1520,55 +1549,56 @@ public void StartMapRotation()
     LevelLoader.instance.OnBlockRotation(LevelLoader.WorldToCellPos(rotate_start_pos));
 }
 
-public void instantiateBlocks()
-{
+    public void instantiateBlocks()
+    {
+        GameObject a = this.gameObject;
+        GameObject b = Instantiate(this.gameObject);
 
-    Debug.Log("Before test");
+        blocka = a;
+        blockb = b;
 
-    GameObject a = this.gameObject;
-    GameObject b = Instantiate(this.gameObject);
+        B_blocka = a.GetComponent<Block>();
+        B_blockb = b.GetComponent<Block>();
 
+        linked = true;
+        instantiated = true;
 
-    bool isLeft = transform.position.x < LevelLoader.center.x;
-    Vector3 targetPosition = new Vector3(transform.position.x + (isLeft ? offset : -offset), transform.position.y, transform.position.z + (isLeft ? offsetz : -offsetz));
-    //this moves the clone to its position.
-    b.transform.position = new Vector3(transform.position.x + (isLeft ? offset : -offset), transform.position.y, transform.position.z + (isLeft ? offsetz : -offsetz));
+        B_blocka.blocka = blocka;
+        B_blocka.blockb = blockb;
+        B_blocka.B_blocka = B_blocka;
+        B_blocka.B_blockb = B_blockb;
+        B_blocka.linked = true;
+        B_blocka.instantiated = true;
 
-    blocka = a.gameObject;
-    blockb = b.gameObject;
-    B_blocka = this.GetComponent<Block>();
-    B_blockb = b.GetComponent<Block>();
-    linked = true;
-    B_blockb.linked = true;
-    B_blockb.B_blockb = blockb.GetComponent<Block>();
-    B_blockb.B_blocka = blocka.GetComponent<Block>();
-    B_blockb.blocka = blocka;
-    B_blockb.blockb = blockb;
-    B_blockb.offset = offset;
-    B_blockb.offsetz = offsetz;
-    B_blockb.instantiated = true;
-    instantiated = true;
-    B_blockb.cld_0 = b.transform.Find("Base")?.gameObject;
-    B_blockb.cld_1 = b.transform.Find("Lower")?.gameObject;
-    B_blockb.cld_2 = b.transform.Find("Upper")?.gameObject;
+        B_blockb.blocka = blocka;
+        B_blockb.blockb = blockb;
+        B_blockb.B_blocka = B_blocka;
+        B_blockb.B_blockb = B_blockb;
+        B_blockb.linked = true;
+        B_blockb.instantiated = true;
 
-        //Instatiation of the new mechanics
+        // Important: copy mirror data to clone
+        B_blockb.gameLevelLeft = gameLevelLeft;
+        B_blockb.gameLevelRight = gameLevelRight;
+        B_blockb.mirrorOffsetLeftToRight = mirrorOffsetLeftToRight;
+        B_blockb.mirrorOffsetRightToLeft = mirrorOffsetRightToLeft;
 
-        // Assign BreakableGround scripts to B_blocka and B_blockb
+        B_blockb.cld_0 = b.transform.Find("Base")?.gameObject;
+        B_blockb.cld_1 = b.transform.Find("Lower")?.gameObject;
+        B_blockb.cld_2 = b.transform.Find("Upper")?.gameObject;
+
+        // Important: move clone to mirrored world position before alignment
+        Vector3 mirrorPos = GetMirroredPosition(blocka.transform.position);
+        mirrorPos.y = blocka.transform.position.y;
+        blockb.transform.position = mirrorPos;
+
         AssignBreakableGroundScripts(B_blocka, B_blockb);
-
-        // Assign SpawnBlock scripts to B_blocka and B_blockb
         AssignSpawnBlockScripts(B_blocka, B_blockb);
-        //    B_blocka.cld_0.SetActive(true);
-        //B_blockb.cld_0.SetActive(true);
-
-        //Get the outline stuff
-        //ShowMirrorGhost(b);
 
         B_blockb.outlineEffect = blockb.GetComponentInChildren<Outline>();
-    B_blocka.BlockAlignment();
-    //B_blockb.BlockAlignment();
-}
+
+        B_blocka.BlockAlignment();
+    }
 
     // Function to assign multiple BreakableGround scripts
     private void AssignBreakableGroundScripts(Block blockA, Block blockB)
@@ -1909,12 +1939,10 @@ public void instantiateBlocks()
         if (alignmentA != null && !alignmentA.isBlocked && alignmentA.gameObject.CompareTag("LevelBrickInventory"))
         {
             MoveBlockBackToInventory(blocka, alignmentA);
-            if (blockb != null) Destroy(blockb);
         }
         else if (alignmentB != null && !alignmentB.isBlocked && alignmentB.gameObject.CompareTag("LevelBrickInventory"))
         {
             MoveBlockBackToInventory(blockb, alignmentB);
-            if (blocka != null) Destroy(blocka);
         }
         else
         {
@@ -1923,94 +1951,66 @@ public void instantiateBlocks()
             MoveBlockToAlignment(blockb, B_blockb.myAlignedBrick.transform.position);
         }
     }
-    private void MoveBlockBackToInventory(GameObject block, BlockAlignment alignment)
+    private void MoveBlockBackToInventory(GameObject droppedBlock, BlockAlignment inventoryAlignment)
     {
         UnblockPreviousAlignment();
 
-        if (block == blocka)
+        Block inventoryBlock = droppedBlock != null
+            ? droppedBlock.GetComponent<Block>()
+            : this;
+
+        if (inventoryBlock == null)
+            inventoryBlock = this;
+
+        GameObject blockToDestroy = null;
+
+        if (inventoryBlock == B_blocka)
         {
-
-
-            //B_blocka.myAlignedBrick = alignment;
-            //B_blocka.isInventory = true;
-            //B_blocka.instantiated = false;
-            //B_blockb.outlineEffect.RemakeMaterial();
-
-
-            //Make the inventory clear
-            B_blocka.myAlignedBrick.isBlocked = false;
-            B_blockb.myAlignedBrick.isBlocked = false;
-            B_blocka.myAlignedBrick = alignment;
-            Debug.Log("Block A Back to Inventory");
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                blocka.transform.position = Vector3.Lerp(blocka.transform.position, B_blocka.myAlignedBrick.transform.position, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-
-            B_blocka.myAlignedBrick.isBlocked = true;
-            B_blocka.isInventory = true;
-            B_blocka.instantiated = false;
-            //Make the inventory the parent again
-            GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
-            if (levelInventory != null)
-            {
-                B_blocka.transform.SetParent(levelInventory.transform);
-            }
-            if (blockb != null)
-            {
-                Destroy(blockb);
-            }
-
+            blockToDestroy = B_blockb != null ? B_blockb.gameObject : null;
         }
-        else if (block == blockb)
+        else if (inventoryBlock == B_blockb)
         {
-            //B_blockb.myAlignedBrick = alignment;
-            //B_blockb.isInventory = true;
-            //B_blockb.instantiated = false;
-            //B_blockb.outlineEffect.RemakeMaterial();
-
-
-            //Make the inventory clear
-            B_blocka.myAlignedBrick.isBlocked = false;
-            B_blockb.myAlignedBrick.isBlocked = false;
-            B_blockb.myAlignedBrick = alignment;
-            Debug.Log("Block B Back to Inventory");
-            SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
-            {
-                blockb.transform.position = Vector3.Lerp(blockb.transform.position, B_blockb.myAlignedBrick.transform.position, f);
-            }, null, gameObject.GetInstanceID() + "drag_success");
-
-            B_blockb.myAlignedBrick.isBlocked = true;
-            B_blockb.isInventory = true;
-            B_blockb.instantiated = false;
-            //Make the inventory the parent again
-            GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
-            if (levelInventory != null)
-            {
-                B_blockb.transform.SetParent(levelInventory.transform);
-            }
-
-            if (blocka != null)
-            {
-                Destroy(blocka);
-            }
-            Outline blockB_Outline = B_blockb.outlineEffect;
-            blockB_Outline.RemakeMaterial();
+            blockToDestroy = B_blocka != null ? B_blocka.gameObject : null;
         }
-        /*
-        alignment.isBlocked = true;
-        MoveBlockToAlignment(block, alignment.transform.position);
+        else
+        {
+            blockToDestroy = B_blockb != null ? B_blockb.gameObject : null;
+        }
+
+        inventoryBlock.blocka = null;
+        inventoryBlock.blockb = null;
+        inventoryBlock.B_blocka = null;
+        inventoryBlock.B_blockb = null;
+        inventoryBlock.linked = false;
+        inventoryBlock.instantiated = false;
+
+        inventoryBlock.myAlignedBrick = inventoryAlignment;
+        inventoryBlock.myAlignedBrick.isBlocked = true;
+        inventoryBlock.isInventory = true;
+        inventoryBlock.isDragging = false;
+        inventoryBlock.mouse_drag = false;
 
         GameObject levelInventory = GameObject.FindGameObjectWithTag("LevelInventory");
-        if (levelInventory != null) block.transform.SetParent(levelInventory.transform);
+        if (levelInventory != null)
+            inventoryBlock.transform.SetParent(levelInventory.transform);
 
-        Debug.Log(block.name + " moved back to inventory");
-        */
-        //B_blocka = null;
-       // B_blockb = null;
-        //blocka = null;
-        //blockb= null;
-        //linked = false;
+        SKUtils.StartProcedure(SKCurve.CubicIn, 0.2f, (f) =>
+        {
+            if (inventoryBlock != null && inventoryBlock.myAlignedBrick != null)
+            {
+                inventoryBlock.transform.position = Vector3.Lerp(
+                    inventoryBlock.transform.position,
+                    inventoryBlock.myAlignedBrick.transform.position,
+                    f
+                );
+            }
+        }, null, inventoryBlock.gameObject.GetInstanceID() + "drag_success");
+
+        if (LevelController.instance != null)
+            LevelController.instance.curDraggedblock = null;
+
+        if (blockToDestroy != null && blockToDestroy != inventoryBlock.gameObject)
+            Destroy(blockToDestroy);
     }
 
     private void UnblockPreviousAlignment()
@@ -2173,13 +2173,11 @@ private void HideMirrorGhost()
 
     private Vector3 GetMirrorPosition(Vector3 sourcePos)
     {
-        bool isLeft = sourcePos.x < LevelLoader.center.x;
+        bool sourceIsLeft = IsPositionOnLeftMap(sourcePos);
 
-        return new Vector3(
-            sourcePos.x + (isLeft ? offset : -offset),
-            sourcePos.y,
-            sourcePos.z + (isLeft ? offsetz : -offsetz)
-        );
+        return sourceIsLeft
+            ? sourcePos + mirrorOffsetLeftToRight
+            : sourcePos + mirrorOffsetRightToLeft;
     }
     private bool CanStartBlockDrag()
     {
@@ -2316,17 +2314,52 @@ private void HideMirrorGhost()
         mouse_drag = false;
         isDragging = false;
 
-        controller.phase = LevelPhase.Draging;
+        LevelController cachedController = controller;
+        LevelPhase returnPhase = phaseBeforeDrag;
+
+        if (cachedController != null)
+            cachedController.phase = LevelPhase.Draging;
+
         SetBlockCollidersActive(false);
 
         _OnEndDrag();
 
-        // Keep colliders off while failed placement returns to original position
-        SetBlockCollidersActive(false);
+        if (LevelController.instance != null)
+            LevelController.instance.curDraggedblock = null;
 
-        StartCoroutine(FinishDragAfterReturnDelay(0.25f));
+        // Do not rely on this block's coroutine if this block may be destroyed.
+        if (cachedController != null)
+        {
+            cachedController.StartCoroutine(FinishDragCleanupFromController(cachedController, returnPhase, 0.25f));
+        }
+    }
 
-        LevelController.instance.curDraggedblock = null;
+    private IEnumerator FinishDragCleanupFromController(
+    LevelController cachedController,
+    LevelPhase returnPhase,
+    float delay
+)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (B_blocka != null)
+        {
+            if (B_blocka.cld_0 != null) B_blocka.cld_0.SetActive(true);
+            if (B_blocka.cld_1 != null) B_blocka.cld_1.SetActive(true);
+            if (B_blocka.cld_2 != null) B_blocka.cld_2.SetActive(true);
+        }
+
+        if (B_blockb != null)
+        {
+            if (B_blockb.cld_0 != null) B_blockb.cld_0.SetActive(true);
+            if (B_blockb.cld_1 != null) B_blockb.cld_1.SetActive(true);
+            if (B_blockb.cld_2 != null) B_blockb.cld_2.SetActive(true);
+        }
+
+        cachedController.EnablePlayerColliders();
+        cachedController.phase = returnPhase;
+
+        Physics.SyncTransforms();
     }
 
     private bool IsRotationDragLocked()
