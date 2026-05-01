@@ -197,7 +197,6 @@ public class PlayerController : MonoBehaviour
                     if(Input.GetKeyDown(KeyCode.Space))
                     {
                         SoundFXManager.instance.PlayRandomSoundFXClip(walkSoundClip, transform, 1f);
-                        controller.phase = LevelPhase.Sprinting;
                     }
 
 
@@ -532,6 +531,7 @@ public class PlayerController : MonoBehaviour
         if (controller.phase == LevelPhase.Loading ||
             controller.phase == LevelPhase.Speaking ||
             controller.phase == LevelPhase.Draging ||
+            controller.phase == LevelPhase.Placing ||
             isLevelDragging)
         {
             return;
