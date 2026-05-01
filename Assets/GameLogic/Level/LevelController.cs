@@ -21,8 +21,8 @@ public class LevelController : SKMonoSingleton<LevelController>
         {
             if (_phase != value)
             {
-              //  Debug.Log($"[PHASE CHANGE] {Time.time:F2}s: {name} changed phase from {_phase} ¡ú {value}.\n" +
-              //            $"Call stack:\n{new System.Diagnostics.StackTrace()}");
+                Debug.Log($"[PHASE CHANGE] {Time.time:F2}s: {name} changed phase from {_phase} ¡ú {value}.\n" +
+                         $"Call stack:\n{new System.Diagnostics.StackTrace()}");
 
                 _phase = value;
             }
