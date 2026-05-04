@@ -153,6 +153,9 @@ public class Block : MonoBehaviour
 
     private bool wasLevelRotating = false;
     private float lastRotationEndTime = -999f;
+
+    private bool hoverSoundPlayed = false;
+
     private void Awake()
     {
         // Robust outline assignment (works for originals & clones; Editor & Player)
@@ -718,25 +721,36 @@ public class Block : MonoBehaviour
 
     private void _OnMouseEnter()
     {
-        //Audio
-        AudioPlayer.instance.playBlockHoverSound();
         if (!draggable || !CanStartBlockDrag())
         {
             SetOutlineActiveSafe(false);
             return;
         }
 
-        AudioPlayer.instance.playBlockHoverSound();
+        if (!hoverSoundPlayed)
+        {
+            AudioPlayer.instance.playBlockHoverSound();
+            hoverSoundPlayed = true;
+        }
+
         SetOutlineActiveSafe(true);
     }
-
     private void _OnMouseExit()
     {
+        hoverSoundPlayed = false;
+
+        // Keep outline while actively dragging
+        if (mouse_drag || isDragging)
+            return;
+
         SetOutlineActiveSafe(false);
     }
 
     public void _OnStartDrag()
     {
+
+        SetOutlineActiveSafe(true);
+
         if (!isInventory)
         {
             if (type == BlockType.Regular)
@@ -2377,6 +2391,11 @@ private void HideMirrorGhost()
         {
             cachedController.StartCoroutine(FinishDragCleanupFromController(cachedController, returnPhase, 0.25f));
         }
+
+        hoverSoundPlayed = false;
+        SetOutlineActiveSafe(false);
+
+
     }
 
     private IEnumerator FinishDragCleanupFromController(
@@ -2465,6 +2484,13 @@ private void HideMirrorGhost()
 
     private void DisableOutlineIfCannotInteract()
     {
+        // Keep outline visible while dragging
+        if (mouse_drag || isDragging)
+        {
+            SetOutlineActiveSafe(true);
+            return;
+        }
+
         bool cannotInteract =
             IsRotationDragLocked() ||
             !draggable ||
