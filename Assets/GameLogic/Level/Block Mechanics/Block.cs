@@ -2380,13 +2380,20 @@ private void HideMirrorGhost()
     }
 
     private IEnumerator FinishDragCleanupFromController(
-    LevelController cachedController,
-    LevelPhase returnPhase,
-    float delay
-)
+        LevelController cachedController,
+        LevelPhase returnPhase,
+        float delay
+    )
     {
         yield return new WaitForSeconds(delay);
 
+        // Re-enable THIS block first.
+        // Important for Free blocks, because B_blocka / B_blockb are null.
+        if (cld_0 != null) cld_0.SetActive(true);
+        if (cld_1 != null) cld_1.SetActive(true);
+        if (cld_2 != null) cld_2.SetActive(true);
+
+        // Re-enable linked regular blocks if they exist.
         if (B_blocka != null)
         {
             if (B_blocka.cld_0 != null) B_blocka.cld_0.SetActive(true);
@@ -2401,8 +2408,11 @@ private void HideMirrorGhost()
             if (B_blockb.cld_2 != null) B_blockb.cld_2.SetActive(true);
         }
 
-        cachedController.EnablePlayerColliders();
-        cachedController.phase = returnPhase;
+        if (cachedController != null)
+        {
+            cachedController.EnablePlayerColliders();
+            cachedController.phase = returnPhase;
+        }
 
         Physics.SyncTransforms();
     }
@@ -2506,25 +2516,6 @@ private void HideMirrorGhost()
 
         return result;
     }
-
-    // Let you toggle in builds with a key (optional)
-    private void LateUpdate()
-{
-        /*
-    if (Input.GetKeyDown(toggleMirrorGhostKey))
-    {
-        showMirrorGhostInBuild = !showMirrorGhostInBuild;
-        if (!showMirrorGhostInBuild) HideMirrorGhost();
-        else ShowMirrorGhost(blockb); // try to refresh immediately
-    }
-
-    // Keep the ghost tracking while dragging or moving
-    if (showMirrorGhostInBuild && type == BlockType.Regular)
-    {
-        ShowMirrorGhost(blockb);
-    }
-        */
-}
 
 }
 
